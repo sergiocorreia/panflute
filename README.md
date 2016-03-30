@@ -1,8 +1,8 @@
-# Extensions to [pandocfilters](https://github.com/jgm/pandocfilters)
+# Extensions to pandocfilters
 
 *(Note: This is an experimental build and is likely to evolve)*
 
-This Python package contains the basic functionality of `pandocfilters`
+This Python package contains the basic functionality of [pandocfilters](https://github.com/jgm/pandocfilters)
 plus helper functions useful for complex filters.
 They contain common boilerplate plus asserts and sanity checks to minimize bugs.
 
