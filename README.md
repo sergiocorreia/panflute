@@ -28,7 +28,7 @@ However, these quickly get hard to read (and write, and use source control on):
 
 *(example taken from the [pandoc-placetable](https://github.com/mb21/pandoc-placetable) filter)*
 
-More complex filters---that use attributes such as long blocks of text or lists---quickly get even moreunwieldy, so as a solution YAML block filters just move the attributes
+More complex filters---that use attributes such as long blocks of text or lists---quickly get even more unwieldy, so as a solution YAML block filters just move the attributes
 to a YAML miniblock inside the filter. The above would then be:
 
 <pre><code>
