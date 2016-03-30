@@ -203,6 +203,16 @@ doc = pf.walk(doc, metadata, filters)
 pf.dump(doc)
 ```
 
+# Install
+
+Run:
+
+```
+pip install git+git://github.com/sergiocorreia/pandocfilters_extended.git
+```
+
+(Windows note: open `cmd` as administrator)
+
 # License
 
 A lot of the code started as copy--paste of `pandocfilter` by @jgm, so we just extend his BSD license.
