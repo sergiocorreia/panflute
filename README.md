@@ -28,7 +28,8 @@ However, these quickly get hard to read (and write, and use source control on):
 
 *(example taken from the [pandoc-placetable](https://github.com/mb21/pandoc-placetable) filter)*
 
-More complex filters---that use attributes such as long blocks of text or lists---quickly get even more unwieldy, so as a solution YAML block filters just move the attributes
+More complex filters---that use attributes such as long blocks of text or lists---quickly get even more unwieldy,
+so as a solution YAML block filters just move the attributes
 to a YAML miniblock inside the filter. The above would then be:
 
 <pre><code>
@@ -78,7 +79,9 @@ label: optional-label
 <pre><code>
 ~~~ table
 title: Summary Stats
-notes: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+notes: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+exercitation ullamco laboris nisi ut aliquip ex ea commodo
 consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
 cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
