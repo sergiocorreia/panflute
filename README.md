@@ -26,43 +26,40 @@ However, these quickly get hard to read (and write, and use source control on):
 ```
 </code></pre>
 
-
-asdasdasd
-
-
 *(example taken from the [pandoc-placetable](https://github.com/mb21/pandoc-placetable) filter)*
 
 More complex filters---that use attributes such as long blocks of text or lists---quickly get even moreunwieldy, so as a solution YAML block filters just move the attributes
 to a YAML miniblock inside the filter. The above would then be:
 
-    ```table
-    file: foo.csv
-    header: true
-    aligns: LRCRR
-    inlinemarkdown: true
-    caption: my **caption**
-    delimiter:','
-    quotechar:'\"'
-    ```
+<pre><code>
+```table
+file: foo.csv
+header: true
+aligns: LRCRR
+inlinemarkdown: true
+caption: my **caption**
+delimiter:','
+quotechar:'\"'
+```
+</code></pre>
 
 If we also had data, we can add it after a YAML end delimiter (either `---` or `...`):
 
-    ```table
-    file: foo.csv
-    header: true
-    aligns: LRCRR
-    inlinemarkdown: true
-    caption: my **caption**
-    delimiter:','
-    quotechar:'\"'
-    ...
-    Fruit, Quantity, Price  
-    apples, 15, 3.24  
-    oranges, 12, 2.22  
-    ```
-
-
-
+<pre><code>
+```table
+file: foo.csv
+header: true
+aligns: LRCRR
+inlinemarkdown: true
+caption: my **caption**
+delimiter:','
+quotechar:'\"'
+...
+Fruit, Quantity, Price  
+apples, 15, 3.24  
+oranges, 12, 2.22
+```
+</code></pre>
 
 
 # License
