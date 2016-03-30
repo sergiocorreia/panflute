@@ -62,43 +62,32 @@ oranges, 12, 2.22
 </code></pre>
 
 
-# License
+### More Examples
 
-A lot of the code started as copy--paste of `pandocfilter` by @jgm, so we just extend his BSD license.
+Figures and tables:
 
-# Helper Functions for Code Block Pandoc Filters
-
-This module contains helper functions for YAML block filters.
-A YAML block is a code block (delimited with three tildes or
-backticks) with an identifier on the first line and YAML as
-the code content. The identifier describes which filter to 
-apply, and the YAML describes attributes and content. Examples:
-
+<pre><code>
 ~~~ figure
-title: Some Title ($e=mc^2$ and *bold*)
+title: Some Title (some latex $e=mc^2$ and *some markdown*)
 notes: 'If the notes contain colons: wrap them in single quotes'
 source: picture.png
 label: optional-label
 ~~~
+</code></pre>
 
+<pre><code>
 ~~~ table
 title: Summary Stats
-notes: 'Some notes'
+notes: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
 label: summary-stats
 source: '../Tables/summary-stats.tex'
 ~~~
+</code></pre>
 
-~~~ table
-title: Summary Stats
-notes: 'Some notes'
-label: summary-stats
-input: csv # Some comment
----
-Variable, Mean, Median
-Price, 10, 11
-Weight, 12, 13
-~~~
-
+<pre><code>
 ~~~ algorithm
 title: K-Means
 input: $\vx, \vy$
@@ -107,7 +96,9 @@ steps:
   1. Something
   2. Something else
 ~~~
+</code></pre>
 
+<pre><code>
 ~~~ stata
 title: A Stata Table
 refresh: false
@@ -118,38 +109,97 @@ collapse (mean) price, by(foreign)
 outsheet using '../tmp/stuff.csv', replace
 exit, STATA // implicit?
 ~~~
+</code></pre>
 
-To process each module, you just do
+### Usage
 
->>> import utils
->>> filters = {'figure': figure_filter, 'algorithm': algo_filter}
->>> doc = utils.get_doc()
->>> metadata = utils.get_metadata(doc)
->>> doc = utils.filter(metadata, filters)
->>> utils.dump(doc) # When you are done
+```python
+import pandocfilters_extended as pf
+from string import Template
 
-Advanced Cases
---------------
+def figures(opt, content, format, meta):
+    base = r"\begin{figure}\caption{$title}\includegraphics{$fn}\end{figure}"
+    tex = Template(base).safe_substitute(title=opt.title, fn=opt.fn)
+    return tex
 
-If you want to read all the filter instances, run an external script
-once, and then apply the results, you can do:
+if __name__ == "__main__":
+    myfilter = pf.block_filter('table', myfun)
+    pf.toJSONFilter(myfilter)
+```
 
-1. Curry the function so you append the attributes of each instance
-2. Call utils.filter() for the filter stata_read
-3. Run Stata
-4. Call utils.filter() for the filter stata_write
-5. Then call other utils.filter() again for the normal filters
+## 2. Support for scripts
 
-Similarly, if you want e.g. figures at the end, you can set up a
-backmatter list:
+If you want to read all the instances of a filter and then run an external script
+*once* (to compile the results, you can do):
 
+```python
+import pandocfilters_extended as pf
+from string import Template
+
+def read_stata(opt, content, format, meta, commands):
+    commands.extend(content)
+
+def write_stata(opt, content, format, meta, commands):
+    # do something with the text based on -opt- or -content-
+    pass
+
+def get_cmd(format, meta, commands):
+    # write commands to a temp file
+    return 'stata.exe do ' + temp_file
+
+if __name__ == "__main__":
+    commands = []
+    myfilter = pf.block_filter('table', reader=read_stata, write=write_stata, cmd=get_cmd, commands=commands)
+    pf.toJSONFilter(myfilter)
+```
+
+This will do a first pass that creates the list of script lines that need to be run, then call an external command,
+then do a second pass that uses the output of the command to write into the AST.
+
+# 3. Support for backmatter
+
+We may want to append all figures and tables to the end, so we need an alternative AST for that,
+and some placeholder text
+
+TODO: the filters should take a backmatter option, where we write the output, and then we should have a replace option that 
+either appends the text at the end of the document, or at a specific place (walking through the doc and replacing a specific word).
+
+Internally, we could rely on partial to curry the functions:
+
+```
 >>> from functools import partial
 >>> backmatter = []
 >>> fig_filter = partial(figure_filter, backmatter=backmatter)
+```
+
 
 And after running the filters, use the included replace filter:
 
+```
 >>> bm = build_backmatter(backmatter) # Join it somehow
 >>> doc = utils.replace_filter(doc, bm, location="REPLACE_HERE")
+```
 
-(If location is not set, it will be appended at the end of the document)
+
+# Allow named arguments when creating elements
+
+It is really hard to read code like this six months down the line:
+`Para([Image(['a caption', [], []], [], [src, ""])])`
+
+Alternatively, it could be better to do:
+`Para([Image(alt_text='a caption', source=src)])`
+
+# Advanced Template
+
+```python
+import pandocfilters_extended as pf
+filters = {'figure': figure_filter, 'algorithm': algo_filter}
+doc = pf.get_doc()
+metadata = pf.get_metadata(doc)
+doc = pf.walk(doc, metadata, filters)
+pf.dump(doc)
+```
+
+# License
+
+A lot of the code started as copy--paste of `pandocfilter` by @jgm, so we just extend his BSD license.
