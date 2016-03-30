@@ -20,9 +20,11 @@ Many filters introduce new elements (tables, figures, etc.) via fenced code bloc
 They allow for titles, filenames, etc. via [attributes](http://pandoc.org/README.html#fenced-code-blocks).
 However, these quickly get hard to read (and write, and use source control on):
 
-    ```{.table file="foo.csv" header=yes aligns=LRCRR inlinemarkdown=yes
-     caption="my **caption**" delimiter="," quotechar="\"" }
-    ```
+````markdown
+```{.table file="foo.csv" header=yes aligns=LRCRR inlinemarkdown=yes
+ caption="my **caption**" delimiter="," quotechar="\"" }
+```
+````
 
 *(example taken from the [pandoc-placetable](https://github.com/mb21/pandoc-placetable) filter)*
 
@@ -54,6 +56,8 @@ If we also had data, we can add it after a YAML end delimiter (either `---` or `
     apples, 15, 3.24  
     oranges, 12, 2.22  
     ```
+
+
 
 
 
