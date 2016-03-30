@@ -126,7 +126,7 @@ def figures(opt, content, format, meta):
     return tex
 
 if __name__ == "__main__":
-    myfilter = pf.block_filter('table', myfun)
+    myfilter = pf.block_filter('table', figures)
     pf.toJSONFilter(myfilter)
 ```
 
