@@ -15,6 +15,8 @@ import io
 import sys
 import json
 
+from .elements import from_json
+
 
 # ---------------------------
 # Functions
@@ -57,7 +59,7 @@ def walk_meta(element):
 
 def load():
     input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    doc = json.load(input_stream, object_hook=to_element)
+    doc = json.load(input_stream, object_hook=from_json)
     output_format = sys.argv[1] if len(sys.argv) > 1 else ""
     return doc, output_format
 

@@ -213,6 +213,14 @@ pip install git+git://github.com/sergiocorreia/pandocfilters_extended.git
 
 (Windows note: open `cmd` as administrator)
 
+# Dev Install
+
+`python setup.py install`
+: installs the package locally
+
+`python setup.py develop`
+: installs locally with a symlink so changes are automatically updated
+
 # License
 
 A lot of the code started as copy--paste of `pandocfilter` by @jgm, so we just extend his BSD license.

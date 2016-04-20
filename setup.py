@@ -1,7 +1,7 @@
 """An extension of pandocfilters
 
 See:
-https://github.com/sergiocorreia/pandocfilters_extended
+https://github.com/sergiocorreia/panflute
 """
 
 from setuptools import setup, find_packages
@@ -16,7 +16,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='pandocfilters_extended',
+    name='panflute',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -27,7 +27,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/sergiocorreia/pandocfilters_extended',
+    url='https://github.com/sergiocorreia/panflute',
 
     # Author details
     author="Sergio Correia (fork of John MacFarlane's pandocfilters)",
@@ -80,7 +80,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['pandocfilters'],
+    install_requires=[], # 'pandocfilters'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
@@ -107,10 +107,10 @@ setup(
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
-    entry_points={
-        'console_scripts': [
-            'media=media:main',
-            'stata=stata:main'
-        ],
-    },
+    # entry_points={
+    #     'console_scripts': [
+    #         'media=media:main',
+    #         'stata=stata:main'
+    #     ],
+    # },
 )

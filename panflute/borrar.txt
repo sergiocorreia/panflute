@@ -1,0 +1,7770 @@
+62158
+[{"unMeta":{"date":{"t":"MetaInlines","c":[{"t":"Str","c":"July"},{"t":"Space","c":[]},{"t":"Str","c
+
+
+
+Str: July
+
+
+Space: []
+
+
+Str: 17,
+
+
+Space: []
+
+
+Str: 2006
+
+
+MetaInlines: [Str(July), Space, Str(17,), Space, Str(2006)]
+
+
+Str: John
+
+
+Space: []
+
+
+Str: MacFarlane
+
+
+MetaInlines: [Str(John), Space, Str(MacFarlane)]
+
+
+Str: Anonymous
+
+
+MetaInlines: [Str(Anonymous)]
+
+
+MetaList: [None, None]
+
+
+Str: Pandoc
+
+
+Space: []
+
+
+Str: Test
+
+
+Space: []
+
+
+Str: Suite
+
+
+MetaInlines: [Str(Pandoc), Space, Str(Test), Space, Str(Suite)]
+
+
+MetaString: example.bib
+
+example.bib
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: set
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: tests
+
+
+Space: []
+
+
+Str: for
+
+
+Space: []
+
+
+Str: pandoc.
+
+
+Space: []
+
+
+Str: Most
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: them
+
+
+Space: []
+
+
+Str: are
+
+
+Space: []
+
+
+Str: adapted
+
+
+Space: []
+
+
+Str: from
+
+
+Space: []
+
+
+Str: John
+
+
+Space: []
+
+
+Str: Gruber’s
+
+
+SoftBreak: []
+
+
+Str: markdown
+
+
+Space: []
+
+
+Str: test
+
+
+Space: []
+
+
+Str: suite.
+
+
+Para: [Str(This), Space, Str(is), Space, Str(a), Space, Str(set), Space, Str(of), Space, Str(tests), Space, Str(for), Space, Str(pandoc.), Space, Str(Most), Space, Str(of), Space, Str(them), Space, Str(are), Space, Str(adapted), Space, Str(from), Space, Str(John), Space, Str(Gruber’s), <elements.SoftBreak object at 0x00698510>, Str(markdown), Space, Str(test), Space, Str(suite.)]
+
+
+Str: As
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: authors
+
+
+Space: []
+
+
+Str: said
+
+
+Space: []
+
+
+NormalCitation: []
+
+[]
+
+Str: such
+
+
+Space: []
+
+
+Str: as
+
+
+NormalCitation: []
+
+[]
+
+Str: (
+
+
+Str: such
+
+
+Space: []
+
+
+Str: as
+
+
+Space: []
+
+
+Str: S
+
+
+Str: .
+
+
+Space: []
+
+
+Str: John
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: n.d.
+
+
+Str: ;
+
+
+Space: []
+
+
+Str: S
+
+
+Str: .
+
+
+Space: []
+
+
+Str: I
+
+
+Str: .
+
+
+Space: []
+
+
+Str: John
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: n.d.
+
+
+Str: )
+
+
+Cite: [[None, None], [Str((), Str(such), Space, Str(as), Space, Str(S), Str(.), Space, Str(John), Str(,), Space, Str(n.d.), Str(;), Space, Str(S), Str(.), Space, Str(I), Str(.), Space, Str(John), Str(,), Space, Str(n.d.), Str())]]
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+NormalCitation: []
+
+[]
+
+Str: (
+
+
+Str: S
+
+
+Str: .
+
+
+Space: []
+
+
+Str: John
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: n.d.
+
+
+Str: )
+
+
+Cite: [[None], [Str((), Str(S), Str(.), Space, Str(John), Str(,), Space, Str(n.d.), Str())]]
+
+
+Para: [Str(As), Space, Str(the), Space, Str(authors), Space, Str(said), Space, <elements.Cite object at 0x00FBA630>, Str(,), Space, Str(and), Space, <elements.Cite object at 0x00FBA7B0>]
+
+
+Str: Demonstration
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: simple
+
+
+Space: []
+
+
+Str: table
+
+
+Space: []
+
+
+Str: syntax.
+
+
+AlignRight: []
+
+
+AlignLeft: []
+
+
+AlignCenter: []
+
+
+AlignDefault: []
+
+
+Str: Right
+
+
+Plain: [Str(Right)]
+
+
+Str: Left
+
+
+Plain: [Str(Left)]
+
+
+Str: Center
+
+
+Plain: [Str(Center)]
+
+
+Str: Default
+
+
+Plain: [Str(Default)]
+
+
+Str: 12
+
+
+Plain: [Str(12)]
+
+
+Str: 12
+
+
+Plain: [Str(12)]
+
+
+Str: 12
+
+
+Plain: [Str(12)]
+
+
+Str: 12
+
+
+Plain: [Str(12)]
+
+
+Str: 123
+
+
+Plain: [Str(123)]
+
+
+Str: 123
+
+
+Plain: [Str(123)]
+
+
+Str: 123
+
+
+Plain: [Str(123)]
+
+
+Str: 123
+
+
+Plain: [Str(123)]
+
+
+Str: 1
+
+
+Plain: [Str(1)]
+
+
+Str: 1
+
+
+Plain: [Str(1)]
+
+
+Str: 1
+
+
+Plain: [Str(1)]
+
+
+Str: 1
+
+
+Plain: [Str(1)]
+
+
+Table: [[Str(Demonstration), Space, Str(of), Space, Str(simple), Space, Str(table), Space, Str(syntax.)], ['AlignRight', 'AlignLeft', 'AlignCenter', 'AlignDefault'], [0.0, 0.0, 0.0, 0.0], [[Plain(Str(Right))], [Plain(Str(Left))], [Plain(Str(Center))], [Plain(Str(Default))]], [[[Plain(Str(12))], [Plain(Str(12))], [Plain(Str(12))], [Plain(Str(12))]], [[Plain(Str(123))], [Plain(Str(123))], [Plain(Str(123))], [Plain(Str(123))]], [[Plain(Str(1))], [Plain(Str(1))], [Plain(Str(1))], [Plain(Str(1))]]]]
+
+
+HorizontalRule: []
+
+
+Str: Headers
+
+
+Header: [1, ['headers', [], []], [Str(Headers)]]
+
+
+Str: Level
+
+
+Space: []
+
+
+Str: 2
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: embedded
+
+
+Space: []
+
+
+Str: link
+
+
+Link: [['', [], []], [Str(embedded), Space, Str(link)], ['/url', '']]
+
+
+Header: [2, ['level-2-with-an-embedded-link', [], []], [Str(Level), Space, Str(2), Space, Str(with), Space, Str(an), Space, <elements.Link object at 0x00FC5090>]]
+
+
+Str: Level
+
+
+Space: []
+
+
+Str: 3
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: emphasis
+
+
+Emph: [Str(emphasis)]
+
+
+Header: [3, ['level-3-with-emphasis', [], []], [Str(Level), Space, Str(3), Space, Str(with), Space, <elements.Emph object at 0x00FC1970>]]
+
+
+Str: Level
+
+
+Space: []
+
+
+Str: 4
+
+
+Header: [4, ['level-4', [], []], [Str(Level), Space, Str(4)]]
+
+
+Str: Level
+
+
+Space: []
+
+
+Str: 5
+
+
+Header: [5, ['level-5', [], []], [Str(Level), Space, Str(5)]]
+
+
+Str: Level
+
+
+Space: []
+
+
+Str: 1
+
+
+Header: [1, ['level-1', [], []], [Str(Level), Space, Str(1)]]
+
+
+Str: Level
+
+
+Space: []
+
+
+Str: 2
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: emphasis
+
+
+Emph: [Str(emphasis)]
+
+
+Header: [2, ['level-2-with-emphasis', [], []], [Str(Level), Space, Str(2), Space, Str(with), Space, <elements.Emph object at 0x00FC1C30>]]
+
+
+Str: Level
+
+
+Space: []
+
+
+Str: 3
+
+
+Header: [3, ['level-3', [], []], [Str(Level), Space, Str(3)]]
+
+
+Str: with
+
+
+Space: []
+
+
+Str: no
+
+
+Space: []
+
+
+Str: blank
+
+
+Space: []
+
+
+Str: line
+
+
+Para: [Str(with), Space, Str(no), Space, Str(blank), Space, Str(line)]
+
+
+Str: Level
+
+
+Space: []
+
+
+Str: 2
+
+
+Header: [2, ['level-2', [], []], [Str(Level), Space, Str(2)]]
+
+
+Str: with
+
+
+Space: []
+
+
+Str: no
+
+
+Space: []
+
+
+Str: blank
+
+
+Space: []
+
+
+Str: line
+
+
+Para: [Str(with), Space, Str(no), Space, Str(blank), Space, Str(line)]
+
+
+HorizontalRule: []
+
+
+Str: Paragraphs
+
+
+Header: [1, ['paragraphs', [], []], [Str(Paragraphs)]]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: regular
+
+
+Space: []
+
+
+Str: paragraph.
+
+
+Para: [Str(Here’s), Space, Str(a), Space, Str(regular), Space, Str(paragraph.)]
+
+
+Str: In
+
+
+Space: []
+
+
+Str: Markdown
+
+
+Space: []
+
+
+Str: 1.0.0
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: earlier.
+
+
+Space: []
+
+
+Str: Version
+
+
+Space: []
+
+
+Str: 8.
+
+
+Space: []
+
+
+Str: This
+
+
+Space: []
+
+
+Str: line
+
+
+Space: []
+
+
+Str: turns
+
+
+Space: []
+
+
+Str: into
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: item.
+
+
+SoftBreak: []
+
+
+Str: Because
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: hard-wrapped
+
+
+Space: []
+
+
+Str: line
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: middle
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: paragraph
+
+
+Space: []
+
+
+Str: looked
+
+
+Space: []
+
+
+Str: like
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: list
+
+
+SoftBreak: []
+
+
+Str: item.
+
+
+Para: [Str(In), Space, Str(Markdown), Space, Str(1.0.0), Space, Str(and), Space, Str(earlier.), Space, Str(Version), Space, Str(8.), Space, Str(This), Space, Str(line), Space, Str(turns), Space, Str(into), Space, Str(a), Space, Str(list), Space, Str(item.), <elements.SoftBreak object at 0x00698718>, Str(Because), Space, Str(a), Space, Str(hard-wrapped), Space, Str(line), Space, Str(in), Space, Str(the), Space, Str(middle), Space, Str(of), Space, Str(a), Space, Str(paragraph), Space, Str(looked), Space, Str(like), Space, Str(a), Space, Str(list), <elements.SoftBreak object at 0x00698788>, Str(item.)]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: one
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: bullet.
+
+
+Space: []
+
+
+Str: *
+
+
+Space: []
+
+
+Str: criminey.
+
+
+Para: [Str(Here’s), Space, Str(one), Space, Str(with), Space, Str(a), Space, Str(bullet.), Space, Str(*), Space, Str(criminey.)]
+
+
+Str: There
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: hard
+
+
+Space: []
+
+
+Str: line
+
+
+Space: []
+
+
+Str: break
+
+
+LineBreak: []
+
+
+Str: here.
+
+
+Para: [Str(There), Space, Str(should), Space, Str(be), Space, Str(a), Space, Str(hard), Space, Str(line), Space, Str(break), <elements.LineBreak object at 0x006987F8>, Str(here.)]
+
+
+HorizontalRule: []
+
+
+Str: Block
+
+
+Space: []
+
+
+Str: Quotes
+
+
+Header: [1, ['block-quotes', [], []], [Str(Block), Space, Str(Quotes)]]
+
+
+Str: E-mail
+
+
+Space: []
+
+
+Str: style:
+
+
+Para: [Str(E-mail), Space, Str(style:)]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: block
+
+
+Space: []
+
+
+Str: quote.
+
+
+Space: []
+
+
+Str: It
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: pretty
+
+
+Space: []
+
+
+Str: short.
+
+
+Para: [Str(This), Space, Str(is), Space, Str(a), Space, Str(block), Space, Str(quote.), Space, Str(It), Space, Str(is), Space, Str(pretty), Space, Str(short.)]
+
+
+BlockQuote: [<elements.Para object at 0x00FC1190>]
+
+
+Str: Code
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: block
+
+
+Space: []
+
+
+Str: quote:
+
+
+Para: [Str(Code), Space, Str(in), Space, Str(a), Space, Str(block), Space, Str(quote:)]
+
+
+CodeBlock: [['', [], []], 'sub status {\n    print "working";\n}']
+
+
+Str: A
+
+
+Space: []
+
+
+Str: list:
+
+
+Para: [Str(A), Space, Str(list:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: item
+
+
+Space: []
+
+
+Str: one
+
+
+Plain: [Str(item), Space, Str(one)]
+
+
+Str: item
+
+
+Space: []
+
+
+Str: two
+
+
+Plain: [Str(item), Space, Str(two)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[Plain(Str(item),Space,Str(one))], [Plain(Str(item),Space,Str(two))]]]
+
+
+Str: Nested
+
+
+Space: []
+
+
+Str: block
+
+
+Space: []
+
+
+Str: quotes:
+
+
+Para: [Str(Nested), Space, Str(block), Space, Str(quotes:)]
+
+
+Str: nested
+
+
+Para: [Str(nested)]
+
+
+BlockQuote: [<elements.Para object at 0x00FC8CB0>]
+
+
+Str: nested
+
+
+Para: [Str(nested)]
+
+
+BlockQuote: [<elements.Para object at 0x00FC8ED0>]
+
+
+BlockQuote: [<elements.Para object at 0x00FC8150>, <elements.CodeBlock object at 0x00FC0828>, <elements.Para object at 0x00FC8AB0>, <elements.OrderedList object at 0x00FC0940>, <elements.Para object at 0x00FC8D30>, <elements.BlockQuote object at 0x00FC8B50>, <elements.BlockQuote object at 0x00FC8E90>]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: not
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: block
+
+
+Space: []
+
+
+Str: quote:
+
+
+Space: []
+
+
+Str: 2
+
+
+Space: []
+
+
+Str: >
+
+
+Space: []
+
+
+Str: 1.
+
+
+Para: [Str(This), Space, Str(should), Space, Str(not), Space, Str(be), Space, Str(a), Space, Str(block), Space, Str(quote:), Space, Str(2), Space, Str(>), Space, Str(1.)]
+
+
+Str: And
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: following
+
+
+Space: []
+
+
+Str: paragraph.
+
+
+Para: [Str(And), Space, Str(a), Space, Str(following), Space, Str(paragraph.)]
+
+
+HorizontalRule: []
+
+
+Str: Code
+
+
+Space: []
+
+
+Str: Blocks
+
+
+Header: [1, ['code-blocks', [], []], [Str(Code), Space, Str(Blocks)]]
+
+
+Str: Code:
+
+
+Para: [Str(Code:)]
+
+
+CodeBlock: [['', [], []], '---- (should be four hyphens)\n\nsub status {\n    print "working";\n}\n\nthis code block is indented by one tab']
+
+
+Str: And:
+
+
+Para: [Str(And:)]
+
+
+CodeBlock: [['', [], []], '    this code block is indented by two tabs\n\nThese should not be escaped:  \\$ \\\\ \\> \\[ \\{']
+
+
+HorizontalRule: []
+
+
+Str: Lists
+
+
+Header: [1, ['lists', [], []], [Str(Lists)]]
+
+
+Str: Unordered
+
+
+Header: [2, ['unordered', [], []], [Str(Unordered)]]
+
+
+Str: Asterisks
+
+
+Space: []
+
+
+Str: tight:
+
+
+Para: [Str(Asterisks), Space, Str(tight:)]
+
+
+Str: asterisk
+
+
+Space: []
+
+
+Str: 1
+
+
+Plain: [Str(asterisk), Space, Str(1)]
+
+
+Str: asterisk
+
+
+Space: []
+
+
+Str: 2
+
+
+Plain: [Str(asterisk), Space, Str(2)]
+
+
+Str: asterisk
+
+
+Space: []
+
+
+Str: 3
+
+
+Plain: [Str(asterisk), Space, Str(3)]
+
+
+BulletList: [[Plain(Str(asterisk),Space,Str(1))], [Plain(Str(asterisk),Space,Str(2))], [Plain(Str(asterisk),Space,Str(3))]]
+
+
+Str: Asterisks
+
+
+Space: []
+
+
+Str: loose:
+
+
+Para: [Str(Asterisks), Space, Str(loose:)]
+
+
+Str: asterisk
+
+
+Space: []
+
+
+Str: 1
+
+
+Para: [Str(asterisk), Space, Str(1)]
+
+
+Str: asterisk
+
+
+Space: []
+
+
+Str: 2
+
+
+Para: [Str(asterisk), Space, Str(2)]
+
+
+Str: asterisk
+
+
+Space: []
+
+
+Str: 3
+
+
+Para: [Str(asterisk), Space, Str(3)]
+
+
+BulletList: [[<elements.Para object at 0x00FC2A70>], [<elements.Para object at 0x00FC2AF0>], [<elements.Para object at 0x00FC2B70>]]
+
+
+Str: Pluses
+
+
+Space: []
+
+
+Str: tight:
+
+
+Para: [Str(Pluses), Space, Str(tight:)]
+
+
+Str: Plus
+
+
+Space: []
+
+
+Str: 1
+
+
+Plain: [Str(Plus), Space, Str(1)]
+
+
+Str: Plus
+
+
+Space: []
+
+
+Str: 2
+
+
+Plain: [Str(Plus), Space, Str(2)]
+
+
+Str: Plus
+
+
+Space: []
+
+
+Str: 3
+
+
+Plain: [Str(Plus), Space, Str(3)]
+
+
+BulletList: [[Plain(Str(Plus),Space,Str(1))], [Plain(Str(Plus),Space,Str(2))], [Plain(Str(Plus),Space,Str(3))]]
+
+
+Str: Pluses
+
+
+Space: []
+
+
+Str: loose:
+
+
+Para: [Str(Pluses), Space, Str(loose:)]
+
+
+Str: Plus
+
+
+Space: []
+
+
+Str: 1
+
+
+Para: [Str(Plus), Space, Str(1)]
+
+
+Str: Plus
+
+
+Space: []
+
+
+Str: 2
+
+
+Para: [Str(Plus), Space, Str(2)]
+
+
+Str: Plus
+
+
+Space: []
+
+
+Str: 3
+
+
+Para: [Str(Plus), Space, Str(3)]
+
+
+BulletList: [[<elements.Para object at 0x00FC2FF0>], [<elements.Para object at 0x00FC2E50>], [<elements.Para object at 0x00FCA110>]]
+
+
+Str: Minuses
+
+
+Space: []
+
+
+Str: tight:
+
+
+Para: [Str(Minuses), Space, Str(tight:)]
+
+
+Str: Minus
+
+
+Space: []
+
+
+Str: 1
+
+
+Plain: [Str(Minus), Space, Str(1)]
+
+
+Str: Minus
+
+
+Space: []
+
+
+Str: 2
+
+
+Plain: [Str(Minus), Space, Str(2)]
+
+
+Str: Minus
+
+
+Space: []
+
+
+Str: 3
+
+
+Plain: [Str(Minus), Space, Str(3)]
+
+
+BulletList: [[Plain(Str(Minus),Space,Str(1))], [Plain(Str(Minus),Space,Str(2))], [Plain(Str(Minus),Space,Str(3))]]
+
+
+Str: Minuses
+
+
+Space: []
+
+
+Str: loose:
+
+
+Para: [Str(Minuses), Space, Str(loose:)]
+
+
+Str: Minus
+
+
+Space: []
+
+
+Str: 1
+
+
+Para: [Str(Minus), Space, Str(1)]
+
+
+Str: Minus
+
+
+Space: []
+
+
+Str: 2
+
+
+Para: [Str(Minus), Space, Str(2)]
+
+
+Str: Minus
+
+
+Space: []
+
+
+Str: 3
+
+
+Para: [Str(Minus), Space, Str(3)]
+
+
+BulletList: [[<elements.Para object at 0x00FCA590>], [<elements.Para object at 0x00FCA610>], [<elements.Para object at 0x00FCA690>]]
+
+
+Str: Ordered
+
+
+Header: [2, ['ordered', [], []], [Str(Ordered)]]
+
+
+Str: Tight:
+
+
+Para: [Str(Tight:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: First
+
+
+Plain: [Str(First)]
+
+
+Str: Second
+
+
+Plain: [Str(Second)]
+
+
+Str: Third
+
+
+Plain: [Str(Third)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[Plain(Str(First))], [Plain(Str(Second))], [Plain(Str(Third))]]]
+
+
+Str: and:
+
+
+Para: [Str(and:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: One
+
+
+Plain: [Str(One)]
+
+
+Str: Two
+
+
+Plain: [Str(Two)]
+
+
+Str: Three
+
+
+Plain: [Str(Three)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[Plain(Str(One))], [Plain(Str(Two))], [Plain(Str(Three))]]]
+
+
+Str: Loose
+
+
+Space: []
+
+
+Str: using
+
+
+Space: []
+
+
+Str: tabs:
+
+
+Para: [Str(Loose), Space, Str(using), Space, Str(tabs:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: First
+
+
+Para: [Str(First)]
+
+
+Str: Second
+
+
+Para: [Str(Second)]
+
+
+Str: Third
+
+
+Para: [Str(Third)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[<elements.Para object at 0x00FCADD0>], [<elements.Para object at 0x00FCF050>], [<elements.Para object at 0x00FCF090>]]]
+
+
+Str: and
+
+
+Space: []
+
+
+Str: using
+
+
+Space: []
+
+
+Str: spaces:
+
+
+Para: [Str(and), Space, Str(using), Space, Str(spaces:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: One
+
+
+Para: [Str(One)]
+
+
+Str: Two
+
+
+Para: [Str(Two)]
+
+
+Str: Three
+
+
+Para: [Str(Three)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[<elements.Para object at 0x00FCF170>], [<elements.Para object at 0x00FCF370>], [<elements.Para object at 0x00FCF410>]]]
+
+
+Str: Multiple
+
+
+Space: []
+
+
+Str: paragraphs:
+
+
+Para: [Str(Multiple), Space, Str(paragraphs:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: Item
+
+
+Space: []
+
+
+Str: 1,
+
+
+Space: []
+
+
+Str: graf
+
+
+Space: []
+
+
+Str: one.
+
+
+Para: [Str(Item), Space, Str(1,), Space, Str(graf), Space, Str(one.)]
+
+
+Str: Item
+
+
+Space: []
+
+
+Str: 1.
+
+
+Space: []
+
+
+Str: graf
+
+
+Space: []
+
+
+Str: two.
+
+
+Space: []
+
+
+Str: The
+
+
+Space: []
+
+
+Str: quick
+
+
+Space: []
+
+
+Str: brown
+
+
+Space: []
+
+
+Str: fox
+
+
+Space: []
+
+
+Str: jumped
+
+
+Space: []
+
+
+Str: over
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: lazy
+
+
+Space: []
+
+
+Str: dog’s
+
+
+Space: []
+
+
+Str: back.
+
+
+Para: [Str(Item), Space, Str(1.), Space, Str(graf), Space, Str(two.), Space, Str(The), Space, Str(quick), Space, Str(brown), Space, Str(fox), Space, Str(jumped), Space, Str(over), Space, Str(the), Space, Str(lazy), Space, Str(dog’s), Space, Str(back.)]
+
+
+Str: Item
+
+
+Space: []
+
+
+Str: 2.
+
+
+Para: [Str(Item), Space, Str(2.)]
+
+
+Str: Item
+
+
+Space: []
+
+
+Str: 3.
+
+
+Para: [Str(Item), Space, Str(3.)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[<elements.Para object at 0x00FC2450>, <elements.Para object at 0x00FC22F0>], [<elements.Para object at 0x00FCF4B0>], [<elements.Para object at 0x00FCF550>]]]
+
+
+Str: Nested
+
+
+Header: [2, ['nested', [], []], [Str(Nested)]]
+
+
+Str: Tab
+
+
+Plain: [Str(Tab)]
+
+
+Str: Tab
+
+
+Plain: [Str(Tab)]
+
+
+Str: Tab
+
+
+Plain: [Str(Tab)]
+
+
+BulletList: [[Plain(Str(Tab))]]
+
+
+BulletList: [[Plain(Str(Tab)), <elements.BulletList object at 0x00FCF0F0>]]
+
+
+BulletList: [[Plain(Str(Tab)), <elements.BulletList object at 0x00FCF890>]]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: another:
+
+
+Para: [Str(Here’s), Space, Str(another:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: First
+
+
+Plain: [Str(First)]
+
+
+Str: Second:
+
+
+Plain: [Str(Second:)]
+
+
+Str: Fee
+
+
+Plain: [Str(Fee)]
+
+
+Str: Fie
+
+
+Plain: [Str(Fie)]
+
+
+Str: Foe
+
+
+Plain: [Str(Foe)]
+
+
+BulletList: [[Plain(Str(Fee))], [Plain(Str(Fie))], [Plain(Str(Foe))]]
+
+
+Str: Third
+
+
+Plain: [Str(Third)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[Plain(Str(First))], [Plain(Str(Second:)), <elements.BulletList object at 0x00FCFA90>], [Plain(Str(Third))]]]
+
+
+Str: Same
+
+
+Space: []
+
+
+Str: thing
+
+
+Space: []
+
+
+Str: but
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: paragraphs:
+
+
+Para: [Str(Same), Space, Str(thing), Space, Str(but), Space, Str(with), Space, Str(paragraphs:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: First
+
+
+Para: [Str(First)]
+
+
+Str: Second:
+
+
+Para: [Str(Second:)]
+
+
+Str: Fee
+
+
+Plain: [Str(Fee)]
+
+
+Str: Fie
+
+
+Plain: [Str(Fie)]
+
+
+Str: Foe
+
+
+Plain: [Str(Foe)]
+
+
+BulletList: [[Plain(Str(Fee))], [Plain(Str(Fie))], [Plain(Str(Foe))]]
+
+
+Str: Third
+
+
+Para: [Str(Third)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[<elements.Para object at 0x00FC60D0>], [<elements.Para object at 0x00FC6190>, <elements.BulletList object at 0x00FC6110>], [<elements.Para object at 0x00FC6470>]]]
+
+
+Str: Tabs
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: spaces
+
+
+Header: [2, ['tabs-and-spaces', [], []], [Str(Tabs), Space, Str(and), Space, Str(spaces)]]
+
+
+Str: this
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: item
+
+
+Space: []
+
+
+Str: indented
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: tabs
+
+
+Para: [Str(this), Space, Str(is), Space, Str(a), Space, Str(list), Space, Str(item), Space, Str(indented), Space, Str(with), Space, Str(tabs)]
+
+
+Str: this
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: item
+
+
+Space: []
+
+
+Str: indented
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: spaces
+
+
+Para: [Str(this), Space, Str(is), Space, Str(a), Space, Str(list), Space, Str(item), Space, Str(indented), Space, Str(with), Space, Str(spaces)]
+
+
+Str: this
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: example
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: item
+
+
+Space: []
+
+
+Str: indented
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: tabs
+
+
+Para: [Str(this), Space, Str(is), Space, Str(an), Space, Str(example), Space, Str(list), Space, Str(item), Space, Str(indented), Space, Str(with), Space, Str(tabs)]
+
+
+Str: this
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: example
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: item
+
+
+Space: []
+
+
+Str: indented
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: spaces
+
+
+Para: [Str(this), Space, Str(is), Space, Str(an), Space, Str(example), Space, Str(list), Space, Str(item), Space, Str(indented), Space, Str(with), Space, Str(spaces)]
+
+
+BulletList: [[<elements.Para object at 0x00FC6C70>], [<elements.Para object at 0x00FC6ED0>]]
+
+
+BulletList: [[<elements.Para object at 0x00FC6810>], [<elements.Para object at 0x00FC6A10>, <elements.BulletList object at 0x00FC6450>]]
+
+
+Str: Fancy
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: markers
+
+
+Header: [2, ['fancy-list-markers', [], []], [Str(Fancy), Space, Str(list), Space, Str(markers)]]
+
+
+Decimal: []
+
+
+TwoParens: []
+
+
+Str: begins
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: 2
+
+
+Plain: [Str(begins), Space, Str(with), Space, Str(2)]
+
+
+Str: and
+
+
+Space: []
+
+
+Str: now
+
+
+Space: []
+
+
+Str: 3
+
+
+Para: [Str(and), Space, Str(now), Space, Str(3)]
+
+
+Str: with
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: continuation
+
+
+Para: [Str(with), Space, Str(a), Space, Str(continuation)]
+
+
+LowerRoman: []
+
+
+Period: []
+
+
+Str: sublist
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: roman
+
+
+Space: []
+
+
+Str: numerals,
+
+
+Space: []
+
+
+Str: starting
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: 4
+
+
+Plain: [Str(sublist), Space, Str(with), Space, Str(roman), Space, Str(numerals,), Space, Str(starting), Space, Str(with), Space, Str(4)]
+
+
+Str: more
+
+
+Space: []
+
+
+Str: items
+
+
+Plain: [Str(more), Space, Str(items)]
+
+
+UpperAlpha: []
+
+
+TwoParens: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: subsublist
+
+
+Plain: [Str(a), Space, Str(subsublist)]
+
+
+Str: a
+
+
+Space: []
+
+
+Str: subsublist
+
+
+Plain: [Str(a), Space, Str(subsublist)]
+
+
+OrderedList: [[1, 'UpperAlpha', 'TwoParens'], [[Plain(Str(a),Space,Str(subsublist))], [Plain(Str(a),Space,Str(subsublist))]]]
+
+
+OrderedList: [[4, 'LowerRoman', 'Period'], [[Plain(Str(sublist),Space,Str(with),Space,Str(roman),Space,Str(numerals,),Space,Str(starting),Space,Str(with),Space,Str(4))], [Plain(Str(more),Space,Str(items)), <elements.OrderedList object at 0x00FCCD00>]]]
+
+
+OrderedList: [[2, 'Decimal', 'TwoParens'], [[Plain(Str(begins),Space,Str(with),Space,Str(2))], [<elements.Para object at 0x00FCE2D0>, <elements.Para object at 0x00FCE390>, <elements.OrderedList object at 0x00FCCD28>]]]
+
+
+Str: Nesting:
+
+
+Para: [Str(Nesting:)]
+
+
+UpperAlpha: []
+
+
+Period: []
+
+
+Str: Upper
+
+
+Space: []
+
+
+Str: Alpha
+
+
+Plain: [Str(Upper), Space, Str(Alpha)]
+
+
+UpperRoman: []
+
+
+Period: []
+
+
+Str: Upper
+
+
+Space: []
+
+
+Str: Roman.
+
+
+Plain: [Str(Upper), Space, Str(Roman.)]
+
+
+Decimal: []
+
+
+TwoParens: []
+
+
+Str: Decimal
+
+
+Space: []
+
+
+Str: start
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: 6
+
+
+Plain: [Str(Decimal), Space, Str(start), Space, Str(with), Space, Str(6)]
+
+
+LowerAlpha: []
+
+
+OneParen: []
+
+
+Str: Lower
+
+
+Space: []
+
+
+Str: alpha
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: paren
+
+
+Plain: [Str(Lower), Space, Str(alpha), Space, Str(with), Space, Str(paren)]
+
+
+OrderedList: [[3, 'LowerAlpha', 'OneParen'], [[Plain(Str(Lower),Space,Str(alpha),Space,Str(with),Space,Str(paren))]]]
+
+
+OrderedList: [[6, 'Decimal', 'TwoParens'], [[Plain(Str(Decimal),Space,Str(start),Space,Str(with),Space,Str(6)), <elements.OrderedList object at 0x00FCCFD0>]]]
+
+
+OrderedList: [[1, 'UpperRoman', 'Period'], [[Plain(Str(Upper),Space,Str(Roman.)), <elements.OrderedList object at 0x00FCCF08>]]]
+
+
+OrderedList: [[1, 'UpperAlpha', 'Period'], [[Plain(Str(Upper),Space,Str(Alpha)), <elements.OrderedList object at 0x00FCC558>]]]
+
+
+Str: Autonumbering:
+
+
+Para: [Str(Autonumbering:)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: Autonumber.
+
+
+Plain: [Str(Autonumber.)]
+
+
+Str: More.
+
+
+Plain: [Str(More.)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: Nested.
+
+
+Plain: [Str(Nested.)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[Plain(Str(Nested.))]]]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[Plain(Str(Autonumber.))], [Plain(Str(More.)), <elements.OrderedList object at 0x010D3170>]]]
+
+
+Str: Should
+
+
+Space: []
+
+
+Str: not
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: item:
+
+
+Para: [Str(Should), Space, Str(not), Space, Str(be), Space, Str(a), Space, Str(list), Space, Str(item:)]
+
+
+Str: M.A. 2007
+
+
+Para: [Str(M.A. 2007)]
+
+
+Str: B.
+
+
+Space: []
+
+
+Str: Williams
+
+
+Para: [Str(B.), Space, Str(Williams)]
+
+
+HorizontalRule: []
+
+
+Str: Definition
+
+
+Space: []
+
+
+Str: Lists
+
+
+Header: [1, ['definition-lists', [], []], [Str(Definition), Space, Str(Lists)]]
+
+
+Str: Tight
+
+
+Space: []
+
+
+Str: using
+
+
+Space: []
+
+
+Str: spaces:
+
+
+Para: [Str(Tight), Space, Str(using), Space, Str(spaces:)]
+
+
+Str: apple
+
+
+Str: red
+
+
+Space: []
+
+
+Str: fruit
+
+
+Plain: [Str(red), Space, Str(fruit)]
+
+
+Str: orange
+
+
+Str: orange
+
+
+Space: []
+
+
+Str: fruit
+
+
+Plain: [Str(orange), Space, Str(fruit)]
+
+
+Str: banana
+
+
+Str: yellow
+
+
+Space: []
+
+
+Str: fruit
+
+
+Plain: [Str(yellow), Space, Str(fruit)]
+
+
+DefinitionList: [[[Str(apple)], [[Plain(Str(red),Space,Str(fruit))]]], [[Str(orange)], [[Plain(Str(orange),Space,Str(fruit))]]], [[Str(banana)], [[Plain(Str(yellow),Space,Str(fruit))]]]]
+
+
+Str: Tight
+
+
+Space: []
+
+
+Str: using
+
+
+Space: []
+
+
+Str: tabs:
+
+
+Para: [Str(Tight), Space, Str(using), Space, Str(tabs:)]
+
+
+Str: apple
+
+
+Str: red
+
+
+Space: []
+
+
+Str: fruit
+
+
+Plain: [Str(red), Space, Str(fruit)]
+
+
+Str: orange
+
+
+Str: orange
+
+
+Space: []
+
+
+Str: fruit
+
+
+Plain: [Str(orange), Space, Str(fruit)]
+
+
+Str: banana
+
+
+Str: yellow
+
+
+Space: []
+
+
+Str: fruit
+
+
+Plain: [Str(yellow), Space, Str(fruit)]
+
+
+DefinitionList: [[[Str(apple)], [[Plain(Str(red),Space,Str(fruit))]]], [[Str(orange)], [[Plain(Str(orange),Space,Str(fruit))]]], [[Str(banana)], [[Plain(Str(yellow),Space,Str(fruit))]]]]
+
+
+Str: Loose:
+
+
+Para: [Str(Loose:)]
+
+
+Str: apple
+
+
+Str: red
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(red), Space, Str(fruit)]
+
+
+Str: orange
+
+
+Str: orange
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(orange), Space, Str(fruit)]
+
+
+Str: banana
+
+
+Str: yellow
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(yellow), Space, Str(fruit)]
+
+
+DefinitionList: [[[Str(apple)], [[<elements.Para object at 0x00FBE930>]]], [[Str(orange)], [[<elements.Para object at 0x00FBEA10>]]], [[Str(banana)], [[<elements.Para object at 0x00FBEAF0>]]]]
+
+
+Str: Multiple
+
+
+Space: []
+
+
+Str: blocks
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: italics:
+
+
+Para: [Str(Multiple), Space, Str(blocks), Space, Str(with), Space, Str(italics:)]
+
+
+Str: apple
+
+
+Emph: [Str(apple)]
+
+
+Str: red
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(red), Space, Str(fruit)]
+
+
+Str: contains
+
+
+Space: []
+
+
+Str: seeds,
+
+
+Space: []
+
+
+Str: crisp,
+
+
+Space: []
+
+
+Str: pleasant
+
+
+Space: []
+
+
+Str: to
+
+
+Space: []
+
+
+Str: taste
+
+
+Para: [Str(contains), Space, Str(seeds,), Space, Str(crisp,), Space, Str(pleasant), Space, Str(to), Space, Str(taste)]
+
+
+Str: orange
+
+
+Emph: [Str(orange)]
+
+
+Str: orange
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(orange), Space, Str(fruit)]
+
+
+CodeBlock: [['', [], []], '{ orange code block }']
+
+
+Str: orange
+
+
+Space: []
+
+
+Str: block
+
+
+Space: []
+
+
+Str: quote
+
+
+Para: [Str(orange), Space, Str(block), Space, Str(quote)]
+
+
+BlockQuote: [<elements.Para object at 0x00FCB270>]
+
+
+DefinitionList: [[[<elements.Emph object at 0x00FBEB90>], [[<elements.Para object at 0x00FBEEB0>, <elements.Para object at 0x00FBEE50>]]], [[<elements.Emph object at 0x00FCB050>], [[<elements.Para object at 0x00FCB1B0>, <elements.CodeBlock object at 0x010D3648>, <elements.BlockQuote object at 0x00FCB150>]]]]
+
+
+Str: Multiple
+
+
+Space: []
+
+
+Str: definitions,
+
+
+Space: []
+
+
+Str: tight:
+
+
+Para: [Str(Multiple), Space, Str(definitions,), Space, Str(tight:)]
+
+
+Str: apple
+
+
+Str: red
+
+
+Space: []
+
+
+Str: fruit
+
+
+Plain: [Str(red), Space, Str(fruit)]
+
+
+Str: computer
+
+
+Plain: [Str(computer)]
+
+
+Str: orange
+
+
+Str: orange
+
+
+Space: []
+
+
+Str: fruit
+
+
+Plain: [Str(orange), Space, Str(fruit)]
+
+
+Str: bank
+
+
+Plain: [Str(bank)]
+
+
+DefinitionList: [[[Str(apple)], [[Plain(Str(red),Space,Str(fruit))], [Plain(Str(computer))]]], [[Str(orange)], [[Plain(Str(orange),Space,Str(fruit))], [Plain(Str(bank))]]]]
+
+
+Str: Multiple
+
+
+Space: []
+
+
+Str: definitions,
+
+
+Space: []
+
+
+Str: loose:
+
+
+Para: [Str(Multiple), Space, Str(definitions,), Space, Str(loose:)]
+
+
+Str: apple
+
+
+Str: red
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(red), Space, Str(fruit)]
+
+
+Str: computer
+
+
+Para: [Str(computer)]
+
+
+Str: orange
+
+
+Str: orange
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(orange), Space, Str(fruit)]
+
+
+Str: bank
+
+
+Para: [Str(bank)]
+
+
+DefinitionList: [[[Str(apple)], [[<elements.Para object at 0x00FCBA70>], [<elements.Para object at 0x00FCBA10>]]], [[Str(orange)], [[<elements.Para object at 0x00FCBBF0>], [<elements.Para object at 0x00FCBB90>]]]]
+
+
+Str: Blank
+
+
+Space: []
+
+
+Str: line
+
+
+Space: []
+
+
+Str: after
+
+
+Space: []
+
+
+Str: term,
+
+
+Space: []
+
+
+Str: indented
+
+
+Space: []
+
+
+Str: marker,
+
+
+Space: []
+
+
+Str: alternate
+
+
+Space: []
+
+
+Str: markers:
+
+
+Para: [Str(Blank), Space, Str(line), Space, Str(after), Space, Str(term,), Space, Str(indented), Space, Str(marker,), Space, Str(alternate), Space, Str(markers:)]
+
+
+Str: apple
+
+
+Str: red
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(red), Space, Str(fruit)]
+
+
+Str: computer
+
+
+Para: [Str(computer)]
+
+
+Str: orange
+
+
+Str: orange
+
+
+Space: []
+
+
+Str: fruit
+
+
+Para: [Str(orange), Space, Str(fruit)]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: sublist
+
+
+Plain: [Str(sublist)]
+
+
+Str: sublist
+
+
+Plain: [Str(sublist)]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[Plain(Str(sublist))], [Plain(Str(sublist))]]]
+
+
+DefinitionList: [[[Str(apple)], [[<elements.Para object at 0x010D40B0>], [<elements.Para object at 0x010D4050>]]], [[Str(orange)], [[<elements.Para object at 0x010D4230>, <elements.OrderedList object at 0x010D3C10>]]]]
+
+
+Str: HTML
+
+
+Space: []
+
+
+Str: Blocks
+
+
+Header: [1, ['html-blocks', [], []], [Str(HTML), Space, Str(Blocks)]]
+
+
+Str: Simple
+
+
+Space: []
+
+
+Str: block
+
+
+Space: []
+
+
+Str: on
+
+
+Space: []
+
+
+Str: one
+
+
+Space: []
+
+
+Str: line:
+
+
+Para: [Str(Simple), Space, Str(block), Space, Str(on), Space, Str(one), Space, Str(line:)]
+
+
+Str: foo
+
+
+Para: [Str(foo)]
+
+
+Div: [['', [], []], [<elements.Para object at 0x010D4750>]]
+
+
+Str: And
+
+
+Space: []
+
+
+Str: nested
+
+
+Space: []
+
+
+Str: without
+
+
+Space: []
+
+
+Str: indentation:
+
+
+Para: [Str(And), Space, Str(nested), Space, Str(without), Space, Str(indentation:)]
+
+
+Str: foo
+
+
+Para: [Str(foo)]
+
+
+Div: [['', [], []], [<elements.Para object at 0x010D4970>]]
+
+
+Div: [['', [], []], [<elements.Div object at 0x010D3E40>]]
+
+
+Str: bar
+
+
+Para: [Str(bar)]
+
+
+Div: [['', [], []], [<elements.Para object at 0x010D4A30>]]
+
+
+Div: [['', [], []], [<elements.Div object at 0x010D3E18>, <elements.Div object at 0x010D3EB8>]]
+
+
+Str: Interpreted
+
+
+Space: []
+
+
+Str: markdown
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: table:
+
+
+Para: [Str(Interpreted), Space, Str(markdown), Space, Str(in), Space, Str(a), Space, Str(table:)]
+
+
+RawBlock: ['html', '<table>']
+
+
+RawBlock: ['html', '<tr>']
+
+
+RawBlock: ['html', '<td>']
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: emphasized
+
+
+Emph: [Str(emphasized)]
+
+
+Plain: [Str(This), Space, Str(is), Space, <elements.Emph object at 0x00FC6290>]
+
+
+RawBlock: ['html', '</td>']
+
+
+RawBlock: ['html', '<td>']
+
+
+Str: And
+
+
+Space: []
+
+
+Str: this
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: strong
+
+
+Strong: [Str(strong)]
+
+
+Plain: [Str(And), Space, Str(this), Space, Str(is), Space, <elements.Strong object at 0x00FCB490>]
+
+
+RawBlock: ['html', '</td>']
+
+
+RawBlock: ['html', '</tr>']
+
+
+RawBlock: ['html', '</table>']
+
+
+RawBlock: ['html', '<script type="text/javascript">document.write(\'This *should not* be interpreted as markdown\');</script>']
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: simple
+
+
+Space: []
+
+
+Str: block:
+
+
+Para: [Str(Here’s), Space, Str(a), Space, Str(simple), Space, Str(block:)]
+
+
+Str: foo
+
+
+Para: [Str(foo)]
+
+
+Div: [['', [], []], [<elements.Para object at 0x010D4AF0>]]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: code
+
+
+Space: []
+
+
+Str: block,
+
+
+Space: []
+
+
+Str: though:
+
+
+Para: [Str(This), Space, Str(should), Space, Str(be), Space, Str(a), Space, Str(code), Space, Str(block,), Space, Str(though:)]
+
+
+CodeBlock: [['', [], []], '<div>\n    foo\n</div>']
+
+
+Str: As
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: this:
+
+
+Para: [Str(As), Space, Str(should), Space, Str(this:)]
+
+
+CodeBlock: [['', [], []], '<div>foo</div>']
+
+
+Str: Now,
+
+
+Space: []
+
+
+Str: nested:
+
+
+Para: [Str(Now,), Space, Str(nested:)]
+
+
+Str: foo
+
+
+Para: [Str(foo)]
+
+
+Div: [['', [], []], [<elements.Para object at 0x00FC91B0>]]
+
+
+Div: [['', [], []], [<elements.Div object at 0x00FBC378>]]
+
+
+Div: [['', [], []], [<elements.Div object at 0x00FBC350>]]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: just
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: HTML
+
+
+Space: []
+
+
+Str: comment:
+
+
+Para: [Str(This), Space, Str(should), Space, Str(just), Space, Str(be), Space, Str(an), Space, Str(HTML), Space, Str(comment:)]
+
+
+RawBlock: ['html', '<!-- Comment -->']
+
+
+Str: Multiline:
+
+
+Para: [Str(Multiline:)]
+
+
+RawBlock: ['html', '<!--\nBlah\nBlah\n-->']
+
+
+RawBlock: ['html', '<!--\n    This is another comment.\n-->']
+
+
+Str: Code
+
+
+Space: []
+
+
+Str: block:
+
+
+Para: [Str(Code), Space, Str(block:)]
+
+
+CodeBlock: [['', [], []], '<!-- Comment -->']
+
+
+Str: Just
+
+
+Space: []
+
+
+Str: plain
+
+
+Space: []
+
+
+Str: comment,
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: trailing
+
+
+Space: []
+
+
+Str: spaces
+
+
+Space: []
+
+
+Str: on
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: line:
+
+
+Para: [Str(Just), Space, Str(plain), Space, Str(comment,), Space, Str(with), Space, Str(trailing), Space, Str(spaces), Space, Str(on), Space, Str(the), Space, Str(line:)]
+
+
+RawBlock: ['html', '<!-- foo -->']
+
+
+Str: Code:
+
+
+Para: [Str(Code:)]
+
+
+CodeBlock: [['', [], []], '<hr />']
+
+
+Str: Hr’s:
+
+
+Para: [Str(Hr’s:)]
+
+
+RawBlock: ['html', '<hr>']
+
+
+RawBlock: ['html', '<hr />']
+
+
+RawBlock: ['html', '<hr />']
+
+
+RawBlock: ['html', '<hr>']
+
+
+RawBlock: ['html', '<hr />']
+
+
+RawBlock: ['html', '<hr />']
+
+
+RawBlock: ['html', '<hr class="foo" id="bar" />']
+
+
+RawBlock: ['html', '<hr class="foo" id="bar" />']
+
+
+RawBlock: ['html', '<hr class="foo" id="bar">']
+
+
+HorizontalRule: []
+
+
+Str: Inline
+
+
+Space: []
+
+
+Str: Markup
+
+
+Header: [1, ['inline-markup', [], []], [Str(Inline), Space, Str(Markup)]]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: emphasized
+
+
+Emph: [Str(emphasized)]
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: so
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: this
+
+
+Emph: [Str(is), Space, Str(this)]
+
+
+Str: .
+
+
+Para: [Str(This), Space, Str(is), Space, <elements.Emph object at 0x010D1090>, Str(,), Space, Str(and), Space, Str(so), Space, <elements.Emph object at 0x010D1190>, Str(.)]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: strong
+
+
+Strong: [Str(strong)]
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: so
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: this
+
+
+Strong: [Str(is), Space, Str(this)]
+
+
+Str: .
+
+
+Para: [Str(This), Space, Str(is), Space, <elements.Strong object at 0x010D12D0>, Str(,), Space, Str(and), Space, Str(so), Space, <elements.Strong object at 0x010D1430>, Str(.)]
+
+
+Str: An
+
+
+Space: []
+
+
+Str: emphasized
+
+
+Space: []
+
+
+Str: link
+
+
+Link: [['', [], []], [Str(emphasized), Space, Str(link)], ['/url', '']]
+
+
+Emph: [<elements.Link object at 0x00FC5AB0>]
+
+
+Str: .
+
+
+Para: [Str(An), Space, <elements.Emph object at 0x010D1590>, Str(.)]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: strong
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: em.
+
+
+Emph: [Str(This), Space, Str(is), Space, Str(strong), Space, Str(and), Space, Str(em.)]
+
+
+Strong: [<elements.Emph object at 0x010D1690>]
+
+
+Para: [<elements.Strong object at 0x010D1650>]
+
+
+Str: So
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: this
+
+
+Emph: [Str(this)]
+
+
+Strong: [<elements.Emph object at 0x010D1830>]
+
+
+Space: []
+
+
+Str: word.
+
+
+Para: [Str(So), Space, Str(is), Space, <elements.Strong object at 0x010D1930>, Space, Str(word.)]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: strong
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: em.
+
+
+Emph: [Str(This), Space, Str(is), Space, Str(strong), Space, Str(and), Space, Str(em.)]
+
+
+Strong: [<elements.Emph object at 0x010D1A30>]
+
+
+Para: [<elements.Strong object at 0x010D19F0>]
+
+
+Str: So
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: this
+
+
+Emph: [Str(this)]
+
+
+Strong: [<elements.Emph object at 0x010D1BD0>]
+
+
+Space: []
+
+
+Str: word.
+
+
+Para: [Str(So), Space, Str(is), Space, <elements.Strong object at 0x010D1CD0>, Space, Str(word.)]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: code:
+
+
+Space: []
+
+
+Code: [['', [], []], '>']
+
+
+Str: ,
+
+
+Space: []
+
+
+Code: [['', [], []], '$']
+
+
+Str: ,
+
+
+Space: []
+
+
+Code: [['', [], []], '\\']
+
+
+Str: ,
+
+
+Space: []
+
+
+Code: [['', [], []], '\\$']
+
+
+Str: ,
+
+
+Space: []
+
+
+Code: [['', [], []], '<html>']
+
+
+Str: .
+
+
+Para: [Str(This), Space, Str(is), Space, Str(code:), Space, <elements.Code object at 0x00FBC878>, Str(,), Space, <elements.Code object at 0x00FBC8C8>, Str(,), Space, <elements.Code object at 0x00FBC918>, Str(,), Space, <elements.Code object at 0x00FBC990>, Str(,), Space, <elements.Code object at 0x00FBC9E0>, Str(.)]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: strikeout
+
+
+Emph: [Str(strikeout)]
+
+
+Str: .
+
+
+Strikeout: [Str(This), Space, Str(is), Space, <elements.Emph object at 0x010D1FD0>, Str(.)]
+
+
+Para: [<elements.Strikeout object at 0x010DA030>]
+
+
+Str: Superscripts:
+
+
+Space: []
+
+
+Str: a
+
+
+Str: bc
+
+
+Superscript: [Str(bc)]
+
+
+Str: d
+
+
+Space: []
+
+
+Str: a
+
+
+Str: hello
+
+
+Emph: [Str(hello)]
+
+
+Superscript: [<elements.Emph object at 0x010DA250>]
+
+
+Space: []
+
+
+Str: a
+
+
+Str: hello there
+
+
+Superscript: [Str(hello there)]
+
+
+Str: .
+
+
+Para: [Str(Superscripts:), Space, Str(a), <elements.Superscript object at 0x010DA090>, Str(d), Space, Str(a), <elements.Superscript object at 0x010DA1D0>, Space, Str(a), <elements.Superscript object at 0x010DA310>, Str(.)]
+
+
+Str: Subscripts:
+
+
+Space: []
+
+
+Str: H
+
+
+Str: 2
+
+
+Subscript: [Str(2)]
+
+
+Str: O,
+
+
+Space: []
+
+
+Str: H
+
+
+Str: 23
+
+
+Subscript: [Str(23)]
+
+
+Str: O,
+
+
+Space: []
+
+
+Str: H
+
+
+Str: many of them
+
+
+Subscript: [Str(many of them)]
+
+
+Str: O.
+
+
+Para: [Str(Subscripts:), Space, Str(H), <elements.Subscript object at 0x010DA3D0>, Str(O,), Space, Str(H), <elements.Subscript object at 0x010DA510>, Str(O,), Space, Str(H), <elements.Subscript object at 0x010DA630>, Str(O.)]
+
+
+Str: These
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: not
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: superscripts
+
+
+Space: []
+
+
+Str: or
+
+
+Space: []
+
+
+Str: subscripts,
+
+
+Space: []
+
+
+Str: because
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: unescaped
+
+
+SoftBreak: []
+
+
+Str: spaces:
+
+
+Space: []
+
+
+Str: a^b
+
+
+Space: []
+
+
+Str: c^d,
+
+
+Space: []
+
+
+Str: a~b
+
+
+Space: []
+
+
+Str: c~d.
+
+
+Para: [Str(These), Space, Str(should), Space, Str(not), Space, Str(be), Space, Str(superscripts), Space, Str(or), Space, Str(subscripts,), Space, Str(because), Space, Str(of), Space, Str(the), Space, Str(unescaped), <elements.SoftBreak object at 0x010D7150>, Str(spaces:), Space, Str(a^b), Space, Str(c^d,), Space, Str(a~b), Space, Str(c~d.)]
+
+
+HorizontalRule: []
+
+
+Str: Smart
+
+
+Space: []
+
+
+Str: quotes,
+
+
+Space: []
+
+
+Str: ellipses,
+
+
+Space: []
+
+
+Str: dashes
+
+
+Header: [1, ['smart-quotes-ellipses-dashes', [], []], [Str(Smart), Space, Str(quotes,), Space, Str(ellipses,), Space, Str(dashes)]]
+
+
+DoubleQuote: []
+
+
+Str: Hello,
+
+
+Quoted: ['DoubleQuote', [Str(Hello,)]]
+
+
+Space: []
+
+
+Str: said
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: spider.
+
+
+Space: []
+
+
+DoubleQuote: []
+
+
+SingleQuote: []
+
+
+Str: Shelob
+
+
+Quoted: ['SingleQuote', [Str(Shelob)]]
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: my
+
+
+Space: []
+
+
+Str: name.
+
+
+Quoted: ['DoubleQuote', [<elements.Quoted object at 0x010DA850>, Space, Str(is), Space, Str(my), Space, Str(name.)]]
+
+
+Para: [<elements.Quoted object at 0x010DA290>, Space, Str(said), Space, Str(the), Space, Str(spider.), Space, <elements.Quoted object at 0x010DA710>]
+
+
+SingleQuote: []
+
+
+Str: A
+
+
+Quoted: ['SingleQuote', [Str(A)]]
+
+
+Str: ,
+
+
+Space: []
+
+
+SingleQuote: []
+
+
+Str: B
+
+
+Quoted: ['SingleQuote', [Str(B)]]
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+SingleQuote: []
+
+
+Str: C
+
+
+Quoted: ['SingleQuote', [Str(C)]]
+
+
+Space: []
+
+
+Str: are
+
+
+Space: []
+
+
+Str: letters.
+
+
+Para: [<elements.Quoted object at 0x010DA970>, Str(,), Space, <elements.Quoted object at 0x010DAA30>, Str(,), Space, Str(and), Space, <elements.Quoted object at 0x010DAB10>, Space, Str(are), Space, Str(letters.)]
+
+
+SingleQuote: []
+
+
+Str: Oak,
+
+
+Quoted: ['SingleQuote', [Str(Oak,)]]
+
+
+Space: []
+
+
+SingleQuote: []
+
+
+Str: elm,
+
+
+Quoted: ['SingleQuote', [Str(elm,)]]
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+SingleQuote: []
+
+
+Str: beech
+
+
+Quoted: ['SingleQuote', [Str(beech)]]
+
+
+Space: []
+
+
+Str: are
+
+
+Space: []
+
+
+Str: names
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: trees.
+
+
+Space: []
+
+
+Str: So
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+SingleQuote: []
+
+
+Str: pine.
+
+
+Quoted: ['SingleQuote', [Str(pine.)]]
+
+
+Para: [<elements.Quoted object at 0x010DAC70>, Space, <elements.Quoted object at 0x010DAD10>, Space, Str(and), Space, <elements.Quoted object at 0x010DADF0>, Space, Str(are), Space, Str(names), Space, Str(of), Space, Str(trees.), Space, Str(So), Space, Str(is), Space, <elements.Quoted object at 0x010DAFD0>]
+
+
+SingleQuote: []
+
+
+Str: He
+
+
+Space: []
+
+
+Str: said,
+
+
+Space: []
+
+
+DoubleQuote: []
+
+
+Str: I
+
+
+Space: []
+
+
+Str: want
+
+
+Space: []
+
+
+Str: to
+
+
+Space: []
+
+
+Str: go.
+
+
+Quoted: ['DoubleQuote', [Str(I), Space, Str(want), Space, Str(to), Space, Str(go.)]]
+
+
+Quoted: ['SingleQuote', [Str(He), Space, Str(said,), Space, <elements.Quoted object at 0x010D2190>]]
+
+
+Space: []
+
+
+Str: Were
+
+
+Space: []
+
+
+Str: you
+
+
+Space: []
+
+
+Str: alive
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: 70’s?
+
+
+Para: [<elements.Quoted object at 0x010D2170>, Space, Str(Were), Space, Str(you), Space, Str(alive), Space, Str(in), Space, Str(the), Space, Str(70’s?)]
+
+
+Str: Here
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: some
+
+
+Space: []
+
+
+Str: quoted
+
+
+Space: []
+
+
+SingleQuote: []
+
+
+Code: [['', [], []], 'code']
+
+
+Quoted: ['SingleQuote', [<elements.Code object at 0x00FBCBE8>]]
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+DoubleQuote: []
+
+
+Str: quoted
+
+
+SoftBreak: []
+
+
+Str: link
+
+
+Link: [['', [], []], [Str(quoted), <elements.SoftBreak object at 0x010D72D8>, Str(link)], ['http://example.com/?foo=1&bar=2', '']]
+
+
+Quoted: ['DoubleQuote', [<elements.Link object at 0x00FC5C90>]]
+
+
+Str: .
+
+
+Para: [Str(Here), Space, Str(is), Space, Str(some), Space, Str(quoted), Space, <elements.Quoted object at 0x010D2570>, Space, Str(and), Space, Str(a), Space, <elements.Quoted object at 0x010D26B0>, Str(.)]
+
+
+Str: Some
+
+
+Space: []
+
+
+Str: dashes:
+
+
+Space: []
+
+
+Str: one—two
+
+
+Space: []
+
+
+Str: —
+
+
+Space: []
+
+
+Str: three—four
+
+
+Space: []
+
+
+Str: —
+
+
+Space: []
+
+
+Str: five.
+
+
+Para: [Str(Some), Space, Str(dashes:), Space, Str(one—two), Space, Str(—), Space, Str(three—four), Space, Str(—), Space, Str(five.)]
+
+
+Str: Dashes
+
+
+Space: []
+
+
+Str: between
+
+
+Space: []
+
+
+Str: numbers:
+
+
+Space: []
+
+
+Str: 5–7,
+
+
+Space: []
+
+
+Str: 255–66,
+
+
+Space: []
+
+
+Str: 1987–1999.
+
+
+Para: [Str(Dashes), Space, Str(between), Space, Str(numbers:), Space, Str(5–7,), Space, Str(255–66,), Space, Str(1987–1999.)]
+
+
+Str: Ellipses…and…and….
+
+
+Para: [Str(Ellipses…and…and….)]
+
+
+HorizontalRule: []
+
+
+Str: LaTeX
+
+
+Header: [1, ['latex', [], []], [Str(LaTeX)]]
+
+
+RawInline: ['tex', '\\cite[22-23]{smith.1899}']
+
+
+Plain: [<elements.RawInline object at 0x010D2AF0>]
+
+
+InlineMath: []
+
+
+Math: ['InlineMath', '2+2=4']
+
+
+Plain: [<elements.Math object at 0x010D2BF0>]
+
+
+InlineMath: []
+
+
+Math: ['InlineMath', 'x \\in y']
+
+
+Plain: [<elements.Math object at 0x010D2C70>]
+
+
+InlineMath: []
+
+
+Math: ['InlineMath', '\\alpha \\wedge \\omega']
+
+
+Plain: [<elements.Math object at 0x010D2D10>]
+
+
+InlineMath: []
+
+
+Math: ['InlineMath', '223']
+
+
+Plain: [<elements.Math object at 0x010D2DB0>]
+
+
+InlineMath: []
+
+
+Math: ['InlineMath', 'p']
+
+
+Str: -Tree
+
+
+Plain: [<elements.Math object at 0x010D2E30>, Str(-Tree)]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: some
+
+
+Space: []
+
+
+Str: display
+
+
+Space: []
+
+
+Str: math:
+
+
+SoftBreak: []
+
+
+DisplayMath: []
+
+
+Math: ['DisplayMath', '\\frac{d}{dx}f(x)=\\lim_{h\\to 0}\\frac{f(x+h)-f(x)}{h}']
+
+
+Plain: [Str(Here’s), Space, Str(some), Space, Str(display), Space, Str(math:), <elements.SoftBreak object at 0x010D7358>, <elements.Math object at 0x010D2FD0>]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: one
+
+
+Space: []
+
+
+Str: that
+
+
+Space: []
+
+
+Str: has
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: line
+
+
+Space: []
+
+
+Str: break
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: it:
+
+
+Space: []
+
+
+InlineMath: []
+
+
+Math: ['InlineMath', '\\alpha + \\omega \\times x^2']
+
+
+Str: .
+
+
+Plain: [Str(Here’s), Space, Str(one), Space, Str(that), Space, Str(has), Space, Str(a), Space, Str(line), Space, Str(break), Space, Str(in), Space, Str(it:), Space, <elements.Math object at 0x010DE250>, Str(.)]
+
+
+BulletList: [[Plain(<elements.RawInline object at 0x010D2AF0>)], [Plain(<elements.Math object at 0x010D2BF0>)], [Plain(<elements.Math object at 0x010D2C70>)], [Plain(<elements.Math object at 0x010D2D10>)], [Plain(<elements.Math object at 0x010D2DB0>)], [Plain(<elements.Math object at 0x010D2E30>,Str(-Tree))], [Plain(Str(Here’s),Space,Str(some),Space,Str(display),Space,Str(math:),<elements.SoftBreak object at 0x010D7358>,<elements.Math object at 0x010D2FD0>)], [Plain(Str(Here’s),Space,Str(one),Space,Str(that),Space,Str(has),Space,Str(a),Space,Str(line),Space,Str(break),Space,Str(in),Space,Str(it:),Space,<elements.Math object at 0x010DE250>,Str(.))]]
+
+
+Str: These
+
+
+Space: []
+
+
+Str: shouldn’t
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: math:
+
+
+Para: [Str(These), Space, Str(shouldn’t), Space, Str(be), Space, Str(math:)]
+
+
+Str: To
+
+
+Space: []
+
+
+Str: get
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: famous
+
+
+Space: []
+
+
+Str: equation,
+
+
+Space: []
+
+
+Str: write
+
+
+Space: []
+
+
+Code: [['', [], []], '$e = mc^2$']
+
+
+Str: .
+
+
+Plain: [Str(To), Space, Str(get), Space, Str(the), Space, Str(famous), Space, Str(equation,), Space, Str(write), Space, <elements.Code object at 0x00FBCDA0>, Str(.)]
+
+
+Str: $22,000
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: lot
+
+
+Emph: [Str(lot)]
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: money.
+
+
+Space: []
+
+
+Str: So
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: $34,000.
+
+
+Space: []
+
+
+Str: (It
+
+
+Space: []
+
+
+Str: worked
+
+
+Space: []
+
+
+Str: if
+
+
+Space: []
+
+
+DoubleQuote: []
+
+
+Str: lot
+
+
+Quoted: ['DoubleQuote', [Str(lot)]]
+
+
+SoftBreak: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: emphasized.)
+
+
+Plain: [Str($22,000), Space, Str(is), Space, Str(a), Space, <elements.Emph object at 0x00FC91F0>, Space, Str(of), Space, Str(money.), Space, Str(So), Space, Str(is), Space, Str($34,000.), Space, Str((It), Space, Str(worked), Space, Str(if), Space, <elements.Quoted object at 0x010D2030>, <elements.SoftBreak object at 0x010D7450>, Str(is), Space, Str(emphasized.))]
+
+
+Str: Shoes
+
+
+Space: []
+
+
+Str: ($20)
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: socks
+
+
+Space: []
+
+
+Str: ($5).
+
+
+Plain: [Str(Shoes), Space, Str(($20)), Space, Str(and), Space, Str(socks), Space, Str(($5).)]
+
+
+Str: Escaped
+
+
+Space: []
+
+
+Code: [['', [], []], '$']
+
+
+Str: :
+
+
+Space: []
+
+
+Str: $73
+
+
+Space: []
+
+
+Str: this
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: emphasized
+
+
+Emph: [Str(this), Space, Str(should), Space, Str(be), Space, Str(emphasized)]
+
+
+Space: []
+
+
+Str: 23$.
+
+
+Plain: [Str(Escaped), Space, <elements.Code object at 0x010DC148>, Str(:), Space, Str($73), Space, <elements.Emph object at 0x010DE9B0>, Space, Str(23$.)]
+
+
+BulletList: [[Plain(Str(To),Space,Str(get),Space,Str(the),Space,Str(famous),Space,Str(equation,),Space,Str(write),Space,<elements.Code object at 0x00FBCDA0>,Str(.))], [Plain(Str($22,000),Space,Str(is),Space,Str(a),Space,<elements.Emph object at 0x00FC91F0>,Space,Str(of),Space,Str(money.),Space,Str(So),Space,Str(is),Space,Str($34,000.),Space,Str((It),Space,Str(worked),Space,Str(if),Space,<elements.Quoted object at 0x010D2030>,<elements.SoftBreak object at 0x010D7450>,Str(is),Space,Str(emphasized.)))], [Plain(Str(Shoes),Space,Str(($20)),Space,Str(and),Space,Str(socks),Space,Str(($5).))], [Plain(Str(Escaped),Space,<elements.Code object at 0x010DC148>,Str(:),Space,Str($73),Space,<elements.Emph object at 0x010DE9B0>,Space,Str(23$.))]]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: LaTeX
+
+
+Space: []
+
+
+Str: table:
+
+
+Para: [Str(Here’s), Space, Str(a), Space, Str(LaTeX), Space, Str(table:)]
+
+
+RawBlock: ['latex', '\\begin{tabular}{|l|l|}\\hline\nAnimal & Number \\\\ \\hline\nDog    & 2      \\\\\nCat    & 1      \\\\ \\hline\n\\end{tabular}']
+
+
+HorizontalRule: []
+
+
+Str: Special
+
+
+Space: []
+
+
+Str: Characters
+
+
+Header: [1, ['special-characters', [], []], [Str(Special), Space, Str(Characters)]]
+
+
+Str: Here
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: some
+
+
+Space: []
+
+
+Str: unicode:
+
+
+Para: [Str(Here), Space, Str(is), Space, Str(some), Space, Str(unicode:)]
+
+
+Str: I
+
+
+Space: []
+
+
+Str: hat:
+
+
+Space: []
+
+
+Str: Î
+
+
+Plain: [Str(I), Space, Str(hat:), Space, Str(Î)]
+
+
+Str: o
+
+
+Space: []
+
+
+Str: umlaut:
+
+
+Space: []
+
+
+Str: ö
+
+
+Plain: [Str(o), Space, Str(umlaut:), Space, Str(ö)]
+
+
+Str: section:
+
+
+Space: []
+
+
+Str: §
+
+
+Plain: [Str(section:), Space, Str(§)]
+
+
+Str: set
+
+
+Space: []
+
+
+Str: membership:
+
+
+Space: []
+
+
+Str: b"'\xe2\x88\x88'"
+
+
+Plain: b'[Str(set), Space, Str(membership:), Space, Str(\xe2\x88\x88)]'
+
+
+Str: copyright:
+
+
+Space: []
+
+
+Str: ©
+
+
+Plain: [Str(copyright:), Space, Str(©)]
+
+
+BulletList: b'[[Plain(Str(I),Space,Str(hat:),Space,Str(\xc3\x8e))], [Plain(Str(o),Space,Str(umlaut:),Space,Str(\xc3\xb6))], [Plain(Str(section:),Space,Str(\xc2\xa7))], [Plain(Str(set),Space,Str(membership:),Space,Str(\xe2\x88\x88))], [Plain(Str(copyright:),Space,Str(\xc2\xa9))]]'
+
+
+Str: AT&T
+
+
+Space: []
+
+
+Str: has
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: ampersand
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: their
+
+
+Space: []
+
+
+Str: name.
+
+
+Para: [Str(AT&T), Space, Str(has), Space, Str(an), Space, Str(ampersand), Space, Str(in), Space, Str(their), Space, Str(name.)]
+
+
+Str: AT&T
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: another
+
+
+Space: []
+
+
+Str: way
+
+
+Space: []
+
+
+Str: to
+
+
+Space: []
+
+
+Str: write
+
+
+Space: []
+
+
+Str: it.
+
+
+Para: [Str(AT&T), Space, Str(is), Space, Str(another), Space, Str(way), Space, Str(to), Space, Str(write), Space, Str(it.)]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: &
+
+
+Space: []
+
+
+Str: that.
+
+
+Para: [Str(This), Space, Str(&), Space, Str(that.)]
+
+
+Str: 4
+
+
+Space: []
+
+
+Str: <
+
+
+Space: []
+
+
+Str: 5.
+
+
+Para: [Str(4), Space, Str(<), Space, Str(5.)]
+
+
+Str: 6
+
+
+Space: []
+
+
+Str: >
+
+
+Space: []
+
+
+Str: 5.
+
+
+Para: [Str(6), Space, Str(>), Space, Str(5.)]
+
+
+Str: Backslash:
+
+
+Space: []
+
+
+Str: \
+
+
+Para: [Str(Backslash:), Space, Str(\)]
+
+
+Str: Backtick:
+
+
+Space: []
+
+
+Str: `
+
+
+Para: [Str(Backtick:), Space, Str(`)]
+
+
+Str: Asterisk:
+
+
+Space: []
+
+
+Str: *
+
+
+Para: [Str(Asterisk:), Space, Str(*)]
+
+
+Str: Underscore:
+
+
+Space: []
+
+
+Str: _
+
+
+Para: [Str(Underscore:), Space, Str(_)]
+
+
+Str: Left
+
+
+Space: []
+
+
+Str: brace:
+
+
+Space: []
+
+
+Str: {
+
+
+Para: [Str(Left), Space, Str(brace:), Space, Str({)]
+
+
+Str: Right
+
+
+Space: []
+
+
+Str: brace:
+
+
+Space: []
+
+
+Str: }
+
+
+Para: [Str(Right), Space, Str(brace:), Space, Str(})]
+
+
+Str: Left
+
+
+Space: []
+
+
+Str: bracket:
+
+
+Space: []
+
+
+Str: [
+
+
+Para: [Str(Left), Space, Str(bracket:), Space, Str([)]
+
+
+Str: Right
+
+
+Space: []
+
+
+Str: bracket:
+
+
+Space: []
+
+
+Str: ]
+
+
+Para: [Str(Right), Space, Str(bracket:), Space, Str(])]
+
+
+Str: Left
+
+
+Space: []
+
+
+Str: paren:
+
+
+Space: []
+
+
+Str: (
+
+
+Para: [Str(Left), Space, Str(paren:), Space, Str(()]
+
+
+Str: Right
+
+
+Space: []
+
+
+Str: paren:
+
+
+Space: []
+
+
+Str: )
+
+
+Para: [Str(Right), Space, Str(paren:), Space, Str())]
+
+
+Str: Greater-than:
+
+
+Space: []
+
+
+Str: >
+
+
+Para: [Str(Greater-than:), Space, Str(>)]
+
+
+Str: Hash:
+
+
+Space: []
+
+
+Str: #
+
+
+Para: [Str(Hash:), Space, Str(#)]
+
+
+Str: Period:
+
+
+Space: []
+
+
+Str: .
+
+
+Para: [Str(Period:), Space, Str(.)]
+
+
+Str: Bang:
+
+
+Space: []
+
+
+Str: !
+
+
+Para: [Str(Bang:), Space, Str(!)]
+
+
+Str: Plus:
+
+
+Space: []
+
+
+Str: +
+
+
+Para: [Str(Plus:), Space, Str(+)]
+
+
+Str: Minus:
+
+
+Space: []
+
+
+Str: -
+
+
+Para: [Str(Minus:), Space, Str(-)]
+
+
+HorizontalRule: []
+
+
+Str: Links
+
+
+Header: [1, ['links', [], []], [Str(Links)]]
+
+
+Str: Explicit
+
+
+Header: [2, ['explicit', [], []], [Str(Explicit)]]
+
+
+Str: Just
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: URL
+
+
+Link: [['', [], []], [Str(URL)], ['/url/', '']]
+
+
+Str: .
+
+
+Para: [Str(Just), Space, Str(a), Space, <elements.Link object at 0x010E2150>, Str(.)]
+
+
+Str: URL
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: title
+
+
+Link: [['', [], []], [Str(URL), Space, Str(and), Space, Str(title)], ['/url/', 'title']]
+
+
+Str: .
+
+
+Para: [<elements.Link object at 0x010E2180>, Str(.)]
+
+
+Str: URL
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: title
+
+
+Link: [['', [], []], [Str(URL), Space, Str(and), Space, Str(title)], ['/url/', 'title preceded by two spaces']]
+
+
+Str: .
+
+
+Para: [<elements.Link object at 0x010E21E0>, Str(.)]
+
+
+Str: URL
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: title
+
+
+Link: [['', [], []], [Str(URL), Space, Str(and), Space, Str(title)], ['/url/', 'title preceded by a tab']]
+
+
+Str: .
+
+
+Para: [<elements.Link object at 0x010E2270>, Str(.)]
+
+
+Str: URL
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: title
+
+
+Link: [['', [], []], [Str(URL), Space, Str(and), Space, Str(title)], ['/url/', 'title with "quotes" in it']]
+
+
+Para: [<elements.Link object at 0x00FC59C0>]
+
+
+Str: URL
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: title
+
+
+Link: [['', [], []], [Str(URL), Space, Str(and), Space, Str(title)], ['/url/', 'title with single quotes']]
+
+
+Para: [<elements.Link object at 0x00FC5C30>]
+
+
+Str: with_underscore
+
+
+Link: [['', [], []], [Str(with_underscore)], ['/url/with_underscore', '']]
+
+
+Para: [<elements.Link object at 0x00FC5FC0>]
+
+
+Str: Email
+
+
+Space: []
+
+
+Str: link
+
+
+Link: [['', [], []], [Str(Email), Space, Str(link)], ['mailto:nobody@nowhere.net', '']]
+
+
+Para: [<elements.Link object at 0x00FC5E70>]
+
+
+Str: Empty
+
+
+Link: [['', [], []], [Str(Empty)], ['', '']]
+
+
+Str: .
+
+
+Para: [<elements.Link object at 0x010E2030>, Str(.)]
+
+
+Str: Reference
+
+
+Header: [2, ['reference', [], []], [Str(Reference)]]
+
+
+Str: Foo
+
+
+Space: []
+
+
+Str: bar
+
+
+Link: [['', [], []], [Str(bar)], ['/url/', '']]
+
+
+Str: .
+
+
+Para: [Str(Foo), Space, <elements.Link object at 0x010E22D0>, Str(.)]
+
+
+Str: Foo
+
+
+Space: []
+
+
+Str: bar
+
+
+Link: [['', [], []], [Str(bar)], ['/url/', '']]
+
+
+Str: .
+
+
+Para: [Str(Foo), Space, <elements.Link object at 0x010E2300>, Str(.)]
+
+
+Str: Foo
+
+
+Space: []
+
+
+Str: bar
+
+
+Link: [['', [], []], [Str(bar)], ['/url/', '']]
+
+
+Str: .
+
+
+Para: [Str(Foo), Space, <elements.Link object at 0x010E2360>, Str(.)]
+
+
+Str: With
+
+
+Space: []
+
+
+Str: embedded
+
+
+Space: []
+
+
+Str: [brackets]
+
+
+Link: [['', [], []], [Str(embedded), Space, Str([brackets])], ['/url/', '']]
+
+
+Str: .
+
+
+Para: [Str(With), Space, <elements.Link object at 0x010E23C0>, Str(.)]
+
+
+Str: b
+
+
+Link: [['', [], []], [Str(b)], ['/url/', '']]
+
+
+Space: []
+
+
+Str: by
+
+
+Space: []
+
+
+Str: itself
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: link.
+
+
+Para: [<elements.Link object at 0x010E2420>, Space, Str(by), Space, Str(itself), Space, Str(should), Space, Str(be), Space, Str(a), Space, Str(link.)]
+
+
+Str: Indented
+
+
+Space: []
+
+
+Str: once
+
+
+Link: [['', [], []], [Str(once)], ['/url', '']]
+
+
+Str: .
+
+
+Para: [Str(Indented), Space, <elements.Link object at 0x010E2450>, Str(.)]
+
+
+Str: Indented
+
+
+Space: []
+
+
+Str: twice
+
+
+Link: [['', [], []], [Str(twice)], ['/url', '']]
+
+
+Str: .
+
+
+Para: [Str(Indented), Space, <elements.Link object at 0x010E2090>, Str(.)]
+
+
+Str: Indented
+
+
+Space: []
+
+
+Str: thrice
+
+
+Link: [['', [], []], [Str(thrice)], ['/url', '']]
+
+
+Str: .
+
+
+Para: [Str(Indented), Space, <elements.Link object at 0x010E24B0>, Str(.)]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: [not][]
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: link.
+
+
+Para: [Str(This), Space, Str(should), Space, Str([not][]), Space, Str(be), Space, Str(a), Space, Str(link.)]
+
+
+CodeBlock: [['', [], []], '[not]: /url']
+
+
+Str: Foo
+
+
+Space: []
+
+
+Str: bar
+
+
+Link: [['', [], []], [Str(bar)], ['/url/', 'Title with "quotes" inside']]
+
+
+Str: .
+
+
+Para: [Str(Foo), Space, <elements.Link object at 0x010E25A0>, Str(.)]
+
+
+Str: Foo
+
+
+Space: []
+
+
+Str: biz
+
+
+Link: [['', [], []], [Str(biz)], ['/url/', 'Title with "quote" inside']]
+
+
+Str: .
+
+
+Para: [Str(Foo), Space, <elements.Link object at 0x010E2600>, Str(.)]
+
+
+Str: With
+
+
+Space: []
+
+
+Str: ampersands
+
+
+Header: [2, ['with-ampersands', [], []], [Str(With), Space, Str(ampersands)]]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: link
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: ampersand
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: URL
+
+
+Link: [['', [], []], [Str(link), Space, Str(with), Space, Str(an), Space, Str(ampersand), Space, Str(in), Space, Str(the), Space, Str(URL)], ['http://example.com/?foo=1&bar=2', '']]
+
+
+Str: .
+
+
+Para: [Str(Here’s), Space, Str(a), Space, <elements.Link object at 0x010E2690>, Str(.)]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: link
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: amersand
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: link
+
+
+Space: []
+
+
+Str: text:
+
+
+SoftBreak: []
+
+
+Str: AT&T
+
+
+Link: [['', [], []], [Str(AT&T)], ['http://att.com/', 'AT&T']]
+
+
+Str: .
+
+
+Para: [Str(Here’s), Space, Str(a), Space, Str(link), Space, Str(with), Space, Str(an), Space, Str(amersand), Space, Str(in), Space, Str(the), Space, Str(link), Space, Str(text:), <elements.SoftBreak object at 0x010D7820>, <elements.Link object at 0x010E26C0>, Str(.)]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: inline
+
+
+Space: []
+
+
+Str: link
+
+
+Link: [['', [], []], [Str(inline), Space, Str(link)], ['/script?foo=1&bar=2', '']]
+
+
+Str: .
+
+
+Para: [Str(Here’s), Space, Str(an), Space, <elements.Link object at 0x010E2720>, Str(.)]
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: inline
+
+
+Space: []
+
+
+Str: link
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: pointy
+
+
+Space: []
+
+
+Str: braces
+
+
+Link: [['', [], []], [Str(inline), Space, Str(link), Space, Str(in), Space, Str(pointy), Space, Str(braces)], ['/script?foo=1&bar=2', '']]
+
+
+Str: .
+
+
+Para: [Str(Here’s), Space, Str(an), Space, <elements.Link object at 0x010E2780>, Str(.)]
+
+
+Str: Autolinks
+
+
+Header: [2, ['autolinks', [], []], [Str(Autolinks)]]
+
+
+Str: With
+
+
+Space: []
+
+
+Str: an
+
+
+Space: []
+
+
+Str: ampersand:
+
+
+Space: []
+
+
+Str: http://example.com/?foo=1&bar=2
+
+
+Link: [['', [], []], [Str(http://example.com/?foo=1&bar=2)], ['http://example.com/?foo=1&bar=2', '']]
+
+
+Para: [Str(With), Space, Str(an), Space, Str(ampersand:), Space, <elements.Link object at 0x010E2810>]
+
+
+Str: In
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: list?
+
+
+Plain: [Str(In), Space, Str(a), Space, Str(list?)]
+
+
+Str: http://example.com/
+
+
+Link: [['', [], []], [Str(http://example.com/)], ['http://example.com/', '']]
+
+
+Plain: [<elements.Link object at 0x010E28D0>]
+
+
+Str: It
+
+
+Space: []
+
+
+Str: should.
+
+
+Plain: [Str(It), Space, Str(should.)]
+
+
+BulletList: [[Plain(Str(In),Space,Str(a),Space,Str(list?))], [Plain(<elements.Link object at 0x010E28D0>)], [Plain(Str(It),Space,Str(should.))]]
+
+
+Str: An
+
+
+Space: []
+
+
+Str: e-mail
+
+
+Space: []
+
+
+Str: address:
+
+
+Space: []
+
+
+Str: nobody@nowhere.net
+
+
+Link: [['', [], []], [Str(nobody@nowhere.net)], ['mailto:nobody@nowhere.net', '']]
+
+
+Para: [Str(An), Space, Str(e-mail), Space, Str(address:), Space, <elements.Link object at 0x010E2960>]
+
+
+Str: Blockquoted:
+
+
+Space: []
+
+
+Str: http://example.com/
+
+
+Link: [['', [], []], [Str(http://example.com/)], ['http://example.com/', '']]
+
+
+Para: [Str(Blockquoted:), Space, <elements.Link object at 0x010E29F0>]
+
+
+BlockQuote: [<elements.Para object at 0x010E53D0>]
+
+
+Str: Auto-links
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: not
+
+
+Space: []
+
+
+Str: occur
+
+
+Space: []
+
+
+Str: here:
+
+
+Space: []
+
+
+Code: [['', [], []], '<http://example.com/>']
+
+
+Para: [Str(Auto-links), Space, Str(should), Space, Str(not), Space, Str(occur), Space, Str(here:), Space, <elements.Code object at 0x010D9670>]
+
+
+CodeBlock: [['', [], []], 'or here: <http://example.com/>']
+
+
+HorizontalRule: []
+
+
+Str: Images
+
+
+Header: [1, ['images', [], []], [Str(Images)]]
+
+
+Str: From
+
+
+Space: []
+
+
+DoubleQuote: []
+
+
+Str: Voyage
+
+
+Space: []
+
+
+Str: dans
+
+
+Space: []
+
+
+Str: la
+
+
+Space: []
+
+
+Str: Lune
+
+
+Quoted: ['DoubleQuote', [Str(Voyage), Space, Str(dans), Space, Str(la), Space, Str(Lune)]]
+
+
+Space: []
+
+
+Str: by
+
+
+Space: []
+
+
+Str: Georges
+
+
+Space: []
+
+
+Str: Melies
+
+
+Space: []
+
+
+Str: (1902):
+
+
+Para: [Str(From), Space, <elements.Quoted object at 0x010E5750>, Space, Str(by), Space, Str(Georges), Space, Str(Melies), Space, Str((1902):)]
+
+
+Str: lalune
+
+
+Image: [['', [], []], [Str(lalune)], ['lalune.jpg', 'fig:Voyage dans la Lune']]
+
+
+Para: [<elements.Image object at 0x010E2A80>]
+
+
+Str: Here
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: movie
+
+
+Space: []
+
+
+Str: movie
+
+
+Image: [['', [], []], [Str(movie)], ['movie.jpg', '']]
+
+
+Space: []
+
+
+Str: icon.
+
+
+Para: [Str(Here), Space, Str(is), Space, Str(a), Space, Str(movie), Space, <elements.Image object at 0x010E2570>, Space, Str(icon.)]
+
+
+HorizontalRule: []
+
+
+Str: Footnotes
+
+
+Header: [1, ['footnotes', [], []], [Str(Footnotes)]]
+
+
+Str: Here
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: footnote
+
+
+Space: []
+
+
+Str: reference,
+
+
+Str: Here
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: footnote.
+
+
+Space: []
+
+
+Str: It
+
+
+Space: []
+
+
+Str: can
+
+
+Space: []
+
+
+Str: go
+
+
+Space: []
+
+
+Str: anywhere
+
+
+Space: []
+
+
+Str: after
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: footnote
+
+
+Space: []
+
+
+Str: reference.
+
+
+SoftBreak: []
+
+
+Str: It
+
+
+Space: []
+
+
+Str: need
+
+
+Space: []
+
+
+Str: not
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: placed
+
+
+Space: []
+
+
+Str: at
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: end
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: document.
+
+
+Para: [Str(Here), Space, Str(is), Space, Str(the), Space, Str(footnote.), Space, Str(It), Space, Str(can), Space, Str(go), Space, Str(anywhere), Space, Str(after), Space, Str(the), Space, Str(footnote), Space, Str(reference.), <elements.SoftBreak object at 0x010D79D8>, Str(It), Space, Str(need), Space, Str(not), Space, Str(be), Space, Str(placed), Space, Str(at), Space, Str(the), Space, Str(end), Space, Str(of), Space, Str(the), Space, Str(document.)]
+
+
+Note: [<elements.Para object at 0x010E5A90>]
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: another.
+
+
+Str: Here’s
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: long
+
+
+Space: []
+
+
+Str: note.
+
+
+Space: []
+
+
+Str: This
+
+
+Space: []
+
+
+Str: one
+
+
+Space: []
+
+
+Str: contains
+
+
+Space: []
+
+
+Str: multiple
+
+
+Space: []
+
+
+Str: blocks.
+
+
+Para: [Str(Here’s), Space, Str(the), Space, Str(long), Space, Str(note.), Space, Str(This), Space, Str(one), Space, Str(contains), Space, Str(multiple), Space, Str(blocks.)]
+
+
+Str: Subsequent
+
+
+Space: []
+
+
+Str: blocks
+
+
+Space: []
+
+
+Str: are
+
+
+Space: []
+
+
+Str: indented
+
+
+Space: []
+
+
+Str: to
+
+
+Space: []
+
+
+Str: show
+
+
+Space: []
+
+
+Str: that
+
+
+Space: []
+
+
+Str: they
+
+
+Space: []
+
+
+Str: belong
+
+
+Space: []
+
+
+Str: to
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: footnote
+
+
+SoftBreak: []
+
+
+Str: (as
+
+
+Space: []
+
+
+Str: with
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: items).
+
+
+Para: [Str(Subsequent), Space, Str(blocks), Space, Str(are), Space, Str(indented), Space, Str(to), Space, Str(show), Space, Str(that), Space, Str(they), Space, Str(belong), Space, Str(to), Space, Str(the), Space, Str(footnote), <elements.SoftBreak object at 0x010D7AD8>, Str((as), Space, Str(with), Space, Str(list), Space, Str(items).)]
+
+
+CodeBlock: [['', [], []], '  { <code> }']
+
+
+Str: If
+
+
+Space: []
+
+
+Str: you
+
+
+Space: []
+
+
+Str: want,
+
+
+Space: []
+
+
+Str: you
+
+
+Space: []
+
+
+Str: can
+
+
+Space: []
+
+
+Str: indent
+
+
+Space: []
+
+
+Str: every
+
+
+Space: []
+
+
+Str: line,
+
+
+Space: []
+
+
+Str: but
+
+
+Space: []
+
+
+Str: you
+
+
+Space: []
+
+
+Str: can
+
+
+Space: []
+
+
+Str: also
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: lazy
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Str: just
+
+
+SoftBreak: []
+
+
+Str: indent
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: first
+
+
+Space: []
+
+
+Str: line
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: each
+
+
+Space: []
+
+
+Str: block.
+
+
+Para: [Str(If), Space, Str(you), Space, Str(want,), Space, Str(you), Space, Str(can), Space, Str(indent), Space, Str(every), Space, Str(line,), Space, Str(but), Space, Str(you), Space, Str(can), Space, Str(also), Space, Str(be), Space, Str(lazy), Space, Str(and), Space, Str(just), <elements.SoftBreak object at 0x010D7B70>, Str(indent), Space, Str(the), Space, Str(first), Space, Str(line), Space, Str(of), Space, Str(each), Space, Str(block.)]
+
+
+Note: [<elements.Para object at 0x00FCD370>, <elements.Para object at 0x00FCD710>, <elements.CodeBlock object at 0x010D9B20>, <elements.Para object at 0x00FCDC70>]
+
+
+Space: []
+
+
+Str: This
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: not
+
+
+Emph: [Str(not)]
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: a
+
+
+SoftBreak: []
+
+
+Str: footnote
+
+
+Space: []
+
+
+Str: reference,
+
+
+Space: []
+
+
+Str: because
+
+
+Space: []
+
+
+Str: it
+
+
+Space: []
+
+
+Str: contains
+
+
+Space: []
+
+
+Str: a
+
+
+Space: []
+
+
+Str: space.[^my
+
+
+Space: []
+
+
+Str: note]
+
+
+Space: []
+
+
+Str: Here
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: an
+
+
+SoftBreak: []
+
+
+Str: inline
+
+
+Space: []
+
+
+Str: note.
+
+
+Str: This
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: easier
+
+
+Emph: [Str(easier)]
+
+
+Space: []
+
+
+Str: to
+
+
+Space: []
+
+
+Str: type.
+
+
+Space: []
+
+
+Str: Inline
+
+
+Space: []
+
+
+Str: notes
+
+
+Space: []
+
+
+Str: may
+
+
+Space: []
+
+
+Str: contain
+
+
+SoftBreak: []
+
+
+Str: links
+
+
+Link: [['', [], []], [Str(links)], ['http://google.com', '']]
+
+
+Space: []
+
+
+Str: and
+
+
+Space: []
+
+
+Code: [['', [], []], ']']
+
+
+Space: []
+
+
+Str: verbatim
+
+
+Space: []
+
+
+Str: characters,
+
+
+Space: []
+
+
+Str: as
+
+
+Space: []
+
+
+Str: well
+
+
+Space: []
+
+
+Str: as
+
+
+SoftBreak: []
+
+
+Str: [bracketed
+
+
+Space: []
+
+
+Str: text].
+
+
+Para: [Str(This), Space, Str(is), Space, <elements.Emph object at 0x010E73F0>, Space, Str(to), Space, Str(type.), Space, Str(Inline), Space, Str(notes), Space, Str(may), Space, Str(contain), <elements.SoftBreak object at 0x010D7C78>, <elements.Link object at 0x010E2B10>, Space, Str(and), Space, <elements.Code object at 0x010D9D00>, Space, Str(verbatim), Space, Str(characters,), Space, Str(as), Space, Str(well), Space, Str(as), <elements.SoftBreak object at 0x010D7CB8>, Str([bracketed), Space, Str(text].)]
+
+
+Note: [<elements.Para object at 0x010E7850>]
+
+
+Para: [Str(Here), Space, Str(is), Space, Str(a), Space, Str(footnote), Space, Str(reference,), <elements.Note object at 0x010E5A70>, Space, Str(and), Space, Str(another.), <elements.Note object at 0x00FCD810>, Space, Str(This), Space, Str(should), Space, <elements.Emph object at 0x00FCDEB0>, Space, Str(be), Space, Str(a), <elements.SoftBreak object at 0x010D7BD0>, Str(footnote), Space, Str(reference,), Space, Str(because), Space, Str(it), Space, Str(contains), Space, Str(a), Space, Str(space.[^my), Space, Str(note]), Space, Str(Here), Space, Str(is), Space, Str(an), <elements.SoftBreak object at 0x010D7C28>, Str(inline), Space, Str(note.), <elements.Note object at 0x010E7330>]
+
+
+Str: Notes
+
+
+Space: []
+
+
+Str: can
+
+
+Space: []
+
+
+Str: go
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: quotes.
+
+
+Str: In
+
+
+Space: []
+
+
+Str: quote.
+
+
+Para: [Str(In), Space, Str(quote.)]
+
+
+Note: [<elements.Para object at 0x010E7A70>]
+
+
+Para: [Str(Notes), Space, Str(can), Space, Str(go), Space, Str(in), Space, Str(quotes.), <elements.Note object at 0x010E7A30>]
+
+
+BlockQuote: [<elements.Para object at 0x010E78F0>]
+
+
+Decimal: []
+
+
+Period: []
+
+
+Str: And
+
+
+Space: []
+
+
+Str: in
+
+
+Space: []
+
+
+Str: list
+
+
+Space: []
+
+
+Str: items.
+
+
+Str: In
+
+
+Space: []
+
+
+Str: list.
+
+
+Para: [Str(In), Space, Str(list.)]
+
+
+Note: [<elements.Para object at 0x010E7D10>]
+
+
+Plain: [Str(And), Space, Str(in), Space, Str(list), Space, Str(items.), <elements.Note object at 0x010E7CD0>]
+
+
+OrderedList: [[1, 'Decimal', 'Period'], [[Plain(Str(And),Space,Str(in),Space,Str(list),Space,Str(items.),<elements.Note object at 0x010E7CD0>)]]]
+
+
+Str: This
+
+
+Space: []
+
+
+Str: paragraph
+
+
+Space: []
+
+
+Str: should
+
+
+Space: []
+
+
+Str: not
+
+
+Space: []
+
+
+Str: be
+
+
+Space: []
+
+
+Str: part
+
+
+Space: []
+
+
+Str: of
+
+
+Space: []
+
+
+Str: the
+
+
+Space: []
+
+
+Str: note,
+
+
+Space: []
+
+
+Str: as
+
+
+Space: []
+
+
+Str: it
+
+
+Space: []
+
+
+Str: is
+
+
+Space: []
+
+
+Str: not
+
+
+Space: []
+
+
+Str: indented.
+
+
+Para: [Str(This), Space, Str(paragraph), Space, Str(should), Space, Str(not), Space, Str(be), Space, Str(part), Space, Str(of), Space, Str(the), Space, Str(note,), Space, Str(as), Space, Str(it), Space, Str(is), Space, Str(not), Space, Str(indented.)]
+
+
+Str: John
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: Smith
+
+
+Str: .
+
+
+Space: []
+
+
+Str: n.d.
+
+
+Space: []
+
+
+Str: “
+
+
+Str: Lorem
+
+
+Str: .
+
+
+Str: ”
+
+
+Space: []
+
+
+Str: Foobar
+
+
+Emph: [Str(Foobar)]
+
+
+Space: []
+
+
+Str: 1
+
+
+Str: :
+
+
+Space: []
+
+
+Str: 2
+
+
+Str: .
+
+
+Para: [Str(John), Str(,), Space, Str(Smith), Str(.), Space, Str(n.d.), Space, Str(“), Str(Lorem), Str(.), Str(”), Space, <elements.Emph object at 0x010E7F90>, Space, Str(1), Str(:), Space, Str(2), Str(.)]
+
+
+Div: [['ref-foo', [], []], [<elements.Para object at 0x010E5430>]]
+
+
+Str: John
+
+
+Str: ,
+
+
+Space: []
+
+
+Str: Smith
+
+
+Space: []
+
+
+Str: II
+
+
+Str: .
+
+
+Space: []
+
+
+Str: n.d.
+
+
+Space: []
+
+
+Str: “
+
+
+Str: Lorems
+
+
+Str: .
+
+
+Str: ”
+
+
+Space: []
+
+
+Str: Foobar
+
+
+Emph: [Str(Foobar)]
+
+
+Space: []
+
+
+Str: 1
+
+
+Str: :
+
+
+Space: []
+
+
+Str: 2
+
+
+Str: .
+
+
+Para: [Str(John), Str(,), Space, Str(Smith), Space, Str(II), Str(.), Space, Str(n.d.), Space, Str(“), Str(Lorems), Str(.), Str(”), Space, <elements.Emph object at 0x00FC7310>, Space, Str(1), Str(:), Space, Str(2), Str(.)]
+
+
+Div: [['ref-bar', [], []], [<elements.Para object at 0x00FC73F0>]]
+
+
+Div: [['refs', ['references'], []], [<elements.Div object at 0x010D9FA8>, <elements.Div object at 0x010DD0A8>]]
+
+[<elements.Para object at 0x00FBA230>, <elements.Para object at 0x00FBA790>, <elements.Table object at 0x00FAE730>, <elements.HorizontalRule object at 0x006985D0>, <elements.Header object at 0x00FAFF60>, <elements.Header object at 0x00FC5060>, <elements.Header object at 0x00FC50F0>, <elements.Header object at 0x00FC5120>, <elements.Header object at 0x00FC5150>, <elements.Header object at 0x00FC5180>, <elements.Header object at 0x00FC51E0>, <elements.Header object at 0x00FC5210>, <elements.Para object at 0x00FC1D50>, <elements.Header object at 0x00FC5240>, <elements.Para object at 0x00FC1EF0>, <elements.HorizontalRule object at 0x00698690>, <elements.Header object at 0x00FC5270>, <elements.Para object at 0x00FC1FF0>, <elements.Para object at 0x00FC8850>, <elements.Para object at 0x00FBA030>, <elements.Para object at 0x00FBAFD0>, <elements.HorizontalRule object at 0x00698800>, <elements.Header object at 0x00FC52A0>, <elements.Para object at 0x00FC1370>, <elements.BlockQuote object at 0x00FC8050>, <elements.BlockQuote object at 0x00FC8F90>, <elements.Para object at 0x00FC2230>, <elements.Para object at 0x00FC2370>, <elements.HorizontalRule object at 0x00698900>, <elements.Header object at 0x00FC5360>, <elements.Para object at 0x00FC23D0>, <elements.CodeBlock object at 0x00FC09E0>, <elements.Para object at 0x00FC24D0>, <elements.CodeBlock object at 0x00FC0A08>, <elements.HorizontalRule object at 0x00698910>, <elements.Header object at 0x00FC53C0>, <elements.Header object at 0x00FC53F0>, <elements.Para object at 0x00FC26F0>, <elements.BulletList object at 0x00FC2030>, <elements.Para object at 0x00FC29B0>, <elements.BulletList object at 0x00FC28F0>, <elements.Para object at 0x00FC2C50>, <elements.BulletList object at 0x00FC2B90>, <elements.Para object at 0x00FC2F10>, <elements.BulletList object at 0x00FCA090>, <elements.Para object at 0x00FCA1F0>, <elements.BulletList object at 0x00FCA130>, <elements.Para object at 0x00FCA4B0>, <elements.BulletList object at 0x00FCA410>, <elements.Header object at 0x00FC5780>, <elements.Para object at 0x00FCA790>, <elements.OrderedList object at 0x00FCC210>, <elements.Para object at 0x00FCAA90>, <elements.OrderedList object at 0x00FCC288>, <elements.Para object at 0x00FCAE70>, <elements.OrderedList object at 0x00FCC2B0>, <elements.Para object at 0x00FCF210>, <elements.OrderedList object at 0x00FCC300>, <elements.Para object at 0x00FBA2F0>, <elements.OrderedList object at 0x00FCC440>, <elements.Header object at 0x00FC5420>, <elements.BulletList object at 0x00FCF930>, <elements.Para object at 0x00FCFA50>, <elements.OrderedList object at 0x00FCC6C0>, <elements.Para object at 0x00FCFF10>, <elements.OrderedList object at 0x00FCC788>, <elements.Header object at 0x00FC5450>, <elements.BulletList object at 0x00FC6F70>, <elements.Header object at 0x00FC54E0>, <elements.OrderedList object at 0x00FCCD78>, <elements.Para object at 0x00FCE810>, <elements.OrderedList object at 0x00FCCE18>, <elements.Para object at 0x00FCF910>, <elements.OrderedList object at 0x010D3148>, <elements.Para object at 0x00FC6D30>, <elements.Para object at 0x00FCE8B0>, <elements.Para object at 0x00FCEC30>, <elements.HorizontalRule object at 0x00698CB0>, <elements.Header object at 0x00FC55D0>, <elements.Para object at 0x00FCEE70>, <elements.DefinitionList object at 0x00FBE110>, <elements.Para object at 0x00FBE370>, <elements.DefinitionList object at 0x00FBE1F0>, <elements.Para object at 0x00FBE6F0>, <elements.DefinitionList object at 0x00FBE6D0>, <elements.Para object at 0x00FBEDD0>, <elements.DefinitionList object at 0x00FCB330>, <elements.Para object at 0x00FCB4D0>, <elements.DefinitionList object at 0x00FCB390>, <elements.Para object at 0x00FCB9B0>, <elements.DefinitionList object at 0x00FCB830>, <elements.Para object at 0x00FCBD30>, <elements.DefinitionList object at 0x010D42D0>, <elements.Header object at 0x00FC5930>, <elements.Para object at 0x010D4610>, <elements.Div object at 0x010D3CD8>, <elements.Para object at 0x010D4910>, <elements.Div object at 0x010D3E90>, <elements.Para object at 0x010D4BB0>, <elements.RawBlock object at 0x010D4C50>, <elements.RawBlock object at 0x010D4CD0>, <elements.RawBlock object at 0x010D4D50>, Plain(Str(This),Space,Str(is),Space,<elements.Emph object at 0x00FC6290>), <elements.RawBlock object at 0x00FCEAD0>, <elements.RawBlock object at 0x00FBED10>, Plain(Str(And),Space,Str(this),Space,Str(is),Space,<elements.Strong object at 0x00FCB490>), <elements.RawBlock object at 0x00FCBB10>, <elements.RawBlock object at 0x00FCBE30>, <elements.RawBlock object at 0x00FCBF50>, <elements.RawBlock object at 0x010D4170>, <elements.Para object at 0x010D4430>, <elements.Div object at 0x010D3FD0>, <elements.Para object at 0x010D4EB0>, <elements.CodeBlock object at 0x00FBC0F8>, <elements.Para object at 0x010D4F90>, <elements.CodeBlock object at 0x00FBC170>, <elements.Para object at 0x00FC90F0>, <elements.Div object at 0x00FBC3A0>, <elements.Para object at 0x00FC9430>, <elements.RawBlock object at 0x00FC9470>, <elements.Para object at 0x00FC94F0>, <elements.RawBlock object at 0x00FC9550>, <elements.RawBlock object at 0x00FC95B0>, <elements.Para object at 0x00FC9610>, <elements.CodeBlock object at 0x00FBC490>, <elements.Para object at 0x00FC97F0>, <elements.RawBlock object at 0x00FC9930>, <elements.Para object at 0x00FC9950>, <elements.CodeBlock object at 0x00FBC580>, <elements.Para object at 0x00FC9A30>, <elements.RawBlock object at 0x00FC9B10>, <elements.RawBlock object at 0x00FC9B90>, <elements.RawBlock object at 0x00FC9C10>, <elements.RawBlock object at 0x00FC9C90>, <elements.RawBlock object at 0x00FC9D10>, <elements.RawBlock object at 0x00FC9D90>, <elements.RawBlock object at 0x00FC9DF0>, <elements.RawBlock object at 0x00FC9E50>, <elements.RawBlock object at 0x00FC9EB0>, <elements.HorizontalRule object at 0x00698F78>, <elements.Header object at 0x00FC59F0>, <elements.Para object at 0x00FC9F30>, <elements.Para object at 0x010D1410>, <elements.Para object at 0x010D1530>, <elements.Para object at 0x010D1630>, <elements.Para object at 0x010D18B0>, <elements.Para object at 0x010D19D0>, <elements.Para object at 0x010D1C50>, <elements.Para object at 0x010D1F10>, <elements.Para object at 0x010DA0B0>, <elements.Para object at 0x010DA410>, <elements.Para object at 0x010DA790>, <elements.Para object at 0x00FC9A50>, <elements.HorizontalRule object at 0x010D7178>, <elements.Header object at 0x00FC56F0>, <elements.Para object at 0x00FC9ED0>, <elements.Para object at 0x010DABF0>, <elements.Para object at 0x010DA6F0>, <elements.Para object at 0x010D23D0>, <elements.Para object at 0x010D25F0>, <elements.Para object at 0x010D2830>, <elements.Para object at 0x010D29D0>, <elements.Para object at 0x010D29F0>, <elements.HorizontalRule object at 0x010D7338>, <elements.Header object at 0x00FC5D20>, <elements.BulletList object at 0x010DE230>, <elements.Para object at 0x010DE450>, <elements.BulletList object at 0x010DE2D0>, <elements.Para object at 0x010DEB10>, <elements.RawBlock object at 0x010DEBD0>, <elements.HorizontalRule object at 0x010D74D0>, <elements.Header object at 0x00FC5A50>, <elements.Para object at 0x010DEDB0>, <elements.BulletList object at 0x010D6110>, <elements.Para object at 0x010D62D0>, <elements.Para object at 0x010D63D0>, <elements.Para object at 0x010D65B0>, <elements.Para object at 0x010D66B0>, <elements.Para object at 0x010D6750>, <elements.Para object at 0x010D6810>, <elements.Para object at 0x010D6870>, <elements.Para object at 0x010D6930>, <elements.Para object at 0x010D69B0>, <elements.Para object at 0x010D6A70>, <elements.Para object at 0x010D6B30>, <elements.Para object at 0x010D6BF0>, <elements.Para object at 0x010D6CB0>, <elements.Para object at 0x010D6D70>, <elements.Para object at 0x010D6E30>, <elements.Para object at 0x010D6EB0>, <elements.Para object at 0x010D6F30>, <elements.Para object at 0x010D6FB0>, <elements.Para object at 0x010D60F0>, <elements.Para object at 0x010E10F0>, <elements.Para object at 0x010E1170>, <elements.HorizontalRule object at 0x010D7678>, <elements.Header object at 0x010E20C0>, <elements.Header object at 0x010E20F0>, <elements.Para object at 0x010E1330>, <elements.Para object at 0x010E14B0>, <elements.Para object at 0x010E1530>, <elements.Para object at 0x010E1650>, <elements.Para object at 0x010D2BB0>, <elements.Para object at 0x010DA990>, <elements.Para object at 0x010DEA50>, <elements.Para object at 0x010DE8D0>, <elements.Para object at 0x010D6B70>, <elements.Header object at 0x010E2060>, <elements.Para object at 0x010E1930>, <elements.Para object at 0x010E1A30>, <elements.Para object at 0x010E1B30>, <elements.Para object at 0x010E1C90>, <elements.Para object at 0x010E1E50>, <elements.Para object at 0x010E1F30>, <elements.Para object at 0x010E1890>, <elements.Para object at 0x010D0150>, <elements.Para object at 0x010D02F0>, <elements.CodeBlock object at 0x010DCEE0>, <elements.Para object at 0x010D03F0>, <elements.Para object at 0x010D04F0>, <elements.Header object at 0x010E2510>, <elements.Para object at 0x010D0750>, <elements.Para object at 0x010D0B10>, <elements.Para object at 0x010D0BF0>, <elements.Para object at 0x010D0D10>, <elements.Header object at 0x010E2750>, <elements.Para object at 0x010D0F70>, <elements.BulletList object at 0x010E5050>, <elements.Para object at 0x010E5330>, <elements.BlockQuote object at 0x010E5210>, <elements.Para object at 0x010E54D0>, <elements.CodeBlock object at 0x010D96C0>, <elements.HorizontalRule object at 0x010D78E8>, <elements.Header object at 0x010E2A50>, <elements.Para object at 0x010E5710>, <elements.Para object at 0x010D61F0>, <elements.Para object at 0x010E1C50>, <elements.HorizontalRule object at 0x010D7958>, <elements.Header object at 0x010E27B0>, <elements.Para object at 0x010E72B0>, <elements.BlockQuote object at 0x010E7170>, <elements.OrderedList object at 0x010D9E90>, <elements.Para object at 0x010E1870>, <elements.Div object at 0x010DD0D0>]

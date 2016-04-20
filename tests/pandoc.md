@@ -9,6 +9,18 @@ title: Pandoc Test Suite
 This is a set of tests for pandoc. Most of them are adapted from John Gruber’s
 markdown test suite.
 
+As the authors said [such as @foo;@bar], and [@foo]
+
+
+  Right     Left     Center     Default
+-------     ------ ----------   -------
+     12     12        12            12
+    123     123       123          123
+      1     1          1             1
+
+Table:  Demonstration of simple table syntax.
+
+
 ------------------------------------------------------------------------------
 
 Headers
