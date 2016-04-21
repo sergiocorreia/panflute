@@ -1,6 +1,7 @@
 # ---------------------------
 # Imports
 # ---------------------------
+from collections import OrderedDict
 
 # ---------------------------
 # Classes - Null
@@ -94,6 +95,9 @@ class Para(object):
 
     def __init__(self, *args):
         self.items = init_items(args, has_blocks=False)
+
+    def __repr__(self):
+        return 'Para({})'.format(' '.join(repr(x) for x in self.items))
 
     def encode_content(self):
         return encode_items(self)
@@ -285,21 +289,46 @@ class Quoted(object):
 
 
 class Cite(object):
-    """Citation (list of inlines)
+    """Cite (list of inlines)
 
      Inline Cite(citations=[Citation] items=[Inline])"""
  
     __slots__ = ['items', 'citations']
 
     def __init__(self, *args, citations):
-        self.citations = citations # TODO: Expand this complex type
+        self.citations = [Citation(**dict(c)) for c in citations] # TODO: Expand this complex type
         self.items = init_items(args, has_blocks=False)
 
-    def encode_content(self):
-        items = encode_items(self)
-        content = [self.citations, items]
-        return content
+    def __repr__(self):
+        return 'Cite(...)'
+        #return 'Cite({};{})'.format(','.join(repr(x) for x in self.items), repr(self.citations))
 
+    def encode_content(self):
+        citations = [x.encode_content() for x in self.citations]
+        items = encode_items(self)
+        return [citations, items]
+
+
+class Citation(object):
+    __slots__ = ['citationHash', 'citationId', 'citationMode', 'citationNoteNum', 'citationPrefix', 'citationSuffix']
+
+    def __init__(self, citationHash, citationId, citationMode, citationNoteNum, citationPrefix, citationSuffix):
+        self.citationHash = citationHash # ??
+        self.citationId = citationId # the bibtex keyword
+        self.citationMode = validate(citationMode, group=CITATION_MODE)
+        self.citationNoteNum = citationNoteNum # ??
+        self.citationPrefix = init_items(citationPrefix, has_blocks=False) # Contains [Inline]
+        self.citationSuffix = init_items(citationSuffix, has_blocks=False) # Contains [Inline]
+
+    def encode_content(self):
+        content = []
+        content.append(['citationSuffix', [to_json(x) for x in self.citationSuffix]])
+        content.append(['citationNoteNum', self.citationNoteNum])
+        content.append(['citationMode', encode_dict(self.citationMode, [])])
+        content.append(['citationPrefix', [to_json(x) for x in self.citationPrefix]])
+        content.append(['citationId', self.citationId])
+        content.append(['citationHash', self.citationHash])
+        return OrderedDict(content)
 
 class Link(object):
     """Hyperlink: alt text (list of inlines), target
@@ -517,6 +546,70 @@ class Table(object):
         content = [caption, alignment, self.width, header, items]
         return content
 
+
+# ---------------------------
+# Classes - Metadata
+# ---------------------------
+
+class Metadata(object):
+
+    def __init__(self, odict):
+        assert type(odict)==OrderedDict
+        self.items = odict
+
+    def __repr__(self):
+        return 'Metadata({})'.format(repr(self.items))
+
+    def encode_content(self):
+        return OrderedDict((k, metawalk(v)) for k, v in self.items.items())
+
+def metawalk(e):
+    t = type(e)
+    assert t in (str, list, bool, MetaInlines, MetaBlocks, OrderedDict), t
+    
+    if t == str:
+        return e
+    elif t == MetaInlines:
+        return to_json(e)
+    elif t == MetaBlocks:
+        return to_json(e)
+    elif t == list:
+        return encode_dict('MetaList', [metawalk(ee) for ee in e])
+    elif t == OrderedDict:
+        return encode_dict('MetaMap', OrderedDict((k, metawalk(v)) for k, v in e.items()))
+    elif t == bool:
+        return encode_dict('MetaBool', e)
+
+
+class MetaInlines (object):
+    """MetaInlines 
+
+     MetaValue MetaInlines (items=[Inline])"""
+ 
+    __slots__ = ['items']
+
+    def __init__(self, *args):
+        self.items = init_items(args, has_blocks=False)
+
+    def __repr__(self):
+        return 'MetaInlines({})'.format(','.join(repr(x) for x in self.items))
+
+    def encode_content(self):
+        return encode_items(self)
+
+class MetaBlocks (object):
+    """MetaBlocks 
+
+     MetaValue MetaBlocks (items=[Inline])"""
+ 
+    __slots__ = ['items']
+
+    def __init__(self, *args):
+        self.items = init_items(args, has_blocks=True)
+
+    def encode_content(self):
+        return encode_items(self)
+
 # ---------------------------
 # Constants
 # ---------------------------
@@ -543,7 +636,7 @@ MATH_FORMATS = {'DisplayMath', 'InlineMath'}
 RAW_FORMATS = {'html', 'tex', 'latex'}
 
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
-    MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES
+    MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
 
 # ---------------------------
 # Aux Functions - Initialize
@@ -604,19 +697,36 @@ def init_ut(self, url, title):
 
 def to_json(element):
     tag = type(element).__name__
-    return encode_dict(tag, element.encode_content())
+    if tag == 'Metadata':
+        return {'unMeta': element.encode_content()}
+    else:
+        if '’' in element.encode_content():
+            pass # print(repr(element))
+        return encode_dict(tag, element.encode_content())
+
 
 def from_json(data):
-    if 't' not in data:
-        return None
 
-    tag = data['t']
-    c = data['c']
+    # Odd cases
+    if data[0][0] != 't':
+        tag = data[0][0]
 
-    #try:
-    #    print(c)
-    #except:
-    #    print(repr(c).encode('utf-8'))
+        #if tag == 'citationSuffix':
+        #    return OrderedDict(data)
+        if tag == 'unMeta':
+            assert len(data) == 1
+            c = data[0][1]
+            c = OrderedDict(c)
+            m = Metadata(c)
+            return m
+        else:
+            print(tag)
+            return data
+    
+    # Standard cases
+    assert  data[1][0] == 'c'
+    tag = data[0][1]
+    c = data[1][1]
 
     if tag == 'Null':
         return Null()
@@ -687,30 +797,29 @@ def from_json(data):
     elif tag == 'Table':
         return Table(*c[4], caption=c[0], alignment=c[1], width=c[2], header=c[3])
 
-    elif tag == 'Doc':
-        return Doc()
-    elif tag == 'MetaString':
-        #print(c)
-        return data # BUGBUG
     elif tag == 'MetaList':
-        return data # [walk_meta(item) for item in c]
+        return c
     elif tag == 'MetaMap':
-        return data # {k: walk_meta(v) for k, v in c.items()}
+        return OrderedDict(c)
     elif tag == 'MetaInlines':
-        return data # c  # stringify(c)
-    elif tag == 'MetaBool':
-        assert c in {'true', 'false'}
-        return data # c == 'true'
+        return MetaInlines(*c)
     elif tag == 'MetaBlocks':
-        return data #c
+        return MetaBlocks(*c)
+    elif tag == 'MetaString':
+        return c
+    elif tag == 'MetaBool':
+        assert c in {True, False}, c # assert c in {'True', 'False'}, c
+        return c
 
     elif tag in SPECIAL_ELEMENTS:
         return tag
 
-    elif tag in CITATION_MODE:
-        return tag
-
     else:
+        print('-- UNKNOWN TAG')
+        print(type(tag))
+        print(tag)
+        print(c)
+        print('--')
         raise Exception('unknown tag ' + tag)
 
 # ---------------------------
@@ -718,7 +827,7 @@ def from_json(data):
 # ---------------------------
 
 def encode_dict(tag, content):
-    return {"t": tag, "c": content}
+    return OrderedDict(( ("t", tag) , ("c", content) ))
 
 
 def encode_items(self):

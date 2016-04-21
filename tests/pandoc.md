@@ -1,10 +1,32 @@
 ---
 author:
-- John MacFarlane
-- Anonymous
+- name: First Name
+  affiliation: One University
+  email: example@email.com
+- name: Second Name
+  affiliation: Another University
+  email: lorem@email.com
+institution: Foobar Institute
 date: 'July 17, 2006'
 title: Pandoc Test Suite
----
+misc:
+- item 1
+- item 2
+jel: [G21, D12, D62]
+abstract: |
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+format:
+  cmdline: see if double dash creates a bug # 'cls & remark 0*.md --view --output=cc2'
+  show-titlepage: true
+  show-published: true
+  elegant-title: true
+  thin-margins: true
+  show-frame: false
+  show-media: true
+  media-in-back: false # true
+  media-pagebreak: true
+...
+
 
 This is a set of tests for pandoc. Most of them are adapted from John Gruber’s
 markdown test suite.
