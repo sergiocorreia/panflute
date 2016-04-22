@@ -1,2 +1,2 @@
-pandoc --smart --parse-raw --to=json pandoc.md > pandoc.json
-pandoc --smart --parse-raw --to=json pandoc.md > pandoc_benchmark.json
+pandoc --smart --parse-raw --to=json 1/pandoc.md > 1/benchmark.json
+pandoc --smart --parse-raw --to=json 2/example.md > 2/benchmark.json

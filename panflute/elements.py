@@ -3,6 +3,20 @@
 # ---------------------------
 from collections import OrderedDict
 
+
+# ---------------------------
+# Special class - Doc
+# ---------------------------
+
+class Doc(object):
+
+    def __init__(self, metadata, items, format):
+        assert type(metadata) == Metadata, type(metadata)
+        self.metadata = metadata
+        self.items = items
+        self.format = format  # Output format
+
+
 # ---------------------------
 # Classes - Null
 # ---------------------------
@@ -11,7 +25,7 @@ class Null(object):
     """Nothing
 
      Block Null()"""
- 
+
     __slots__ = []
 
     def encode_content(self):
@@ -22,7 +36,7 @@ class Space(object):
     """Inter-word space
 
      Inline Space()"""
- 
+
     __slots__ = []
 
     def __repr__(self):
@@ -36,7 +50,7 @@ class HorizontalRule(object):
     """Horizontal rule
 
      Block HorizontalRule()"""
- 
+
     __slots__ = []
 
     def encode_content(self):
@@ -47,7 +61,7 @@ class SoftBreak(object):
     """Soft line break
 
      Inline SoftBreak()"""
- 
+
     __slots__ = []
 
     def encode_content(self):
@@ -58,7 +72,7 @@ class LineBreak(object):
     """Hard line break
 
      Inline LineBreak()"""
- 
+
     __slots__ = []
 
     def encode_content(self):
@@ -73,7 +87,7 @@ class Plain(object):
     """Plain text, not a paragraph
 
      Block Plain(items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -90,7 +104,7 @@ class Para(object):
     """Paragraph
 
      Block Para(items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -107,7 +121,7 @@ class BlockQuote(object):
     """Block quote (list of blocks)
 
      Block BlockQuote(items=[Block])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -121,7 +135,7 @@ class Emph(object):
     """Emphasized text (list of inlines)
 
      Inline Emph(items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -135,7 +149,7 @@ class Strong(object):
     """Strongly emphasized text (list of inlines)
 
      Inline Strong(items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -149,7 +163,7 @@ class Strikeout(object):
     """Strikeout text (list of inlines)
 
      Inline Strikeout(items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -163,7 +177,7 @@ class Superscript(object):
     """Superscripted text (list of inlines)
 
      Inline Superscript(items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -177,7 +191,7 @@ class Subscript(object):
     """Subscripted text (list of inlines)
 
      Inline Subscript(items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -191,7 +205,7 @@ class SmallCaps(object):
     """Small caps text (list of inlines)
 
      Inline SmallCaps(items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -205,7 +219,7 @@ class Note(object):
     """Footnote or endnote
 
      Inline Note(items=[Block])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -223,10 +237,11 @@ class Header(object):
     """Header - level (integer) and text (inlines)
 
      Block Header(level=Int ica=Attr items=[Inline])"""
- 
+
     __slots__ = ['level', 'items', 'identifier', 'classes', 'attributes']
 
-    def __init__(self, *args, level=1, identifier='', classes=None, attributes=None):
+    def __init__(self, *args, level=1, identifier='', classes=None,
+                 attributes=None):
         self.level = validate(level, group=(1, 2, 3, 4, 5, 6))
         init_ica(self, identifier, classes, attributes)
         self.items = init_items(args, has_blocks=False)
@@ -241,7 +256,7 @@ class Div(object):
     """Generic block container with attributes
 
      Block Div(ica=Attr items=[Block])"""
- 
+
     __slots__ = ['items', 'identifier', 'classes', 'attributes']
 
     def __init__(self, *args, identifier='', classes=None, attributes=None):
@@ -258,7 +273,7 @@ class Span(object):
     """Generic inline container with attributes
 
      Inline Span(ica=Attr items=[Inline])"""
- 
+
     __slots__ = ['items', 'identifier', 'classes', 'attributes']
 
     def __init__(self, *args, identifier='', classes=None, attributes=None):
@@ -275,7 +290,7 @@ class Quoted(object):
     """Quoted text (list of inlines)
 
      Inline Quoted(quote_type=QuoteType items=[Inline])"""
- 
+
     __slots__ = ['quote_type', 'items']
 
     def __init__(self, *args, quote_type='DoubleQuote'):
@@ -292,16 +307,15 @@ class Cite(object):
     """Cite (list of inlines)
 
      Inline Cite(citations=[Citation] items=[Inline])"""
- 
+
     __slots__ = ['items', 'citations']
 
     def __init__(self, *args, citations):
-        self.citations = [Citation(**dict(c)) for c in citations] # TODO: Expand this complex type
+        self.citations = [Citation(**dict(c)) for c in citations]
         self.items = init_items(args, has_blocks=False)
 
     def __repr__(self):
         return 'Cite(...)'
-        #return 'Cite({};{})'.format(','.join(repr(x) for x in self.items), repr(self.citations))
 
     def encode_content(self):
         citations = [x.encode_content() for x in self.citations]
@@ -310,34 +324,41 @@ class Cite(object):
 
 
 class Citation(object):
-    __slots__ = ['citationHash', 'citationId', 'citationMode', 'citationNoteNum', 'citationPrefix', 'citationSuffix']
+    __slots__ = ['citationHash', 'citationId', 'citationMode',
+                 'citationNoteNum', 'citationPrefix', 'citationSuffix']
 
-    def __init__(self, citationHash, citationId, citationMode, citationNoteNum, citationPrefix, citationSuffix):
-        self.citationHash = citationHash # ??
-        self.citationId = citationId # the bibtex keyword
+    def __init__(self, citationHash, citationId, citationMode,
+                 citationNoteNum, citationPrefix, citationSuffix):
+        self.citationHash = citationHash  # ??
+        self.citationId = citationId  # the bibtex keyword
         self.citationMode = validate(citationMode, group=CITATION_MODE)
-        self.citationNoteNum = citationNoteNum # ??
-        self.citationPrefix = init_items(citationPrefix, has_blocks=False) # Contains [Inline]
-        self.citationSuffix = init_items(citationSuffix, has_blocks=False) # Contains [Inline]
+        self.citationNoteNum = citationNoteNum  # ??
+        self.citationPrefix = init_items(citationPrefix, has_blocks=False)
+        self.citationSuffix = init_items(citationSuffix, has_blocks=False)
 
     def encode_content(self):
         content = []
-        content.append(['citationSuffix', [to_json(x) for x in self.citationSuffix]])
+        content.append(['citationSuffix',
+                       [to_json(x) for x in self.citationSuffix]])
         content.append(['citationNoteNum', self.citationNoteNum])
         content.append(['citationMode', encode_dict(self.citationMode, [])])
-        content.append(['citationPrefix', [to_json(x) for x in self.citationPrefix]])
+        content.append(['citationPrefix',
+                       [to_json(x) for x in self.citationPrefix]])
         content.append(['citationId', self.citationId])
         content.append(['citationHash', self.citationHash])
         return OrderedDict(content)
+
 
 class Link(object):
     """Hyperlink: alt text (list of inlines), target
 
      Inline Link(ica=Attr items=[Inline] [url=String title=String])"""
- 
-    __slots__ = ['items', 'url', 'title', 'identifier', 'classes', 'attributes']
 
-    def __init__(self, *args, url, title, identifier='', classes=None, attributes=None):
+    __slots__ = ['items', 'url', 'title', 'identifier', 'classes',
+                 'attributes']
+
+    def __init__(self, *args, url, title, identifier='', classes=None,
+                 attributes=None):
         self.items = init_items(args, has_blocks=False)
         init_ut(self, url, title)
         init_ica(self, identifier, classes, attributes)
@@ -354,10 +375,12 @@ class Image(object):
     """Image: alt text (list of inlines), target
 
      Inline Image(ica=Attr items=[Inline] ut=Target)"""
- 
-    __slots__ = ['items', 'url', 'title', 'identifier', 'classes', 'attributes']
 
-    def __init__(self, *args, url, title, identifier='', classes=None, attributes=None):
+    __slots__ = ['items', 'url', 'title', 'identifier', 'classes',
+                 'attributes']
+
+    def __init__(self, *args, url, title, identifier='', classes=None,
+                 attributes=None):
         self.items = init_items(args, has_blocks=False)
         init_ut(self, url, title)
         init_ica(self, identifier, classes, attributes)
@@ -377,12 +400,12 @@ class Str(object):
     """Text (string)
 
      Inline Str(text=String)"""
- 
+
     __slots__ = ['text']
 
     def __init__(self, text):
         self.text = validate(text, instance=str)
-    
+
     def __repr__(self):
         return 'Str({})'.format(self.text)
 
@@ -394,7 +417,7 @@ class CodeBlock(object):
     """Code block (literal) with attributes
 
      Block CodeBlock(ica=Attr text=String)"""
- 
+
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=None, attributes=None):
@@ -409,7 +432,7 @@ class RawBlock(object):
     """Raw block
 
      Block RawBlock(format=Format text=String)"""
- 
+
     __slots__ = ['text', 'format']
 
     def __init__(self, text, format):
@@ -424,7 +447,7 @@ class Code(object):
     """Inline code (literal)
 
      Inline Code(ica=Attr text=String)"""
- 
+
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=None, attributes=None):
@@ -440,7 +463,7 @@ class Math(object):
     """TeX math (literal)
 
      Inline Math(text=String format=MathType)"""
- 
+
     __slots__ = ['format', 'text']
 
     def __init__(self, text, format):
@@ -456,7 +479,7 @@ class RawInline(object):
     """Raw inline
 
      Inline RawInline(format=Format text=String)"""
- 
+
     __slots__ = ['text', 'format']
 
     def __init__(self, text, format):
@@ -475,7 +498,7 @@ class BulletList(object):
     """Bullet list (list of items, each a list of blocks)
 
      Block BulletList(items=[[Block]])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -489,7 +512,7 @@ class OrderedList(object):
     """Ordered list (attributes and a list of items, each a list of blocks)
 
      Block OrderedList(ssd=ListAttributes items=[[Block]])"""
- 
+
     __slots__ = ['items', 'start', 'style', 'delimiter']
 
     def __init__(self, *args, start=1, style='Decimal', delimiter='Period'):
@@ -497,32 +520,42 @@ class OrderedList(object):
         init_ssd(self, start, style, delimiter)
 
     def encode_content(self):
-        ssd = [self.start, encode_dict(self.style, []), encode_dict(self.delimiter, [])]
+        ssd = [self.start, encode_dict(self.style, []),
+               encode_dict(self.delimiter, [])]
         items = encode_items(self)
         return [ssd, items]
 
 
 class DefinitionList(object):
-    """Definition list Each list item is a pair consisting of a term (a list of inlines) and one or more definitions (each a list of blocks)
+    """Definition list Each list item is a pair consisting of a term
+    (a list of inlines) and one or more definitions (each a list of blocks)
 
      Block DefinitionList(items=[([Inline],[[Block]])])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
-        self.items = [(init_items(k, has_blocks=False), init_items(v, has_blocks=True, depth=2)) for k, v in args]
+        self.items = [(init_items(k, has_blocks=False),
+                       init_items(v, has_blocks=True, depth=2))
+                      for k, v in args]
 
     def encode_content(self):
         return encode_items(self)
 
+
 class Table(object):
-    """Table, with caption, column alignments (required), relative column widths (0 = default), column headers (each a list of blocks), and rows (each a list of lists of blocks)
+    """Table, with caption, column alignments (required), relative column
+    widths (0 = default), column headers (each a list of blocks),
+    and rows (each a list of lists of blocks)
 
-     Block Table(caption=[Inline] alignment=[Alignment] width=[Double] header=[[Block]] items=[[[Block]]])"""
- 
-    __slots__ = ['items', 'header', 'caption', 'alignment', 'width', 'rows', 'cols']
+     Block Table(caption=[Inline] alignment=[Alignment] width=[Double]
+     header=[[Block]] items=[[[Block]]])"""
 
-    def __init__(self, *args, header=None, caption=None, alignment=None, width=None):
+    __slots__ = ['items', 'header', 'caption', 'alignment', 'width', 'rows',
+                 'cols']
+
+    def __init__(self, *args, header=None, caption=None, alignment=None,
+                 width=None):
         self.items = init_items(args, has_blocks=True, depth=3)
         self.rows = len(self.items)
         self.cols = len(self.items[0])
@@ -531,10 +564,11 @@ class Table(object):
         assert len(header) == self.cols
 
         self.caption = init_items(caption, has_blocks=False)
-        
-        self.alignment = ['AlignDefault'] * len(self.items[0]) if alignment is None else alignment
+
+        self.alignment = ['AlignDefault'] * len(self.items[0]) \
+            if alignment is None else alignment
         assert all(item in TABLE_ALIGNMENT for item in alignment)
-        
+
         self.width = [0.0] * len(self.items[0]) if width is None else width
         assert all(item >= 0 for item in width)
 
@@ -554,7 +588,7 @@ class Table(object):
 class Metadata(object):
 
     def __init__(self, odict):
-        assert type(odict)==OrderedDict
+        assert type(odict) == OrderedDict
         self.items = odict
 
     def __repr__(self):
@@ -563,10 +597,11 @@ class Metadata(object):
     def encode_content(self):
         return OrderedDict((k, metawalk(v)) for k, v in self.items.items())
 
+
 def metawalk(e):
     t = type(e)
     assert t in (str, list, bool, MetaInlines, MetaBlocks, OrderedDict), t
-    
+
     if t == str:
         return e
     elif t == MetaInlines:
@@ -576,16 +611,17 @@ def metawalk(e):
     elif t == list:
         return encode_dict('MetaList', [metawalk(ee) for ee in e])
     elif t == OrderedDict:
-        return encode_dict('MetaMap', OrderedDict((k, metawalk(v)) for k, v in e.items()))
+        return encode_dict('MetaMap', OrderedDict((k, metawalk(v))
+                                                  for k, v in e.items()))
     elif t == bool:
         return encode_dict('MetaBool', e)
 
 
 class MetaInlines (object):
-    """MetaInlines 
+    """MetaInlines
 
      MetaValue MetaInlines (items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -597,11 +633,12 @@ class MetaInlines (object):
     def encode_content(self):
         return encode_items(self)
 
+
 class MetaBlocks (object):
-    """MetaBlocks 
+    """MetaBlocks
 
      MetaValue MetaBlocks (items=[Inline])"""
- 
+
     __slots__ = ['items']
 
     def __init__(self, *args):
@@ -614,9 +651,12 @@ class MetaBlocks (object):
 # Constants
 # ---------------------------
 
-BLOCKS = [Plain, Para, CodeBlock, RawBlock, BlockQuote, OrderedList, BulletList, DefinitionList, Header, HorizontalRule, Table, Div, Null]
+BLOCKS = [Plain, Para, CodeBlock, RawBlock, BlockQuote, OrderedList,
+          BulletList, DefinitionList, Header, HorizontalRule, Table, Div, Null]
 
-INLINES = [Str, Emph, Strong, Strikeout, Superscript, Subscript, SmallCaps, Quoted, Cite, Code, Space, SoftBreak, LineBreak, Math, RawInline, Link, Image, Note, Span]
+INLINES = [Str, Emph, Strong, Strikeout, Superscript, Subscript, SmallCaps,
+           Quoted, Cite, Code, Space, SoftBreak, LineBreak, Math, RawInline,
+           Link, Image, Note, Span]
 
 LIST_NUMBER_STYLES = {
     'DefaultStyle', 'Example', 'Decimal', 'LowerRoman',
@@ -638,6 +678,7 @@ RAW_FORMATS = {'html', 'tex', 'latex'}
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
     MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
 
+
 # ---------------------------
 # Aux Functions - Initialize
 # ---------------------------
@@ -655,9 +696,11 @@ def init_items(args, has_blocks, depth=1):
     if depth == 1:
         ans = tuple(validate_item(x, has_blocks) for x in args)
     elif depth == 2:
-        ans = tuple(tuple(validate_item(x, has_blocks) for x in y) for y in args)
+        ans = tuple(tuple(validate_item(x, has_blocks) for x in y)
+                    for y in args)
     else:
-        ans = tuple(tuple(tuple(validate_item(x, has_blocks) for x in y) for y in z) for z in args)
+        ans = tuple(tuple(tuple(validate_item(x, has_blocks) for x in y)
+                          for y in z) for z in args)
     return ans
 
 
@@ -699,9 +742,9 @@ def to_json(element):
     tag = type(element).__name__
     if tag == 'Metadata':
         return {'unMeta': element.encode_content()}
+    elif tag == 'Doc':
+        return [element.metadata, element.items]
     else:
-        if '’' in element.encode_content():
-            pass # print(repr(element))
         return encode_dict(tag, element.encode_content())
 
 
@@ -711,8 +754,6 @@ def from_json(data):
     if data[0][0] != 't':
         tag = data[0][0]
 
-        #if tag == 'citationSuffix':
-        #    return OrderedDict(data)
         if tag == 'unMeta':
             assert len(data) == 1
             c = data[0][1]
@@ -720,11 +761,10 @@ def from_json(data):
             m = Metadata(c)
             return m
         else:
-            print(tag)
             return data
-    
+
     # Standard cases
-    assert  data[1][0] == 'c'
+    assert data[1][0] == 'c'
     tag = data[0][1]
     c = data[1][1]
 
@@ -761,28 +801,35 @@ def from_json(data):
         return Note(*c)
 
     elif tag == 'Header':
-        return Header(*c[2], level=c[0], identifier=c[1][0], classes=c[1][1], attributes=c[1][2])
+        return Header(*c[2], level=c[0], identifier=c[1][0], classes=c[1][1],
+                      attributes=c[1][2])
     elif tag == 'Div':
-        return Div(*c[1], identifier=c[0][0], classes=c[0][1], attributes=c[0][2])
+        return Div(*c[1], identifier=c[0][0], classes=c[0][1],
+                   attributes=c[0][2])
     elif tag == 'Span':
-        return Span(*c[1], identifier=c[0][0], classes=c[0][1], attributes=c[0][2])
+        return Span(*c[1], identifier=c[0][0], classes=c[0][1],
+                    attributes=c[0][2])
     elif tag == 'Quoted':
         return Quoted(*c[1], quote_type=c[0])
     elif tag == 'Cite':
         return Cite(*c[1], citations=c[0])
     elif tag == 'Link':
-        return Link(*c[1], url=c[2][0], title=c[2][1], identifier=c[0][0], classes=c[0][1], attributes=c[0][2])
+        return Link(*c[1], url=c[2][0], title=c[2][1], identifier=c[0][0],
+                    classes=c[0][1], attributes=c[0][2])
     elif tag == 'Image':
-        return Image(*c[1], url=c[2][0], title=c[2][1], identifier=c[0][0], classes=c[0][1], attributes=c[0][2])
+        return Image(*c[1], url=c[2][0], title=c[2][1], identifier=c[0][0],
+                     classes=c[0][1], attributes=c[0][2])
 
     elif tag == 'Str':
         return Str(c)
     elif tag == 'CodeBlock':
-        return CodeBlock(text=c[1], identifier=c[0][0], classes=c[0][1], attributes=c[0][2])
+        return CodeBlock(text=c[1], identifier=c[0][0],
+                         classes=c[0][1], attributes=c[0][2])
     elif tag == 'RawBlock':
         return RawBlock(text=c[1], format=c[0])
     elif tag == 'Code':
-        return Code(text=c[1], identifier=c[0][0], classes=c[0][1], attributes=c[0][2])
+        return Code(text=c[1], identifier=c[0][0],
+                    classes=c[0][1], attributes=c[0][2])
     elif tag == 'Math':
         return Math(text=c[1], format=c[0])
     elif tag == 'RawInline':
@@ -791,11 +838,13 @@ def from_json(data):
     elif tag == 'BulletList':
         return BulletList(*c)
     elif tag == 'OrderedList':
-        return OrderedList(*c[1], start=c[0][0], style=c[0][1], delimiter=c[0][2])
+        return OrderedList(*c[1], start=c[0][0],
+                           style=c[0][1], delimiter=c[0][2])
     elif tag == 'DefinitionList':
         return DefinitionList(*c)
     elif tag == 'Table':
-        return Table(*c[4], caption=c[0], alignment=c[1], width=c[2], header=c[3])
+        return Table(*c[4], caption=c[0], alignment=c[1], width=c[2],
+                     header=c[3])
 
     elif tag == 'MetaList':
         return c
@@ -808,7 +857,7 @@ def from_json(data):
     elif tag == 'MetaString':
         return c
     elif tag == 'MetaBool':
-        assert c in {True, False}, c # assert c in {'True', 'False'}, c
+        assert c in {True, False}, c
         return c
 
     elif tag in SPECIAL_ELEMENTS:
@@ -822,12 +871,13 @@ def from_json(data):
         print('--')
         raise Exception('unknown tag ' + tag)
 
+
 # ---------------------------
 # Aux JSON Functions
 # ---------------------------
 
 def encode_dict(tag, content):
-    return OrderedDict(( ("t", tag) , ("c", content) ))
+    return OrderedDict((("t", tag), ("c", content)))
 
 
 def encode_items(self):
@@ -835,9 +885,11 @@ def encode_items(self):
     if tag in ('BulletList', 'OrderedList'):
         return [[to_json(x) for x in row] for row in self.items]
     elif tag == 'DefinitionList':
-        return [ [ [to_json(x) for x in k], [[to_json(x) for x in y] for y in v] ] for (k, v) in self.items]
+        return [[[to_json(x) for x in k], [[to_json(x) for x in y]
+                for y in v]] for (k, v) in self.items]
     elif tag == 'Table':
-        return [[[to_json(x) for x in cell] for cell in row] for row in self.items]
+        return [[[to_json(x) for x in cell] for cell in row]
+                for row in self.items]
     else:
         return [to_json(x) for x in self.items]
 
@@ -855,4 +907,3 @@ def decode_ica(self, attr):
         attr = ["", [], []]  # ID, classes, attribute pairs
     self.identifier, self.classes, attributes = attr
     self.attributes = dict(attributes)
-

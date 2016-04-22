@@ -15,92 +15,44 @@ import io
 import sys
 import json
 
-from .elements import from_json
+from .elements import from_json, to_json, Doc, Metadata
 
 
 # ---------------------------
 # Functions
 # ---------------------------
 
-def split_metadata(doc):
-    if len(doc) == 1:
-        return {}, doc
+def load(input_stream=None):
+    """Load JSON-encoded document and return Doc class
 
-    old_meta, doc = doc
-    old_meta = old_meta['unMeta']
-    meta = {}
-    for k, v in old_meta.items():
-        meta[k] = walk_meta(v)
-    return meta, doc
+    If no input stream is set (a file handle), will load from stdin"""
 
-def walk_meta(element):
-    t = element['t']
-    c = element['c']
+    if input_stream is None:
+        input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 
-    if t == 'MetaList':
-        return [walk_meta(item) for item in c]
-    elif t == 'MetaMap':
-        return {k: walk_meta(v) for k, v in c.items()}
-    elif t == 'MetaInlines':
-        return c  # stringify(c)
-    elif t == 'MetaBool':
-        assert c in {'true', 'false'}
-        return c == 'true'
-    elif t == 'MetaBlocks':
-        return c
-    else:
-        raise Exception(t, c)
+    # Load JSON and validate it
+    doc = json.load(input_stream, object_pairs_hook=from_json)
+    assert len(doc) == 2, 'json.load returned list with unexpected size:'
+    metadata, items = doc
+    assert type(metadata) == Metadata
+    assert type(items) == list
+
+    # Output format
+    format = sys.argv[1] if len(sys.argv) > 1 else ""
+
+    return Doc(metadata=metadata, items=items, format=format)
 
 
+def dump(doc, output_stream=None):
+    assert type(doc) == Doc
+    if output_stream is None:
+        output_stream = sys.stdout
+    # print(output_stream) # BUGBUG Use a diff encoding?
 
-
-
-
-
-def load():
-    input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    doc = json.load(input_stream, object_hook=from_json)
-    output_format = sys.argv[1] if len(sys.argv) > 1 else ""
-    return doc, output_format
-
-
-def to_element(json_doc):
-    return None  # Element(json_doc)
-
-
-def dumper(obj):
-    try:
-        return obj.to_json()
-    except:
-        print(obj)
-    # except AttributeError:
-    #    return obj.__dict__
-
-
-def dump(doc):
-    json.dump(doc, sys.stdout, default=dumper)  # , indent=2)
-
-
-if __name__ == '__main__':
-    pass
-
-    # p1 = Para(Str('a'), Space, Str('b'))
-    # print(type(p1))
-    # print(list(el.tag for el in p1.items))
-
-    row1 = [Plain(Str('a'), Space, Str('b'))]
-    row2 = [Plain(Str("c"))]
-    bl = OrderedList(row1, row2, start=3, delimiter='OneParen')
-
-    print(bl.to_json())
-
-    # Build AST from stdin
-    # doc, fmt = load()
-    # print(doc)
-    # json_doc = [block.dump() for block in doc]
-
-    # Manipulate the AST
-    # ...
-
-    # Dump the AST into stdout
-    # dump(doc)
+    json.dump(
+        obj=doc,
+        fp=output_stream,
+        default=to_json,  # Serializer
+        separators=(',', ':'),  # Compact separators, like Pandoc
+        ensure_ascii=False  # For Pandoc compat
+    )
