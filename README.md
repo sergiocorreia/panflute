@@ -1,3 +1,10 @@
+# Misc
+
+- Can use isinstance(element, Block)
+- Can use globals through doc
+
+
+
 # Extensions to pandocfilters
 
 *(Note: This is an experimental build and is likely to evolve)*

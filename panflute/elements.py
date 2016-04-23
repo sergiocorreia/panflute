@@ -5,13 +5,31 @@ from collections import OrderedDict
 
 
 # ---------------------------
+# Metaclasses
+# ---------------------------
+
+class Element(object):
+    pass
+
+
+class Inline(Element):
+    pass
+
+
+class Block(Element):
+    pass
+
+
+# ---------------------------
 # Special class - Doc
 # ---------------------------
 
 class Doc(object):
+    # We don't have slots, so you can e.g. add backmatter as an element
+    # (sort of like a global variable)
 
     def __init__(self, metadata, items, format):
-        assert type(metadata) == Metadata, type(metadata)
+        assert type(metadata) == OrderedDict, type(metadata)
         self.metadata = metadata
         self.items = items
         self.format = format  # Output format
@@ -21,7 +39,7 @@ class Doc(object):
 # Classes - Null
 # ---------------------------
 
-class Null(object):
+class Null(Block):
     """Nothing
 
      Block Null()"""
@@ -32,7 +50,7 @@ class Null(object):
         return []
 
 
-class Space(object):
+class Space(Inline):
     """Inter-word space
 
      Inline Space()"""
@@ -46,7 +64,7 @@ class Space(object):
         return []
 
 
-class HorizontalRule(object):
+class HorizontalRule(Block):
     """Horizontal rule
 
      Block HorizontalRule()"""
@@ -57,7 +75,7 @@ class HorizontalRule(object):
         return []
 
 
-class SoftBreak(object):
+class SoftBreak(Inline):
     """Soft line break
 
      Inline SoftBreak()"""
@@ -68,7 +86,7 @@ class SoftBreak(object):
         return []
 
 
-class LineBreak(object):
+class LineBreak(Inline):
     """Hard line break
 
      Inline LineBreak()"""
@@ -83,7 +101,7 @@ class LineBreak(object):
 # Classes - Simple Containers
 # ---------------------------
 
-class Plain(object):
+class Plain(Block):
     """Plain text, not a paragraph
 
      Block Plain(items=[Inline])"""
@@ -100,7 +118,7 @@ class Plain(object):
         return encode_items(self)
 
 
-class Para(object):
+class Para(Block):
     """Paragraph
 
      Block Para(items=[Inline])"""
@@ -117,7 +135,7 @@ class Para(object):
         return encode_items(self)
 
 
-class BlockQuote(object):
+class BlockQuote(Block):
     """Block quote (list of blocks)
 
      Block BlockQuote(items=[Block])"""
@@ -131,7 +149,7 @@ class BlockQuote(object):
         return encode_items(self)
 
 
-class Emph(object):
+class Emph(Inline):
     """Emphasized text (list of inlines)
 
      Inline Emph(items=[Inline])"""
@@ -145,7 +163,7 @@ class Emph(object):
         return encode_items(self)
 
 
-class Strong(object):
+class Strong(Inline):
     """Strongly emphasized text (list of inlines)
 
      Inline Strong(items=[Inline])"""
@@ -159,7 +177,7 @@ class Strong(object):
         return encode_items(self)
 
 
-class Strikeout(object):
+class Strikeout(Inline):
     """Strikeout text (list of inlines)
 
      Inline Strikeout(items=[Inline])"""
@@ -173,7 +191,7 @@ class Strikeout(object):
         return encode_items(self)
 
 
-class Superscript(object):
+class Superscript(Inline):
     """Superscripted text (list of inlines)
 
      Inline Superscript(items=[Inline])"""
@@ -187,7 +205,7 @@ class Superscript(object):
         return encode_items(self)
 
 
-class Subscript(object):
+class Subscript(Inline):
     """Subscripted text (list of inlines)
 
      Inline Subscript(items=[Inline])"""
@@ -201,7 +219,7 @@ class Subscript(object):
         return encode_items(self)
 
 
-class SmallCaps(object):
+class SmallCaps(Inline):
     """Small caps text (list of inlines)
 
      Inline SmallCaps(items=[Inline])"""
@@ -215,7 +233,7 @@ class SmallCaps(object):
         return encode_items(self)
 
 
-class Note(object):
+class Note(Inline):
     """Footnote or endnote
 
      Inline Note(items=[Block])"""
@@ -233,7 +251,7 @@ class Note(object):
 # Classes - Complex Containers
 # ---------------------------
 
-class Header(object):
+class Header(Block):
     """Header - level (integer) and text (inlines)
 
      Block Header(level=Int ica=Attr items=[Inline])"""
@@ -252,7 +270,7 @@ class Header(object):
         return [self.level, ica, items]
 
 
-class Div(object):
+class Div(Block):
     """Generic block container with attributes
 
      Block Div(ica=Attr items=[Block])"""
@@ -269,7 +287,7 @@ class Div(object):
         return [ica, items]
 
 
-class Span(object):
+class Span(Inline):
     """Generic inline container with attributes
 
      Inline Span(ica=Attr items=[Inline])"""
@@ -286,7 +304,7 @@ class Span(object):
         return [ica, items]
 
 
-class Quoted(object):
+class Quoted(Inline):
     """Quoted text (list of inlines)
 
      Inline Quoted(quote_type=QuoteType items=[Inline])"""
@@ -303,7 +321,7 @@ class Quoted(object):
         return [quote_type, items]
 
 
-class Cite(object):
+class Cite(Inline):
     """Cite (list of inlines)
 
      Inline Cite(citations=[Citation] items=[Inline])"""
@@ -323,7 +341,7 @@ class Cite(object):
         return [citations, items]
 
 
-class Citation(object):
+class Citation(Element):
     __slots__ = ['citationHash', 'citationId', 'citationMode',
                  'citationNoteNum', 'citationPrefix', 'citationSuffix']
 
@@ -349,7 +367,7 @@ class Citation(object):
         return OrderedDict(content)
 
 
-class Link(object):
+class Link(Inline):
     """Hyperlink: alt text (list of inlines), target
 
      Inline Link(ica=Attr items=[Inline] [url=String title=String])"""
@@ -371,7 +389,7 @@ class Link(object):
         return content
 
 
-class Image(object):
+class Image(Inline):
     """Image: alt text (list of inlines), target
 
      Inline Image(ica=Attr items=[Inline] ut=Target)"""
@@ -396,7 +414,7 @@ class Image(object):
 # Classes - Text
 # ---------------------------
 
-class Str(object):
+class Str(Inline):
     """Text (string)
 
      Inline Str(text=String)"""
@@ -413,7 +431,7 @@ class Str(object):
         return self.text
 
 
-class CodeBlock(object):
+class CodeBlock(Block):
     """Code block (literal) with attributes
 
      Block CodeBlock(ica=Attr text=String)"""
@@ -428,7 +446,7 @@ class CodeBlock(object):
         return [encode_ica(self), self.text]
 
 
-class RawBlock(object):
+class RawBlock(Block):
     """Raw block
 
      Block RawBlock(format=Format text=String)"""
@@ -443,7 +461,7 @@ class RawBlock(object):
         return [self.format, self.text]
 
 
-class Code(object):
+class Code(Inline):
     """Inline code (literal)
 
      Inline Code(ica=Attr text=String)"""
@@ -459,7 +477,7 @@ class Code(object):
         return [ica, self.text]
 
 
-class Math(object):
+class Math(Inline):
     """TeX math (literal)
 
      Inline Math(text=String format=MathType)"""
@@ -475,7 +493,7 @@ class Math(object):
         return [format, self.text]
 
 
-class RawInline(object):
+class RawInline(Inline):
     """Raw inline
 
      Inline RawInline(format=Format text=String)"""
@@ -494,7 +512,7 @@ class RawInline(object):
 # Classes - Misc
 # ---------------------------
 
-class BulletList(object):
+class BulletList(Block):
     """Bullet list (list of items, each a list of blocks)
 
      Block BulletList(items=[[Block]])"""
@@ -508,7 +526,7 @@ class BulletList(object):
         return encode_items(self)
 
 
-class OrderedList(object):
+class OrderedList(Block):
     """Ordered list (attributes and a list of items, each a list of blocks)
 
      Block OrderedList(ssd=ListAttributes items=[[Block]])"""
@@ -526,7 +544,7 @@ class OrderedList(object):
         return [ssd, items]
 
 
-class DefinitionList(object):
+class DefinitionList(Block):
     """Definition list Each list item is a pair consisting of a term
     (a list of inlines) and one or more definitions (each a list of blocks)
 
@@ -543,7 +561,7 @@ class DefinitionList(object):
         return encode_items(self)
 
 
-class Table(object):
+class Table(Block):
     """Table, with caption, column alignments (required), relative column
     widths (0 = default), column headers (each a list of blocks),
     and rows (each a list of lists of blocks)
@@ -580,21 +598,6 @@ class Table(object):
         content = [caption, alignment, self.width, header, items]
         return content
 
-
-# ---------------------------
-# Classes - Metadata
-# ---------------------------
-
-class Metadata(object):
-
-    def __init__(self, odict):
-        assert type(odict) == OrderedDict
-        self.items = odict
-
-    def __repr__(self):
-        return 'Metadata({})'.format(repr(self.items))
-
-    def encode_content(self):
         return OrderedDict((k, metawalk(v)) for k, v in self.items.items())
 
 
@@ -617,7 +620,7 @@ def metawalk(e):
         return encode_dict('MetaBool', e)
 
 
-class MetaInlines (object):
+class MetaInlines(Element):
     """MetaInlines
 
      MetaValue MetaInlines (items=[Inline])"""
@@ -634,7 +637,7 @@ class MetaInlines (object):
         return encode_items(self)
 
 
-class MetaBlocks (object):
+class MetaBlocks(Element):
     """MetaBlocks
 
      MetaValue MetaBlocks (items=[Inline])"""
@@ -651,12 +654,7 @@ class MetaBlocks (object):
 # Constants
 # ---------------------------
 
-BLOCKS = [Plain, Para, CodeBlock, RawBlock, BlockQuote, OrderedList,
-          BulletList, DefinitionList, Header, HorizontalRule, Table, Div, Null]
 
-INLINES = [Str, Emph, Strong, Strikeout, Superscript, Subscript, SmallCaps,
-           Quoted, Cite, Code, Space, SoftBreak, LineBreak, Math, RawInline,
-           Link, Image, Note, Span]
 
 LIST_NUMBER_STYLES = {
     'DefaultStyle', 'Example', 'Decimal', 'LowerRoman',
@@ -694,26 +692,25 @@ def validate(x, group=None, instance=None):
 def init_items(args, has_blocks, depth=1):
     assert depth in (1, 2, 3)
     if depth == 1:
-        ans = tuple(validate_item(x, has_blocks) for x in args)
+        ans = [validate_item(x, has_blocks) for x in args]
     elif depth == 2:
-        ans = tuple(tuple(validate_item(x, has_blocks) for x in y)
-                    for y in args)
+        ans = [[validate_item(x, has_blocks) for x in y] for y in args]
     else:
-        ans = tuple(tuple(tuple(validate_item(x, has_blocks) for x in y)
-                          for y in z) for z in args)
+        ans = [[[validate_item(x, has_blocks) for x in y] for y in z] 
+               for z in args]
     return ans
 
 
 def validate_item(x, has_blocks):
     x = x() if callable(x) else x
-    assert type(x) in (BLOCKS if has_blocks else INLINES), (type(x), x)
+    assert isinstance(x, Block if has_blocks else Inline), (type(x), x)
     return x
 
 
 def init_ica(self, identifier, classes, attributes):
     self.identifier = identifier
     self.classes = classes if classes else []
-    self.attributes = attributes if attributes else {}
+    self.attributes = attributes if attributes else OrderedDict()
     assert isinstance(self.identifier, str)
     assert isinstance(self.attributes, dict)
     assert all(isinstance(cl, str) for cl in self.classes)
@@ -739,16 +736,20 @@ def init_ut(self, url, title):
 # ---------------------------
 
 def to_json(element):
-    tag = type(element).__name__
-    if tag == 'Metadata':
-        return {'unMeta': element.encode_content()}
-    elif tag == 'Doc':
-        return [element.metadata, element.items]
+    tag = type(element)
+    if tag == Doc:
+        meta = element.metadata.items()
+        meta = OrderedDict((k, metawalk(v)) for k, v in meta)
+        return [{'unMeta': meta}, element.items]
     else:
-        return encode_dict(tag, element.encode_content())
+        return encode_dict(tag.__name__, element.encode_content())
 
 
 def from_json(data):
+
+    # Empty metadata
+    if data == []:
+        return data
 
     # Odd cases
     if data[0][0] != 't':
@@ -758,8 +759,7 @@ def from_json(data):
             assert len(data) == 1
             c = data[0][1]
             c = OrderedDict(c)
-            m = Metadata(c)
-            return m
+            return c
         else:
             return data
 

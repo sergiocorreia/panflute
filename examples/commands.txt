@@ -1,0 +1,17 @@
+pandoc --filter ./pandocfilters/caps.py ./input/caps-sample.md
+pandoc --filter ./panflute/caps.py ./input/caps-sample.md
+
+pandoc --filter ./pandocfilters/comments.py ./input/comments-sample.md
+pandoc --filter ./panflute/comments.py ./input/comments-sample.md
+
+pandoc --filter ./pandocfilters/myemph.py ./input/myemph-sample.md --to latex
+pandoc --filter ./panflute/myemph.py ./input/myemph-sample.md --to latex
+
+pandoc --filter ./pandocfilters/theorem.py ./input/theorem-sample.md --to latex
+pandoc --filter ./panflute/theorem.py ./input/theorem-sample.md --to latex
+
+pandoc --filter ./pandocfilters/theorem.py ./input/theorem-sample.md --to html
+pandoc --filter ./panflute/theorem.py ./input/theorem-sample.md --to html
+
+
+pandoc --filter ./panflute/table.py ./input/table-sample.md --to markdown
