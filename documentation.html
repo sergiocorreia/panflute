@@ -1,0 +1,196 @@
+<h1 id="panflute-api-documentation">Panflute API Documentation</h1>
+<h2 id="general-functions-that-replace-the-ones-in-pandocfilters">1. General functions (that replace the ones in pandocfilters)</h2>
+<h3 id="tojsonfilteraction-preparenone-finalizenone-kwargs">toJSONFilter(action, prepare=None, finalize=None, **kwargs)</h3>
+<ul>
+<li><strong>action(element, <a href="#doc">doc</a>, ...)</strong>: A function that works on each element. See <a href="#walk">walk</a> to see how the iteration is done</li>
+<li><strong>prepare(<a href="#doc">doc</a>)</strong>: A function run after the document is processed, before the filters are applied.</li>
+<li><strong>finalize(<a href="#doc">doc</a>)</strong>: A function run after the filters are applied are processed, before the document is converted back to JSON and returned to Pandoc.</li>
+<li><strong>kwargs</strong>: extra keywords that are passed to action()</li>
+</ul>
+<h3 id="tojsonfiltersactions-preparenone-finalizenone-input_streamnone-output_streamnone-kwargs">toJSONFilters(actions, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)</h3>
+<p>Like <code>toJSONFilter</code> but takes a list of actions instead of a single action.</p>
+<p>Notes:</p>
+<ul>
+<li>The second action is only applied after the first is done with the entire document, and so on.</li>
+</ul>
+<h3 id="load"><a href="#doc">doc</a> = load()</h3>
+<p>Load the document from stdin.</p>
+<h3 id="dump">dump(<a href="#doc">doc</a>)</h3>
+<p>Dump the document as JSON back into stdout, returning control to Pandoc.</p>
+<h3 id="walk">walk(element, action, doc)</h3>
+<p>Walk through element and all other elements within it, applying action to them.</p>
+<ul>
+<li>element: the root element of the tree that will be walked. It can also be a list or the doc element</li>
+<li><strong>action(element, <a href="#doc">doc</a>, ...)</strong>: A function that works on each element.</li>
+<li><strong><a href="#doc">doc</a></strong>: The entire document</li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li>The walking is done in a depth-first pattern, going as deep as possible into the items of each element, and only then going to the next element.</li>
+</ul>
+<h3 id="stringify">stringify(element)</h3>
+<h2 id="additional-functions-useful-for-complex-filters">2. Additional functions (useful for complex filters)</h2>
+<h3 id="convert_markdown">convert_markdown(text, format='json')</h3>
+<p>Use Pandoc to parse a string as markdown, and return the corresponding list of elements, or (if a format other than 'json' is used) return the desired format.</p>
+<p>Based on pyandoc by Kenneth Reitz.</p>
+<h3 id="yaml_filter">yaml_filter(element, doc, tag, function)</h3>
+<p>This filter will call <code>function(options=options, data=data, element=element, doc=doc)</code> for all code blocks that have the <code>tag</code> class. The content is then parsed by YAML and loaded into the <code>options</code> dictionary. Any content below the YAML ending delimiters (<code>...</code> or <code>---</code>) is passed unprocessed as <code>data</code>.</p>
+<h3 id="shell">shell(args, wait=True, msg=None)</h3>
+<p>Call a shell program. Still experimental.</p>
+<h3 id="debugargs-kwargs-debug">debug(*args, **kwargs) {#debug}</h3>
+<p>Use this as a replacement for print(), because print doesn't work while using a filter from pandoc.</p>
+<h3 id="replace_keyword">replace_keyword(doc, keyword, replacement)</h3>
+<ul>
+<li><strong><a href="#doc">doc</a></strong>: The entire document</li>
+<li><strong>keyword</strong>: A word (without spaces) that will be replaced</li>
+<li><strong>replacement</strong>: The element that will replace the Str() that contains the word. If the element is a Block, we will replace the Para() that contains the string; if the para contains more than just the string, the replacement will fail.</li>
+</ul>
+<h2 id="special-elements">3. Special Elements</h2>
+<h3 id="doc">Doc(metadata, items, format)</h3>
+<p>Properties:</p>
+<ul>
+<li><strong>.metadata</strong>: has a nested dictionary with metadata items (possibly with other lists or dictionaries within)</li>
+<li><strong>.items</strong>: list with the top--level elements</li>
+<li><strong>.format</strong>: contains the output format</li>
+</ul>
+<p>Methods:</p>
+<ul>
+<li><strong>get_metadata(request, default)</strong>: Use this to retrieve nested keywords. For instance, <code>doc.get_metadata('setup.spacing', 1.0)</code> is an alternative to <code>doc.metadata.get('setup', {}).get('spacing', 1.0)</code></li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li><code>doc</code> allows for optional attributes, which can be used as global variables across calls</li>
+</ul>
+<h3 id="element">Element</h3>
+<p>Super class of all standard elements</p>
+<h3 id="block">Block</h3>
+<p>Super class of all standard block elements</p>
+<h3 id="inline">Inline</h3>
+<p>Super class of all standard inline elements</p>
+<h2 id="standard-elements">4. Standard Elements</h2>
+<h3 id="null---block">Null() -&gt; Block</h3>
+<p>Nothing</p>
+<h3 id="space---inline">Space() -&gt; Inline</h3>
+<p>Inter-word space</p>
+<h3 id="horizontalrule---block">HorizontalRule() -&gt; Block</h3>
+<p>Horizontal rule</p>
+<h3 id="softbreak---inline">SoftBreak() -&gt; Inline</h3>
+<p>Soft line break</p>
+<h3 id="linebreak---inline">LineBreak() -&gt; Inline</h3>
+<p>Hard line break</p>
+<h3 id="plainargs---inline---block">Plain(*args -&gt; <a href="#inline">Inline</a>) -&gt; Block</h3>
+<p>Plain text, not a paragraph</p>
+<h3 id="paraargs---inline---block">Para(*args -&gt; <a href="#inline">Inline</a>) -&gt; Block</h3>
+<p>Paragraph</p>
+<h3 id="blockquoteargs---block---block">BlockQuote(*args -&gt; <a href="#block">Block</a>) -&gt; Block</h3>
+<p>Block quote (list of blocks)</p>
+<h3 id="emphargs---inline---inline">Emph(*args -&gt; <a href="#inline">Inline</a>) -&gt; Inline</h3>
+<p>Emphasized text (list of inlines)</p>
+<h3 id="strong---inline">Strong() -&gt; Inline</h3>
+<p>Strongly emphasized text (list of inlines)</p>
+<h3 id="strikeoutargs---inline---inline">Strikeout(*args -&gt; <a href="#inline">Inline</a>) -&gt; Inline</h3>
+<p>Strikeout text (list of inlines)</p>
+<h3 id="superscriptargs---inline---inline">Superscript(*args -&gt; <a href="#inline">Inline</a>) -&gt; Inline</h3>
+<p>Superscripted text (list of inlines)</p>
+<h3 id="subscriptargs---inline---inline">Subscript(*args -&gt; <a href="#inline">Inline</a>) -&gt; Inline</h3>
+<p>Subscripted text (list of inlines)</p>
+<h3 id="smallcapsargs---inline---inline">SmallCaps(*args -&gt; <a href="#inline">Inline</a>) -&gt; Inline</h3>
+<p>Small caps text (list of inlines)</p>
+<h3 id="noteargs---block---inline">Note(*args -&gt; <a href="#block">Block</a>) -&gt; Inline</h3>
+<p>Footnote or endnote</p>
+<h3 id="headerargs---inline-level1-identifier-classes-attributes---block">Header(*args -&gt; <a href="#inline">Inline</a>, level=1, identifier='', classes=[], attributes={}) -&gt; Block</h3>
+<p>Header - level (integer) and text (inlines)</p>
+<h3 id="divargs---block-identifier-classes-attributes---block">Div(*args -&gt; <a href="#block">Block</a>, identifier='', classes=[], attributes={}) -&gt; Block</h3>
+<p>Generic block container with attributes</p>
+<h3 id="spanargs---inline-identifier-classes-attributes---inline">Span(*args -&gt; <a href="#inline">Inline</a>, identifier='', classes=[], attributes={}) -&gt; Inline</h3>
+<p>Generic inline container with attributes</p>
+<h3 id="quotedargs---inline-quote_typedoublequote---inline">Quoted(*args -&gt; <a href="#inline">Inline</a>, quote_type='DoubleQuote') -&gt; Inline</h3>
+<p>Quoted text (list of inlines)</p>
+<p>quote_type:</p>
+<ul>
+<li>SingleQuote</li>
+<li>DoubleQuote</li>
+</ul>
+<h3 id="citeargs---inline-citations---inline">Cite(*args -&gt; <a href="#inline">Inline</a>, citations) -&gt; Inline</h3>
+<p>Cite (list of inlines)</p>
+<h3 id="citationcitationhash-citationid-citationmode-citationnotenum-citationprefix-citationsuffix---element">Citation(citationHash, citationId, citationMode, citationNoteNum, citationPrefix, citationSuffix) -&gt; Element</h3>
+<h3 id="linkargs---inline-url-title-identifier-classes-attributes---inline">Link(*args -&gt; <a href="#inline">Inline</a>, url, title, identifier='', classes=[], attributes={}) -&gt; Inline</h3>
+<p>Hyperlink: alt text (list of inlines), target</p>
+<dl>
+<dt>url</dt>
+<dd>Target (string) title
+</dd>
+<dd>Alt. title (?)
+</dd>
+</dl>
+<h3 id="imageargs---inline-url-title-identifier-classes-attributes---inline">Image(*args -&gt; <a href="#inline">Inline</a>, url, title, identifier='', classes=[], attributes={}) -&gt; Inline</h3>
+<p>Image: alt text (list of inlines), target</p>
+<dl>
+<dt>url</dt>
+<dd>Target (string) title
+</dd>
+<dd>Alt. title (?)
+</dd>
+</dl>
+<h3 id="strtext---inline">Str(text) -&gt; Inline</h3>
+<p>Text (string)</p>
+<h3 id="codeblocktext-identifier-classes-attributes---block">CodeBlock(text, identifier='', classes=[], attributes={}) -&gt; Block</h3>
+<p>Code block (literal) with attributes</p>
+<h3 id="rawblocktext-format---block">RawBlock(text, format) -&gt; Block</h3>
+<p>Raw block</p>
+<p>format:</p>
+<ul>
+<li>html</li>
+<li>tex</li>
+<li>latex</li>
+</ul>
+<h3 id="codetext-identifier-classes-attributes---inline">Code(text, identifier='', classes=[], attributes={}) -&gt; Inline</h3>
+<p>Inline code (literal)</p>
+<h3 id="mathtext-format---inline">Math(text, format) -&gt; Inline</h3>
+<p>TeX math (literal)</p>
+<p>format:</p>
+<ul>
+<li>DisplayMath</li>
+<li>InlineMath</li>
+</ul>
+<h3 id="rawinlinetext-format---inline">RawInline(text, format) -&gt; Inline</h3>
+<p>Raw inline</p>
+<p>format:</p>
+<ul>
+<li>html</li>
+<li>tex</li>
+<li>latex</li>
+</ul>
+<h3 id="bulletlistargs---block---block">BulletList(*args -&gt; [<a href="#block">Block</a>]) -&gt; Block</h3>
+<p>Bullet list (list of items, each a list of blocks)</p>
+<pre><code> Block BulletList(items=[[Block]])&quot;&quot;&quot;</code></pre>
+<h3 id="orderedlistargs---block-start1-styledecimal-delimiterperiod---block">OrderedList(*args -&gt; [<a href="#block">Block</a>], start=1, style='Decimal', delimiter='Period') -&gt; Block</h3>
+<p>Ordered list (attributes and a list of items, each a list of blocks)</p>
+<p>Number styles:</p>
+<ul>
+<li>DefaultStyle</li>
+<li>Example</li>
+<li>Decimal</li>
+<li>LowerRoman</li>
+<li>UpperRoman</li>
+<li>LowerAlpha</li>
+<li>UpperAlpha</li>
+</ul>
+<p>Number delimiters:</p>
+<ul>
+<li>DefaultDelim</li>
+<li>Period</li>
+<li>OneParen</li>
+<li>TwoParens</li>
+</ul>
+<h3 id="definitionlistargs---inline-block---block">DefinitionList(*args -&gt; [ ( [<a href="#inline">Inline</a>] , [<a href="#block">Block</a>] ) ) -&gt; Block</h3>
+<p>Definition list Each list item is a pair consisting of a term (a list of inlines) and one or more definitions (each a list of blocks)</p>
+<h3 id="tableargs---block-headernone---block-captionnone---inline-alignmentnone---alignment-widthnone---double---block">Table(*args -&gt; [[<a href="#block">Block</a>]], header=None -&gt; [<a href="#block">Block</a>], caption=None -&gt; <a href="#inline">Inline</a>, alignment=None -&gt; [Alignment], width=None -&gt; [Double]) -&gt; Block</h3>
+<p>Table, with caption, column alignments (required), relative column widths (0 = default), column headers (each a list of blocks), and rows (each a list of lists of blocks)</p>
+<p>Alignment:</p>
+<ul>
+<li>AlignLeft</li>
+<li>AlignRight</li>
+<li>AlignCenter</li>
+<li>AlignDefault</li>
+</ul>

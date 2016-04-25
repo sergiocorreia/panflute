@@ -2,18 +2,19 @@
 
 ## 1. General functions (that replace the ones in pandocfilters)
 
-### toJSONFilter(action, prepare=None, finalize=None, **kwargs) {#toJSONFilter}
+### toJSONFilter(action, prepare=None, finalize=None, **kwargs)
 
 - **action(element, [doc](#doc), ...)**: A function that works on each element. See [walk](#walk) to see how the iteration is done
 - **prepare([doc](#doc))**: A function run after the document is processed, before the filters are applied.
 - **finalize([doc](#doc))**: A function run after the filters are applied are processed, before the document is converted back to JSON and returned to Pandoc.
 - **kwargs**: extra keywords that are passed to action()
 
-### toJSONFilters(actions, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs) {#toJSONFilters}
+### toJSONFilters(actions, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
 
 Like `toJSONFilter` but takes a list of actions instead of a single action.
 
 Notes:
+
 - The second action is only applied after the first is done with the entire document, and so on.
 
 ### [doc](#doc) = load() {#load}
@@ -33,6 +34,7 @@ Walk through element and all other elements within it, applying action to them.
 - **[doc](#doc)**: The entire document
 
 Notes:
+
 - The walking is done in a depth-first pattern, going as deep as possible into the items of each element, and only then going to the next element.
 
 ### stringify(element) {#stringify}
@@ -75,14 +77,17 @@ Use this as a replacement for print(), because print doesn't work while using a 
 ### Doc(metadata, items, format) {#doc}
 
 Properties:
+
 - **.metadata**: has a nested dictionary with metadata items (possibly with other lists or dictionaries within)
 - **.items**: list with the top--level elements
 - **.format**: contains the output format
 
 Methods:
+
 - **get_metadata(request, default)**: Use this to retrieve nested keywords. For instance, `doc.get_metadata('setup.spacing', 1.0)` is an alternative to `doc.metadata.get('setup', {}).get('spacing', 1.0)`
 
 Notes:
+
 - `doc` allows for optional attributes, which can be used as global variables across calls
 
 ### Element
@@ -177,6 +182,7 @@ Generic inline container with attributes
 Quoted text (list of inlines)
 
 quote_type:
+
 - SingleQuote
 - DoubleQuote
 
@@ -217,6 +223,7 @@ Code block (literal) with attributes
 Raw block
 
 format:
+
 - html
 - tex
 - latex
@@ -230,6 +237,7 @@ Inline code (literal)
 TeX math (literal)
 
 format:
+
 - DisplayMath
 - InlineMath
 
@@ -238,6 +246,7 @@ format:
 Raw inline
 
 format:
+
 - html
 - tex
 - latex
@@ -253,6 +262,7 @@ Bullet list (list of items, each a list of blocks)
 Ordered list (attributes and a list of items, each a list of blocks)
 
 Number styles:
+
 - DefaultStyle
 - Example
 - Decimal
@@ -262,6 +272,7 @@ Number styles:
 - UpperAlpha
 
 Number delimiters:
+
 - DefaultDelim
 - Period
 - OneParen
@@ -279,6 +290,7 @@ Table, with caption, column alignments (required), relative column
     and rows (each a list of lists of blocks)
 
 Alignment:
+
 - AlignLeft
 - AlignRight
 - AlignCenter
