@@ -3,24 +3,45 @@
 - Can use isinstance(element, Block)
 - Can use globals through doc
 
+# Panflute -- Pythonic Pandoc Filters
 
+This Python package is intended as a Pythonic alternative to 
+[pandocfilters](https://github.com/jgm/pandocfilters). Its features include:
 
-# Extensions to pandocfilters
+- Elements can be created "Pythonically", directly by specifying arguments. Thus, instead of
+`Div(attributes({id: "foo"}, [Str("bar"), Str("Spam")])` you can write
+`Div(Str(bar), Str(spam), identifier=foo)`
+- Elements are documented, so autocompletion works and `help(div)` is useful.
+- Complex cases, such as tracking global variables, are easier to handle.
+- There are useful helper functions for some common--but--complex filters.
 
-*(Note: This is an experimental build and is likely to evolve)*
+## Motivation
 
-This Python package contains the basic functionality of [pandocfilters](https://github.com/jgm/pandocfilters)
-plus helper functions useful for complex filters.
-They contain common boilerplate plus asserts and sanity checks to minimize bugs.
+The lack of documentation about the precise JSON format that Pandoc expects
+makes filters in Python both harder to create and maintain.
+
+For instance, it is really hard to read code like this
+six months down the line:
+`Para([Image(['a caption', [], []], [], [src, ""])])`
+
+Alternatively, we will do:
+`Para(Image(text='a caption', source=src))`
+
+Thus, we hope that filters written with `panflute` are more readable and concise. Some examples of ported filters are [included](/tree/master/examples/panflute).
+
+### Pandoc Filters
 
 For a guide to pandocfilters, see the [repository](https://github.com/jgm/pandocfilters)
 and the [tutorial](http://pandoc.org/scripting.html).
 The repo includes [sample filters](https://github.com/jgm/pandocfilters/tree/master/examples),
 and the wiki lists useful [third party filters](https://github.com/jgm/pandoc/wiki/Pandoc-Filters).
 
+
+## Extensions
+
 The extensions introduced here include:
 
-## 1. YAML block filters
+### 1. YAML block filters
 
 Many filters introduce new elements (tables, figures, etc.) via fenced code blocks
 (with either three tildes or backticks as fences).
@@ -121,7 +142,7 @@ exit, STATA // implicit?
 ~~~
 </code></pre>
 
-### Usage
+#### Usage
 
 ```python
 import pandocfilters_extended as pf
@@ -137,7 +158,7 @@ if __name__ == "__main__":
     pf.toJSONFilter(myfilter)
 ```
 
-## 2. Support for scripts
+### 2. Support for external scripts
 
 If you want to read all the instances of a filter and then run an external script
 *once* (to compile the results, you can do):
@@ -166,7 +187,7 @@ if __name__ == "__main__":
 This will do a first pass that creates the list of script lines that need to be run, then call an external command,
 then do a second pass that uses the output of the command to write into the AST.
 
-# 3. Support for backmatter
+### 3. Support for global variables and backmatter
 
 We may want to append all figures and tables to the end, so we need an alternative AST for that,
 and some placeholder text
@@ -191,13 +212,6 @@ And after running the filters, use the included replace filter:
 ```
 
 
-# Allow named arguments when creating elements
-
-It is really hard to read code like this six months down the line:
-`Para([Image(['a caption', [], []], [], [src, ""])])`
-
-Alternatively, it could be better to do:
-`Para([Image(alt_text='a caption', source=src)])`
 
 # Advanced Template
 

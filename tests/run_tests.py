@@ -2,6 +2,8 @@ import panflute as pf
 
 input_fn = '../tests/1/benchmark.json'
 output_fn = '../tests/1/panflute.json'
+output_txt_benchmark = '../tests/1/benchmark.txt'
+output_txt_panflute = '../tests/1/panflute.txt'
 
 def test_filter(element, doc):
 	if type(element)==pf.Header:
@@ -45,3 +47,18 @@ print('Dumping JSON...')
 with open(output_fn, mode='w', encoding='utf-8') as f:
 	pf.dump(doc, f)
 	f.write('\n')
+
+print('Testing stringify()')
+with open(input_fn, encoding='utf-8') as f:
+	doc = pf.load(f)
+ans = pf.stringify(doc.items)
+#print(repr(ans).encode('utf-8'))
+with open(output_txt_panflute, encoding='utf-8', mode='w') as f:
+	f.write(ans)
+
+import pandocfilters, json
+with open(input_fn, encoding='utf-8') as f:
+	doc = json.load(f)
+ans = pandocfilters.stringify(doc)
+with open(output_txt_benchmark, encoding='utf-8', mode='w') as f:
+	f.write(ans)

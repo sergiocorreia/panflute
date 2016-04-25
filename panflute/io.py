@@ -11,13 +11,24 @@ For the Pandoc element definitions, see:
 # Imports
 # ---------------------------
 
+from .elements import Element, Doc, from_json, to_json
+from .elements import Space, LineBreak, SoftBreak, Para
+
 import io
 import sys
 import json
 import codecs  # Used in sys.stdout writer
 from collections import OrderedDict
+from functools import partial
 
-from .elements import from_json, to_json, Doc, Element
+
+# ---------------------------
+# Constants
+# ---------------------------
+
+Spaces = (Space, LineBreak, SoftBreak)
+
+VerticalSpaces = (Para, )
 
 
 # ---------------------------
@@ -41,7 +52,10 @@ def load(input_stream=None):
     # Output format
     format = sys.argv[1] if len(sys.argv) > 1 else 'html'
 
-    return Doc(metadata=metadata, items=items, format=format)
+    doc = Doc(metadata=metadata, items=items, format=format)
+    
+    # Augment doc with an open Pandoc process
+    return doc
 
 
 def dump(doc, output_stream=None):
@@ -77,10 +91,18 @@ def walk(element, action, doc):
     any optional attributes (such as backmatter) which gives it
     flexibility."""
 
+    # Use this when debugging, to bypass pandoc (which intercepts stdout)
+    # print("WARNING: ", element, file=sys.stderr)
 
-    assert is_container(element), type(element)
+    assert element is doc or is_container(element), type(element)
 
-    if isinstance(element, Element):
+    # element can be doc, a normal element, or a list
+
+    if element is doc:
+        doc.items = walk(doc.items, action, doc)
+        # TODO: Walk metadata?
+        return doc
+    elif isinstance(element, Element):
         # Apply filter to the element
         altered = action(element, doc)
         # Returning [] is the same as deleting the element (pandocfilters.py)
@@ -110,12 +132,16 @@ def walk(element, action, doc):
     return altered
 
 
-def toJSONFilters(actions, prepare=None, finalize=None,
-                  input_stream=None, output_stream=None):
+def toJSONFilters(actions,
+                  prepare=None, finalize=None,
+                  input_stream=None, output_stream=None,
+                  **kwargs):
     doc = load(input_stream=input_stream)
     if prepare is not None:
         prepare(doc)
     for action in actions:
+        if kwargs:
+            action = partial(action, **kwargs)
         doc.items = walk(doc.items, action, doc)
     if finalize is not None:
         finalize(doc)
@@ -124,3 +150,25 @@ def toJSONFilters(actions, prepare=None, finalize=None,
 
 def toJSONFilter(action, *args, **kwargs):
     return toJSONFilters([action], *args, **kwargs)
+
+# ---------------------------
+# Useful Functions
+# ---------------------------
+
+def stringify(element):
+    assert is_container(element)
+    ans = []
+
+    if isinstance(element, Element):
+        if hasattr(element, 'text'):
+            ans.append(element.text)
+        for item in get_containers(element):
+            ans.append(stringify(item))
+        if isinstance(element, Spaces):
+            ans.append(' ')
+        if isinstance(element, VerticalSpaces):
+            ans.append('\n\n')
+    else:
+        for item in element:
+            ans.append(stringify(item) if is_container(item) else str(item))
+    return ''.join(ans)
