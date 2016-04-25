@@ -1,4 +1,4 @@
-"""An extension of pandocfilters
+"""A pythonic alternative to pandocfilters
 
 See:
 https://github.com/sergiocorreia/panflute
@@ -21,16 +21,16 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1.0',
+    version='1.0.0',
 
-    description='Extensions to pandocfilters',
+    description='Pythonic Pandoc filters',
     long_description=long_description,
 
     # The project's main homepage.
     url='https://github.com/sergiocorreia/panflute',
 
     # Author details
-    author="Sergio Correia (fork of John MacFarlane's pandocfilters)",
+    author="Sergio Correia",
     author_email='sergio.correia@gmail.com',
 
     # Choose your license
@@ -107,11 +107,12 @@ setup(
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
-    entry_points={
-        'console_scripts': [
-            'pandoc-figure=figure:main'
-            #'media=media:main',
-            #'stata=stata:main'
-        ],
-    },
+    #entry_points={
+    #    'console_scripts': [
+    #        'pandoc-figure=filter_figure:main',
+    #        'pandoc-table=filter_table:main'
+    #        #'media=media:main',
+    #        #'stata=stata:main'
+    #    ],
+    #},
 )

@@ -62,14 +62,25 @@ def convert_markdown(text, format='json'):
     return out
 
 
-def yaml_filter(element, doc, tag, function):
-    if type(element) == CodeBlock and tag in element.classes:
-        # Split yaml and data parts (separated by ... or ---)
-        raw = re.split("^([.]{3,}|[-]{3,})$", element.text, 1, re.MULTILINE)
-        data = raw[2] if len(raw)>2 else ''
-        raw = raw[0]
-        options = yaml.load(raw)
-        return function(options=options, data=data, element=element, doc=doc)
+def yaml_filter(element, doc, tag=None, function=None, tags=None):
+    
+    # Allow for either tag+function or a dict {tag: function}
+    assert (tag is None) + (tags is None) == 1 #  XOR
+    if tags is None:
+        tags = {tag: function}
+
+    if type(element) == CodeBlock:
+        for tag in tags:
+            if tag in element.classes:
+                function = tags[tag]
+                # Split yaml and data parts (separated by ... or ---)
+                raw = re.split("^([.]{3,}|[-]{3,})$",
+                               element.text, 1, re.MULTILINE)
+                data = raw[2] if len(raw)>2 else ''
+                raw = raw[0]
+                options = yaml.load(raw)
+                return function(options=options, data=data,
+                                element=element, doc=doc)
 
 
 def shell(args, wait=True, msg=None):
