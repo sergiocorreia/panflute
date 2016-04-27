@@ -6,6 +6,7 @@ For the Pandoc element definitions, see:
   https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html
 - Recent updates:
   https://github.com/jgm/pandoc-types/commits/master/Text/Pandoc/Definition.hs
+
 """
 # ---------------------------
 # Imports
@@ -59,6 +60,10 @@ def load(input_stream=None):
 
 
 def dump(doc, output_stream=None):
+    """
+    ...
+    """
+
     assert type(doc) == Doc
     if output_stream is None:
         sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
@@ -136,6 +141,9 @@ def toJSONFilters(actions,
                   prepare=None, finalize=None,
                   input_stream=None, output_stream=None,
                   **kwargs):
+    """
+    ...
+    """
     doc = load(input_stream=input_stream)
     if prepare is not None:
         prepare(doc)
@@ -149,6 +157,9 @@ def toJSONFilters(actions,
 
 
 def toJSONFilter(action, *args, **kwargs):
+    """
+    ...
+    """
     return toJSONFilters([action], *args, **kwargs)
 
 # ---------------------------
@@ -156,6 +167,9 @@ def toJSONFilter(action, *args, **kwargs):
 # ---------------------------
 
 def stringify(element):
+    """
+    ...
+    """
     assert is_container(element)
     ans = []
 

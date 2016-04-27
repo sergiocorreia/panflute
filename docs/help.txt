@@ -1,0 +1,6 @@
+REST Primer:
+http://www.sphinx-doc.org/en/stable/rest.html
+
+REST and Sphinx Cheatsheet:
+http://openalea.gforge.inria.fr/doc/openalea/doc/_build/html/source/sphinx/rest_syntax.html#restructured-text-rest-and-sphinx-cheatsheet
+
