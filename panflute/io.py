@@ -1,13 +1,7 @@
 """
-Serialize JSON dump into AST and vice versa
-
-For the Pandoc element definitions, see:
-- Readable format:
-  https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html
-- Recent updates:
-  https://github.com/jgm/pandoc-types/commits/master/Text/Pandoc/Definition.hs
-
+Serialize JSON dump into an element tree and vice versa
 """
+
 # ---------------------------
 # Imports
 # ---------------------------
@@ -37,9 +31,11 @@ VerticalSpaces = (Para, )
 # ---------------------------
 
 def load(input_stream=None):
-    """Load JSON-encoded document and return Doc class
+    """
+    Load JSON-encoded document and return Doc class
 
-    If no input stream is set (a file handle), will load from stdin"""
+    If no input stream is set (a file handle), will load from stdin
+    """
 
     if input_stream is None:
         input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
@@ -53,7 +49,7 @@ def load(input_stream=None):
     # Output format
     format = sys.argv[1] if len(sys.argv) > 1 else 'html'
 
-    doc = Doc(metadata=metadata, items=items, format=format)
+    doc = Doc(*items, metadata=metadata, format=format)
     
     # Augment doc with an open Pandoc process
     return doc

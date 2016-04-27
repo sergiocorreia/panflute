@@ -19,8 +19,12 @@ from subprocess import Popen, PIPE, call
 # ---------------------------
 
 def replace_keyword(doc, keyword, replacement):
+    """
+    ...
+    
+    .. note:: may not be robust to corner cases (handling spaces, etc.)
+    """
 
-    # Note: not very robust to corner cases
     def filter_kwd(e, d):
         if type(e) == Str and e.text == keyword:
             if isinstance(replacement, Inline):
@@ -37,12 +41,17 @@ def replace_keyword(doc, keyword, replacement):
 
 
 def debug(*args, **kwargs):
+    """
+    ...
+    """
     print(*args, **kwargs, file=sys.stderr)
 
 def convert_markdown(text, format='json'):
-    """Pandoc Wrapper; based on pyandoc by Kenneth Reitz
+    """
+    Pandoc Wrapper; based on pyandoc by Kenneth Reitz
 
-    Returns a list of items"""
+    Returns a list of items
+    """
 
     pandoc_path = which('pandoc')
     if not os.path.exists(pandoc_path):
@@ -63,6 +72,9 @@ def convert_markdown(text, format='json'):
 
 
 def yaml_filter(element, doc, tag=None, function=None, tags=None):
+    """
+    ...
+    """
     
     # Allow for either tag+function or a dict {tag: function}
     assert (tag is None) + (tags is None) == 1 #  XOR
