@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 
 # ---------------------------
-# Metaclasses
+# Meta Classes
 # ---------------------------
 
 class Element(object):
@@ -757,6 +757,31 @@ class MetaBlocks(Element):
 
     def encode_content(self):
         return encode_items(self)
+
+
+# ---------------------------
+# Classes not in Pandoc
+# ---------------------------
+
+class TableHeader(Element):
+    pass
+
+class TableRow(Element):
+    pass
+
+class TableCell(Element):
+    pass
+
+class ListItem(Element):
+    pass
+
+class Definition(Element):
+    pass
+
+class DefinitionTerm(Element):
+    pass
+
+
 
 
 # ---------------------------
