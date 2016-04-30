@@ -25,7 +25,7 @@ def theorems(e, doc):
         else:
             return
 
-        e.items = [left] + e.items + [right]
+        e.content = [left] + list(e.content) + [right]
         return e
 
 

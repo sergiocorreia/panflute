@@ -7,7 +7,7 @@ Regular Text.
 
 <div class="theorem">
 
-This is my theorem with Äüö.
+This is my theorem with UNICODE REMOVED.
 </div>
 
 Regular Text.

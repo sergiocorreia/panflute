@@ -103,7 +103,7 @@ def walk(element, action, doc):
     # element can be doc, a normal element, or a list
 
     if element is doc:
-        doc.items = walk(doc.items, action, doc)
+        doc.content = walk(doc.content, action, doc)
         # TODO: Walk metadata?
         return doc
     elif isinstance(element, Element):
@@ -149,7 +149,7 @@ def toJSONFilters(actions,
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
-        doc.items = walk(doc.items, action, doc)
+        doc.content = walk(doc.content, action, doc)
     if finalize is not None:
         finalize(doc)
     dump(doc, output_stream=output_stream)

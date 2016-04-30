@@ -12,9 +12,9 @@ Term 2 with *inline markup*
 
     Third paragraph of definition 2.
 
-Term with Äüö
+Term with UNICODE REMOVED
 
-: Definition with Äüö
+: Definition with UNICODE REMOVED
 
 
 Regular Text.

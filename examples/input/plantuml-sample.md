@@ -19,7 +19,7 @@ Alice -> Bob: Another authentication Request
 Alice <-- Bob: another authentication Response
 ```
 
-with Äüö
+with UNICODE REMOVED
 
 ```plantuml
 Älöc -> Bob: Authentication Request

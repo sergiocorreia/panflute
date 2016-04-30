@@ -1,5 +1,5 @@
 
-Regular text with Äüö.
+Regular text with UNICODE REMOVED.
 
 <!-- A NORMAL TAG -->
 
@@ -7,7 +7,7 @@ Some text
 
 <!-- BEGIN COMMENT -->
 
-This is a comment with Äüö
+This is a comment with UNICODE REMOVED
 
 <!-- END COMMENT -->
 

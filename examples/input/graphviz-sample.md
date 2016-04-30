@@ -11,8 +11,8 @@ to get
 digraph G {Hello->World}
 ```
 
-with with Äüö
+with with UNICODE REMOVED
 
 ```graphviz
-digraph G {Hello->World with Äüö}
+digraph G {Hello->World with UNICODE REMOVED}
 ```
