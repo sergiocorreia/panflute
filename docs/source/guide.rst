@@ -1,6 +1,27 @@
 User guide
 ==========
 
+
+Creating a document from scratch
+********************************
+
+.. note:: A guiding principle is that an element can contain lists of
+   elements, but not lists of dicts or other objects.
+
+   The most complex example is this:
+
+   - The :class:`DefinitionList` element can contain mutiple :class:``DefinitionItem`.
+   - In turn, these contain multiple inlines under the ``.term`` attribute
+     and multiple definitions.
+   - Finally, each definition can contain multiple blocks.
+
+   Notice that we don't allow a definition item to contain lists of lists of blocks, we need it to be lists of definition elements (which are lists of blocks). This is to preserve the ``.parent`` attribute.
+
+
+Then you can feed it to pandoc as json...
+
+
+
 A Simple filter
 ***************
 
@@ -33,3 +54,9 @@ https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintr
 
 
 Through the shell function
+
+
+Metadata
+********
+
+TODO: Example replacing a Header(Str('Abstract')) and everything after that before the next header with Null and moving the content to the metadata as abstract MetaBlock!? 

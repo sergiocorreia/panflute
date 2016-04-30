@@ -62,13 +62,19 @@ More about Pandoc filters:
 
 """
 
+from .base import Element, Block, Inline  # , Items
+
 from .elements import (
-    Doc, Element, Block, Inline,
+    Doc, Citation, TableRow, TableCell, ListItem, DefinitionItem, Definition)
+
+from .elements import (
     Null, HorizontalRule, Space, SoftBreak, LineBreak, Str,
     Code, BlockQuote, Note, Div, Plain, Para, Emph, Strong, Strikeout,
     Superscript, Subscript, SmallCaps, Span, RawBlock, RawInline, Math,
     CodeBlock, Link, Image, BulletList, OrderedList, DefinitionList, Header,
     Quoted, Cite, Table)
+
+# from .elements import from_json
 
 from .io import load, dump, walk, toJSONFilter, toJSONFilters, stringify
 

@@ -5,6 +5,9 @@ output_fn = '../tests/1/panflute.json'
 output_txt_benchmark = '../tests/1/benchmark.txt'
 output_txt_panflute = '../tests/1/panflute.txt'
 
+def empty_test(element, doc):
+	return
+
 def test_filter(element, doc):
 	if type(element)==pf.Header:
 		return []
@@ -38,20 +41,38 @@ print('Are both files the same?')
 print(' - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
 print(' - Content:', input_data == output_data)
 
-print('\nApplying filter...')
-doc.items = pf.walk(element=doc.items, action=test_filter, doc=doc)
+print('\nApplying trivial filter...')
+doc.content = pf.walk(element=doc.content, action=empty_test, doc=doc)
 print(' - Done!')
 
-
-print('Dumping JSON...')
+print(' - Dumping JSON...')
 with open(output_fn, mode='w', encoding='utf-8') as f:
 	pf.dump(doc, f)
 	f.write('\n')
+print(' - Done!')
+print(' - Comparing...')
+with open(input_fn, encoding='utf-8') as f:
+	input_data = f.read()
+with open(output_fn, encoding='utf-8') as f:
+	output_data = f.read()
+print(' - Are both files the same?')
+print('   - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
+print('   - Content:', input_data == output_data)
+
+
+
+assert 0
+
+
+
+
+
+
 
 print('Testing stringify()')
 with open(input_fn, encoding='utf-8') as f:
 	doc = pf.load(f)
-ans = pf.stringify(doc.items)
+ans = pf.stringify(doc.content)
 #print(repr(ans).encode('utf-8'))
 with open(output_txt_panflute, encoding='utf-8', mode='w') as f:
 	f.write(ans)

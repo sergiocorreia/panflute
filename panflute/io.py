@@ -6,7 +6,7 @@ Serialize JSON dump into an element tree and vice versa
 # Imports
 # ---------------------------
 
-from .elements import Element, Doc, from_json, to_json
+from .elements import Element, Doc, from_json, Items
 from .elements import Space, LineBreak, SoftBreak, Para
 
 import io
@@ -65,17 +65,20 @@ def dump(doc, output_stream=None):
         sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
         output_stream = sys.stdout
 
+    json_serializer = lambda elem: elem.to_json()
+
     json.dump(
         obj=doc,
         fp=output_stream,
-        default=to_json,  # Serializer
+        default=json_serializer,  # Serializer
         separators=(',', ':'),  # Compact separators, like Pandoc
         ensure_ascii=False  # For Pandoc compat
     )
 
 
 def is_container(element):
-    return isinstance(element, (list, tuple, Element))
+    #return isinstance(element, (list, tuple, Element))
+    return isinstance(element, (Element, Items))
 
 
 def get_containers(element):
@@ -95,7 +98,7 @@ def walk(element, action, doc):
     # Use this when debugging, to bypass pandoc (which intercepts stdout)
     # print("WARNING: ", element, file=sys.stderr)
 
-    assert element is doc or is_container(element), type(element)
+    assert is_container(element), type(element)
 
     # element can be doc, a normal element, or a list
 

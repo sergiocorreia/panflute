@@ -3,33 +3,8 @@
 # ---------------------------
 
 from collections import OrderedDict
-
-
-# ---------------------------
-# Meta Classes
-# ---------------------------
-
-class Element(object):
-    """
-    Base class of all pandoc elements
-    """
-
-    __slots__ = []
-
-
-class Inline(Element):
-    """
-    Base class of all inline elements
-    """
-    __slots__ = []
-
-
-class Block(Element):
-    """
-    Base class of all block elements
-    """
-
-    __slots__ = []
+from .base import Element, Block, Inline, Items
+from .base import check_type, check_group, encode_dict
 
 
 # ---------------------------
@@ -47,38 +22,59 @@ class Doc(Element):
     """
     Pandoc document container.
 
-    :param items: list of the top-level documents contained in the document
+    Besides the document, it includes the frontpage metadata and the
+    desired output format. Filter functions can also add properties to it
+    as means of global variables that can later be read by different calls.
+
+    :param args: top--level documents contained in the document
+    :type args: :class:`Block` sequence
     :param metadata: the frontpage metadata
-    :type metadata: ``dict`` or :class:`collections.OrderedDict`
+    :type metadata: ``dict``
     :param format: output format, such as 'markdown', 'latex' and 'html'
+    :type format: ``str``
+    :return: Document with base class :class:`Element`
+    :Base: :class:`Element`
+
+    :Example:
+
+        >>> meta = {'author':'John Doe'}
+        >>> content = [Header(Str('Title')), Para(Str('Hello!'))]
+        >>> doc = Doc(*content, metadata=meta, format='pdf')
+        >>> doc.figure_count = 0 #  You can add attributes freely
+
+    .. warning:: The ``.parent`` and related methods are not implemented
+       in the metadata.
     """
 
-    # We don't have slots, so you can e.g. add backmatter as an element
-    # (sort of like a global variable)
-
-    def __init__(self, *args, metadata=None, format='html'):
-        if metadata is None:
-            metadata = OrderedDict()
-        elif type(metadata) == dict:
-            metadata = OrderedDict(metadata)
-        else:
-            assert isinstance(metadata, OrderedDict), type(metadata)
-
-        self.items = args
-        self.metadata = metadata
+    def __init__(self, *args, metadata={}, format='html'):
+        self._set_content(args, Block)
+        self.metadata = OrderedDict(check_type(metadata, dict).copy())
+        #: Doc comment for instance attribute Doc.format
         self.format = format  # Output format
 
+    def to_json(self):
+        # Overrides default method
+        meta = self.metadata # .content()
+        meta = OrderedDict((k, metawalk(v)) for k, v in meta.items())
+        return [{'unMeta': meta}, self.content]
+
     def get_metadata(self, key, default):
-        """Retrieve metadata with a nested key separated by '.' (dot).
+        """Retrieve metadata with nested keys separated by dots.
 
-        Keyword arguments:
-        key -- string with the keys separated by a dot ('key1.key2')
-        default -- default return value in case the key is not found
+        This is useful to avoid repeatedly checking if a dict exists, as
+        the frontmatter might not have the keys that we expect.
 
-        Examples::
-        
-        >>> show_frame = doc.get_metadata('format.show-frame', False)
-        >>> stata_path = doc.get_metadata('stata.path', default_path())
+        :param key: string with the keys separated by a dot ('key1.key2')
+        :type key: ``str``
+        :param default: default return value in case the key is not found
+
+        :Example:
+
+            >>> doc.metadata['format']['show-frame'] = True
+            >>> #  ...
+            >>> #  afterwards:
+            >>> show_frame = doc.get_metadata('format.show-frame', False)
+            >>> stata_path = doc.get_metadata('media.path.figures', '.')
         """
 
         meta = self.metadata
@@ -97,64 +93,41 @@ class Doc(Element):
 class Null(Block):
     """Nothing
 
-     Block Null()
-     """
-
+    :Base: :class:`Block`
+    """
     __slots__ = []
-
-    def encode_content(self):
-        return []
 
 
 class Space(Inline):
     """Inter-word space
 
-     Inline Space()
+    :Base: :class:`Inline`
      """
-
     __slots__ = []
-
-    def __repr__(self):
-        return 'Space'
-
-    def encode_content(self):
-        return []
 
 
 class HorizontalRule(Block):
     """Horizontal rule
 
-     Block HorizontalRule()
+     :Base: :class:`Block`
      """
-
     __slots__ = []
-
-    def encode_content(self):
-        return []
 
 
 class SoftBreak(Inline):
     """Soft line break
 
-     Inline SoftBreak()
+     :Base: :class:`Inline`
      """
-
     __slots__ = []
-
-    def encode_content(self):
-        return []
 
 
 class LineBreak(Inline):
     """Hard line break
 
-     Inline LineBreak()
+     :Base: :class:`Inline`
      """
-
     __slots__ = []
-
-    def encode_content(self):
-        return []
 
 
 # ---------------------------
@@ -164,166 +137,167 @@ class LineBreak(Inline):
 class Plain(Block):
     """Plain text, not a paragraph
 
-     Block Plain(items=[Inline])
-     """
-
-    __slots__ = ['items']
+    :param args: contents of the plain block of text
+    :type args: :class:`Inline`
+    :Base: :class:`Block`
+    """
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def __repr__(self):
-        return 'Plain({})'.format(','.join(repr(x) for x in self.items))
-
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class Para(Block):
     """Paragraph
 
-     Block Para(items=[Inline])
-     """
+    :param args: contents of the paragraph
+    :type args: :class:`Inline`
+    :Base: :class:`Block`
 
-    __slots__ = ['items']
+    :Example:
+
+        >>> content = [Str('Some'), Space, Emph(Str('words.'))]
+        >>> para1 = Para(*content)
+        >>> para2 = Para(Str('More'), Space, Str('words.'))
+    """
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def __repr__(self):
-        return 'Para({})'.format(' '.join(repr(x) for x in self.items))
-
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class BlockQuote(Block):
-    """Block quote (list of blocks)
+    """Block quote
 
-     Block BlockQuote(items=[Block])
+    :param args: sequence of blocks
+    :type args: :class:`Block`
+    :Base: :class:`Block`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=True)
+        self._set_content(args, Block)
 
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class Emph(Inline):
-    """Emphasized text (list of inlines)
+    """Emphasized text
 
-     Inline Emph(items=[Inline])
+    :param args: elements that will be emphasized
+    :type args: :class:`Inline`
+    :Base: :class:`Inline`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def __repr__(self):
-        return 'Emph({})'.format(' '.join(repr(x) for x in self.items))
-
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class Strong(Inline):
-    """Strongly emphasized text (list of inlines)
+    """Strongly emphasized text
 
-     Inline Strong(items=[Inline])
+    :param args: elements that will be emphasized
+    :type args: :class:`Inline`
+    :Base: :class:`Inline`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def __repr__(self):
-        return 'Strong({})'.format(' '.join(repr(x) for x in self.items))
-
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class Strikeout(Inline):
-    """Strikeout text (list of inlines)
+    """Strikeout text
 
-     Inline Strikeout(items=[Inline])
+    :param args: elements that will be striken out
+    :type args: :class:`Inline`
+    :Base: :class:`Inline`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def __repr__(self):
-        return 'Strikeout({})'.format(' '.join(repr(x) for x in self.items))
-
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class Superscript(Inline):
     """Superscripted text (list of inlines)
 
-     Inline Superscript(items=[Inline])
+    :param args: elements that will be set superscript
+    :type args: :class:`Inline`
+    :Base: :class:`Inline`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class Subscript(Inline):
     """Subscripted text (list of inlines)
 
-     Inline Subscript(items=[Inline])
+    :param args: elements that will be set suberscript
+    :type args: :class:`Inline`
+    :Base: :class:`Inline`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class SmallCaps(Inline):
     """Small caps text (list of inlines)
 
-     Inline SmallCaps(items=[Inline])
+    :param args: elements that will be set with small caps
+    :type args: :class:`Inline`
+    :Base: :class:`Inline`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class Note(Inline):
     """Footnote or endnote
 
-     Inline Note(items=[Block])
+    :param args: elements that are part of the note
+    :type args: :class:`Block`
+    :Base: :class:`Inline`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=True)
+        self._set_content(args, Block)
 
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 # ---------------------------
@@ -331,178 +305,270 @@ class Note(Inline):
 # ---------------------------
 
 class Header(Block):
-    """Header - level (integer) and text (inlines)
+    """Header
 
-     Block Header(level=Int ica=Attr items=[Inline])
+    :param args: contents of the header
+    :type args: :class:`Inline`
+    :param level: level of the header (1 is the largest and 6 the smallest)
+    :type level: ``int``
+    :param identifier: element identifier (usually unique)
+    :type identifier: :class:`str`
+    :param classes: class names of the element
+    :type classes: :class:`list` of :class:`str`
+    :param attributes: additional attributes
+    :type attributes: :class:`dict`
+    :Base: :class:`Block`
+
+    :Example:
+
+        >>> title = [Str('Monty'), Space, Str('Python')]
+        >>> header = Header(*title, level=2, identifier='toc')
+        >>> header.level += 1
      """
+    __slots__ = ['level', '_content', 'identifier', 'classes', 'attributes']
 
-    __slots__ = ['level', 'items', 'identifier', 'classes', 'attributes']
+    def __init__(self, *args, level=1,
+                 identifier='', classes=[], attributes={}):
+        self.level = check_type(level, int)
+        if not 0 < self.level <= 6:
+            raise TypeError('Header level not between 1 and 6')
+        self._set_ica(identifier, classes, attributes)
+        self._set_content(args, Inline)
 
-    def __init__(self, *args, level=1, identifier='', classes=[],
-                 attributes={}):
-        self.level = validate(level, group=(1, 2, 3, 4, 5, 6))
-        init_ica(self, identifier, classes, attributes)
-        self.items = init_items(args, container=self, has_blocks=False)
-
-    def encode_content(self):
-        ica = encode_ica(self)
-        items = encode_items(self)
-        return [self.level, ica, items]
+    def _slots_to_json(self):
+        return [self.level, self._ica_to_json(), self.content.to_json()]
 
 
 class Div(Block):
     """Generic block container with attributes
 
-     Block Div(ica=Attr items=[Block])
+    :param args: contents of the div
+    :type args: :class:`Block`
+    :param identifier: element identifier (usually unique)
+    :type identifier: :class:`str`
+    :param classes: class names of the element
+    :type classes: :class:`list` of :class:`str`
+    :param attributes: additional attributes
+    :type attributes: :class:`dict`
+    :Base: :class:`Block`
      """
 
-    __slots__ = ['items', 'identifier', 'classes', 'attributes']
+    __slots__ = ['_content', 'identifier', 'classes', 'attributes']
 
     def __init__(self, *args, identifier='', classes=[], attributes={}):
-        init_ica(self, identifier, classes, attributes)
-        self.items = init_items(args, container=self, has_blocks=True)
+        self._set_ica(identifier, classes, attributes)
+        self._set_content(args, Block)
 
-    def encode_content(self):
-        ica = encode_ica(self)
-        items = encode_items(self)
-        return [ica, items]
+    def _slots_to_json(self):
+        return [self._ica_to_json(), self.content.to_json()]
 
 
 class Span(Inline):
-    """Generic inline container with attributes
+    """Generic block container with attributes
 
-     Inline Span(ica=Attr items=[Inline])
+    :param args: contents of the div
+    :type args: :class:`Inline`
+    :param identifier: element identifier (usually unique)
+    :type identifier: :class:`str`
+    :param classes: class names of the element
+    :type classes: :class:`list` of :class:`str`
+    :param attributes: additional attributes
+    :type attributes: :class:`dict`
+    :Base: :class:`Inline`
      """
 
-    __slots__ = ['items', 'identifier', 'classes', 'attributes']
+    __slots__ = ['_content', 'identifier', 'classes', 'attributes']
 
     def __init__(self, *args, identifier='', classes=[], attributes={}):
-        init_ica(self, identifier, classes, attributes)
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_ica(identifier, classes, attributes)
+        self._set_content(args, Inline)
 
-    def __repr__(self):
-        _id = 'id={}'.format(self.identifier) if self.identifier else ''
-        _cl = 'classes={}'.format(repr(self.classes)) if self.classes else ''
-        _at = 'classes={}'.format(repr(self.attributes)) if self.attributes else ''
-        ica = ''.join(';'+ x for x in [_id, _cl, _at] if x)
-        return 'Span({}{})'.format(' '.join(repr(x) for x in self.items), ica)
-
-    def encode_content(self):
-        ica = encode_ica(self)
-        items = encode_items(self)
-        return [ica, items]
+    def _slots_to_json(self):
+        return [self._ica_to_json(), self.content.to_json()]
 
 
 class Quoted(Inline):
-    """Quoted text (list of inlines)
+    """Quoted text
 
-     Inline Quoted(quote_type=QuoteType items=[Inline])
+    :param args: contents of the quote
+    :type args: :class:`Inline`
+    :param quote_type: either 'SingleQuote' or 'DoubleQuote'
+    :type quote_type: ``str``
+    :Base: :class:`Inline`
      """
 
-    __slots__ = ['quote_type', 'items']
+    __slots__ = ['quote_type', '_content']
 
     def __init__(self, *args, quote_type='DoubleQuote'):
-        self.quote_type = validate(quote_type, group=QUOTE_TYPES)
-        self.items = init_items(args, container=self, has_blocks=False)
+        self.quote_type = check_group(quote_type, QUOTE_TYPES)
+        self._set_content(args, Inline)
 
-    def encode_content(self):
+    def _slots_to_json(self):
         quote_type = encode_dict(self.quote_type, [])
-        items = encode_items(self)
-        return [quote_type, items]
+        return [quote_type, self.content.to_json()]
 
 
 class Cite(Inline):
-    """Cite (list of inlines)
+    """Cite: set of citations with related text
 
-     Inline Cite(citations=[Citation] items=[Inline])
+    :param args: contents of the cite (the raw text)
+    :type args: :class:`Inline`
+    :param citations: sequence of citations
+    :type citations: [:class:`Citation`]
+    :Base: :class:`Inline`
      """
 
-    __slots__ = ['items', 'citations']
+    __slots__ = ['_content', '_citations']
 
-    def __init__(self, *args, citations):
-        self.citations = [Citation(**dict(c)) for c in citations]
-        self.items = init_items(args, container=self, has_blocks=False)
+    def __init__(self, *args, citations=[]):
+        self._set_content(args, Inline)
+        self.citations = citations
 
-    def __repr__(self):
-        return 'Cite(...)'
+    # Cannot access citations directly b/c that would mess up .parent
+    @property
+    def citations(self):
+        return self._citations
 
-    def encode_content(self):
-        citations = [x.encode_content() for x in self.citations]
-        items = encode_items(self)
-        return [citations, items]
+    @citations.setter
+    def citations(self, value):
+        value = value.list if isinstance(value, Items) else list(value)
+        self._citations = Items(*value, oktypes=Citation, parent=self)
+        self._citations._container = '_citations'
+
+    def _slots_to_json(self):
+        return [self.citations.to_json(), self.content.to_json()]
 
 
 class Citation(Element):
-    __slots__ = ['citationHash', 'citationId', 'citationMode',
-                 'citationNoteNum', 'citationPrefix', 'citationSuffix']
+    """ 
+    A single citation to a single work
 
-    def __init__(self, citationHash, citationId, citationMode,
-                 citationNoteNum, citationPrefix, citationSuffix):
-        self.citationHash = citationHash  # ??
-        self.citationId = citationId  # the bibtex keyword
-        self.citationMode = validate(citationMode, group=CITATION_MODE)
-        self.citationNoteNum = citationNoteNum  # ??
-        self.citationPrefix = init_items(citationPrefix, 
-                                         container=self, has_blocks=False)
-        self.citationSuffix = init_items(citationSuffix, 
-                                         container=self, has_blocks=False)
+    :param id: citation key (e.g. the bibtex keyword)
+    :type id: ``str``
+    :param mode: how will the citation appear ('NormalCitation' for the default style, 'AuthorInText' to exclude parenthesis, 'SuppressAuthor' to exclude the author's name)
+    :type mode: ``str``
+    :param prefix: Text before the citation reference
+    :type prefix: [:class:`Inline`]
+    :param suffix: Text after the citation reference
+    :type suffix: [:class:`Inline`]
+    :param note_num: (Not sure...)
+    :type note_num: ``int``
+    :param hash: (Not sure...)
+    :type hash: ``int``
+    :Base: :class:`Element`
+    
+    TODO: Look up and add more documentation about this object
+    """
 
-    def encode_content(self):
-        content = []
-        content.append(['citationSuffix',
-                       [to_json(x) for x in self.citationSuffix]])
-        content.append(['citationNoteNum', self.citationNoteNum])
-        content.append(['citationMode', encode_dict(self.citationMode, [])])
-        content.append(['citationPrefix',
-                       [to_json(x) for x in self.citationPrefix]])
-        content.append(['citationId', self.citationId])
-        content.append(['citationHash', self.citationHash])
-        return OrderedDict(content)
+    __slots__ = ['id', 'mode', '_prefix', '_suffix', 'note_num', 'hash']
+
+    def __init__(self, id, mode='NormalCitation', prefix='', suffix='',
+                 hash=0, note_num=0):
+        self.id = check_type(id, str)
+        self.mode = check_group(mode, CITATION_MODE)
+        self.hash = check_type(hash, int)
+        self.note_num = check_type(note_num, int)
+        self.prefix = prefix
+        self.suffix = suffix
+
+    @property
+    def prefix(self):
+        return self._prefix
+
+    @prefix.setter
+    def prefix(self, value):
+        value = value.list if isinstance(value, Items) else list(value)
+        self._prefix = Items(*value, oktypes=Inline, parent=self)
+        self._prefix._container = '_prefix'
+
+    @property
+    def suffix(self):
+        return self._suffix
+
+    @suffix.setter
+    def suffix(self, value):
+        value = value.list if isinstance(value, Items) else list(value)
+        self._suffix = Items(*value, oktypes=Inline, parent=self)
+        self._suffix._container = '_suffix'
+
+    def to_json(self):
+        # Replace default .to_json ; we don't need _slots_to_json()
+        ans = OrderedDict()
+        ans['citationSuffix'] = self.suffix.to_json()
+        ans['citationNoteNum'] = self.note_num
+        ans['citationMode'] = encode_dict(self.mode, [])
+        ans['citationPrefix'] = self.prefix.to_json()
+        ans['citationId'] = self.id
+        ans['citationHash'] = self.hash
+        return ans
 
 
 class Link(Inline):
-    """Hyperlink: alt text (list of inlines), target
+    """
+    Hyperlink
 
-     Inline Link(ica=Attr items=[Inline] [url=String title=String])
+    :param args: text with the link description
+    :type args: :class:`Inline`
+    :param url: URL or path of the link
+    :type url: ``str``
+    :param title: Alt. title
+    :type title: ``str``
+    :param identifier: element identifier (usually unique)
+    :type identifier: :class:`str`
+    :param classes: class names of the element
+    :type classes: :class:`list` of :class:`str`
+    :param attributes: additional attributes
+    :type attributes: :class:`dict`
+    :Base: :class:`Inline`
      """
 
-    __slots__ = ['items', 'url', 'title', 'identifier', 'classes',
-                 'attributes']
+    __slots__ = ['_content', 'url', 'title',
+                 'identifier', 'classes', 'attributes']
 
-    def __init__(self, *args, url, title, identifier='', classes=[],
-                 attributes={}):
-        self.items = init_items(args, container=self, has_blocks=False)
-        init_ut(self, url, title)
-        init_ica(self, identifier, classes, attributes)
+    def __init__(self, *args, url='', title='',
+                 identifier='', classes=[], attributes={}):
+        self._set_content(args, Inline)
+        self._set_ica(identifier, classes, attributes)
+        self.url = check_type(url, str)
+        self.title = check_type(title, str)
 
-    def encode_content(self):
-        ica = encode_ica(self)
-        items = encode_items(self)
+    def _slots_to_json(self):
         ut = [self.url, self.title]
-        content = [ica, items, ut]
-        return content
+        return [self._ica_to_json(), self.content.to_json(), ut]
 
 
 class Image(Inline):
-    """Image: alt text (list of inlines), target
+    """
+    Image
 
-     Inline Image(ica=Attr items=[Inline] ut=Target)
+    :param args: text with the image description
+    :type args: :class:`Inline`
+    :param url: URL or path of the image
+    :type url: ``str``
+    :param title: Alt. title
+    :type title: ``str``
+    :param identifier: element identifier (usually unique)
+    :type identifier: :class:`str`
+    :param classes: class names of the element
+    :type classes: :class:`list` of :class:`str`
+    :param attributes: additional attributes
+    :type attributes: :class:`dict`
+    :Base: :class:`Inline`
      """
 
-    __slots__ = ['items', 'url', 'title', 'identifier', 'classes',
-                 'attributes']
+    __slots__ = ['_content', 'url', 'title',
+                 'identifier', 'classes', 'attributes']
 
-    def __init__(self, *args, url, title, identifier='', classes=[],
-                 attributes={}):
-        self.items = init_items(args, container=self, has_blocks=False)
-        init_ut(self, url, title)
-        init_ica(self, identifier, classes, attributes)
+    def __init__(self, *args, url='', title='',
+                 identifier='', classes=[], attributes={}):
+        self._set_content(args, Inline)
+        self._set_ica(identifier, classes, attributes)
+        self.url = check_type(url, str)
+        self.title = check_type(title, str)
 
-    def encode_content(self):
-        ica = encode_ica(self)
-        items = encode_items(self)
+    def _slots_to_json(self):
         ut = [self.url, self.title]
-        return [ica, items, ut]
+        return [self._ica_to_json(), self.content.to_json(), ut]
 
 
 # ---------------------------
@@ -510,278 +576,465 @@ class Image(Inline):
 # ---------------------------
 
 class Str(Inline):
-    """Text (string)
+    """
+    Text (a string)
 
-     Inline Str(text=String)
+    :param text: a string of unformatted text
+    :type text: :class:`str`
+    :Base: :class:`Inline`
      """
 
     __slots__ = ['text']
 
     def __init__(self, text):
-        self.text = validate(text, instance=str)
+        self.text = check_type(text, str)
 
     def __repr__(self):
         return 'Str({})'.format(self.text)
 
-    def encode_content(self):
+    def _slots_to_json(self):
         return self.text
 
 
 class CodeBlock(Block):
-    """Code block (literal) with attributes
+    """
+    Code block (literal text) with optional attributes
 
-     Block CodeBlock(ica=Attr text=String)
+    :param text: literal text (preformatted text, code, etc.)
+    :type text: :class:`str`
+    :param identifier: element identifier (usually unique)
+    :type identifier: :class:`str`
+    :param classes: class names of the element
+    :type classes: :class:`list` of :class:`str`
+    :param attributes: additional attributes
+    :type attributes: :class:`dict`
+    :Base: :class:`Block`
      """
 
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=[], attributes={}):
-        self.text = validate(text, instance=str)
-        init_ica(self, identifier, classes, attributes)
+        self.text = check_type(text, str)
+        self._set_ica(identifier, classes, attributes)
 
-    def encode_content(self):
-        return [encode_ica(self), self.text]
+    def _slots_to_json(self):
+        return [self._ica_to_json(), self.text]
 
 
 class RawBlock(Block):
-    """Raw block
+    """
+    Raw block
 
-     Block RawBlock(format=Format text=String)
+    :param text: a string of raw text with another underlying format
+    :type text: :class:`str`
+    :param format: Format of the raw text ('html', 'tex' or 'latex')
+    :type format: ``str``
+    :Base: :class:`Block`
      """
 
     __slots__ = ['text', 'format']
 
-    def __init__(self, text, format):
-        self.text = validate(text, instance=str)
-        self.format = validate(format, group=RAW_FORMATS)
+    def __init__(self, text, format='html'):
+        self.text = check_type(text, str)
+        self.format = check_group(format, RAW_FORMATS)
 
-    def encode_content(self):
+    def _slots_to_json(self):
         return [self.format, self.text]
 
 
 class Code(Inline):
-    """Inline code (literal)
+    """
+    Inline code (literal)
 
-     Inline Code(ica=Attr text=String)
+    :param text: literal text (preformatted text, code, etc.)
+    :type text: :class:`str`
+    :param identifier: element identifier (usually unique)
+    :type identifier: :class:`str`
+    :param classes: class names of the element
+    :type classes: :class:`list` of :class:`str`
+    :param attributes: additional attributes
+    :type attributes: :class:`dict`
+    :Base: :class:`Inline`
      """
 
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=[], attributes={}):
-        self.text = validate(text, instance=str)
-        init_ica(self, identifier, classes, attributes)
+        self.text = check_type(text, str)
+        self._set_ica(identifier, classes, attributes)
 
-    def encode_content(self):
-        ica = encode_ica(self)
+    def _slots_to_json(self):
+        ica = self._ica_to_json()
         return [ica, self.text]
 
 
 class Math(Inline):
     """TeX math (literal)
 
-     Inline Math(text=String format=MathType)
+    :param text: a string of raw text representing TeX math
+    :type text: :class:`str`
+    :param format: How the math will be typeset ('DisplayMath' or 'InlineMath')
+    :type format: ``str``
+    :Base: :class:`Inline`
      """
 
-    __slots__ = ['format', 'text']
+    __slots__ = ['text', 'format']
 
-    def __init__(self, text, format):
-        self.text = validate(text, instance=str)
-        self.format = validate(format, group=MATH_FORMATS)
+    def __init__(self, text, format='DisplayMath'):
+        self.text = check_type(text, str)
+        self.format = check_group(format, MATH_FORMATS)
 
-    def encode_content(self):
+    def _slots_to_json(self):
         format = encode_dict(self.format, [])
         return [format, self.text]
 
 
 class RawInline(Inline):
-    """Raw inline
+    """Raw inline text
 
-     Inline RawInline(format=Format text=String)
+    :param text: a string of raw text with another underlying format
+    :type text: :class:`str`
+    :param format: Format of the raw text ('html', 'tex' or 'latex')
+    :type format: ``str``
+    :Base: :class:`Inline`
      """
 
     __slots__ = ['text', 'format']
 
-    def __init__(self, text, format):
-        self.text = validate(text, instance=str)
-        self.format = validate(format, group=RAW_FORMATS)
+    def __init__(self, text, format='html'):
+        self.text = check_type(text, str)
+        self.format = check_group(format, RAW_FORMATS)
 
-    def encode_content(self):
+    def _slots_to_json(self):
         return [self.format, self.text]
 
 
 # ---------------------------
-# Classes - Misc
+# Classes - Lists
 # ---------------------------
 
-class BulletList(Block):
-    """Bullet list (list of items, each a list of blocks)
+class ListItem(Element):
+    """Bullet list (unordered list)
 
-     Block BulletList(items=[[Block]])
+    :param args: List item
+    :type args: :class:`Block`
+    :Base: :class:`Element`
      """
-
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=True, depth=2)
+        self._set_content(args, Block)
 
-    def encode_content(self):
-        return encode_items(self)
+    def to_json(self):
+        return self.content.to_json()
+
+
+class BulletList(Block):
+    """Bullet list (unordered list)
+
+    :param args: List item
+    :type args: :class:`ListItem` | ``list``
+    :Base: :class:`Block`
+     """
+
+    __slots__ = ['_content']
+
+    def __init__(self, *args):
+        self._set_content(args, ListItem)
+
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class OrderedList(Block):
     """Ordered list (attributes and a list of items, each a list of blocks)
 
-     Block OrderedList(ssd=ListAttributes items=[[Block]])
+    :param args: List item
+    :type args: :class:`ListItem` | ``list``
+    :param start: Starting value of the list
+    :type start: :class:`int`
+    :param style: Style of the number delimiter
+        ('DefaultStyle', 'Example', 'Decimal', 'LowerRoman',
+        'UpperRoman', 'LowerAlpha', 'UpperAlpha')
+    :type style: :class:`str`
+    :param delimiter: List number delimiter
+        ('DefaultDelim', 'Period', 'OneParen', 'TwoParens')
+    :type delimiter: :class:`str`
+    :Base: :class:`Block`
      """
 
-    __slots__ = ['items', 'start', 'style', 'delimiter']
+    __slots__ = ['_content', 'start', 'style', 'delimiter']
 
     def __init__(self, *args, start=1, style='Decimal', delimiter='Period'):
-        self.items = init_items(args, container=self, has_blocks=True, depth=2)
-        init_ssd(self, start, style, delimiter)
+        self._set_content(args, ListItem)
+        self.start = check_type(start, int)
+        self.style = check_group(style, LIST_NUMBER_STYLES)
+        self.delimiter = check_group(delimiter, LIST_NUMBER_DELIMITERS)
 
-    def encode_content(self):
-        ssd = [self.start, encode_dict(self.style, []),
-               encode_dict(self.delimiter, [])]
-        items = encode_items(self)
-        return [ssd, items]
+    def _slots_to_json(self):
+        style = encode_dict(self.style, [])
+        delimiter = encode_dict(self.delimiter, [])
+        ssd = [self.start, style, delimiter]
+        return [ssd, self.content.to_json()]
+
+
+class Definition(Element):
+    """The definition (description); used in a definition list.
+    It can include code and all other block elements.
+
+    :param args: elements
+    :type args: :class:`Inline`
+    :Base: :class:`Element`
+     """
+    __slots__ = ['_content']
+
+    def __init__(self, *args):
+        self._set_content(args, Block)
+
+    def to_json(self):
+        return self.content.to_json()
+
+
+class DefinitionItem(Element):
+    """
+    Contains pairs of Term and Definitions (plural!)
+
+    Each list item represents a pair of i) a term
+    (a list of inlines) and ii) one or more definitions
+
+
+    :param term: Term of the definition (an inline holder)
+    :type term: [:class:`Inline`]
+    :param definition: List of definitions or descriptions
+        (each a block holder)
+    :type definition: [:class:`Definition`]
+    :Base: :class:`Element`
+    """
+    __slots__ = ['_term', '_definitions']
+
+    def __init__(self, term, definitions):
+        self.term = term
+        self.definitions = definitions
+
+    def __repr__(self):
+        term = self.term
+        definitions = self.definitions
+        return '{}({}: {})'.format(self.tag, term, definitions)
+
+    @property
+    def term(self):
+        return self._term
+
+    @term.setter
+    def term(self, value):
+        value = value.list if isinstance(value, Items) else list(value)
+        self._term = Items(*value, oktypes=Inline, parent=self)
+        self._term._container = '_term'
+
+    @property
+    def definitions(self):
+        return self._definitions
+
+    @definitions.setter
+    def definitions(self, value):
+        value = value.list if isinstance(value, Items) else list(value)
+        self._definitions = Items(*value, oktypes=Definition, parent=self)
+        self._definitions._container = '_definitions'
+
+    def to_json(self):
+        return [self.term.to_json(), self.definitions.to_json()]
 
 
 class DefinitionList(Block):
-    """Definition list Each list item is a pair consisting of a term
-    (a list of inlines) and one or more definitions (each a list of blocks)
+    """Definition list: list of definition items; basically (term, definition)
+    tuples.
 
-     Block DefinitionList(items=[([Inline],[[Block]])])
+    Each list item represents a pair of i) a term
+    (a list of inlines) and ii) one or more definitions (each a list of blocks)
+
+    Example:
+
+        >>> term1 = [Str('Spam')]
+        >>> def1 = Definition(Para(Str('...emails')))
+        >>> def2 = Definition(Para(Str('...meat')))
+        >>> spam = DefinitionItem(term1, [def1, def2])
+        >>> 
+        >>> term2 = [Str('Spanish'), Space, Str('Inquisition')]
+        >>> def3 = Definition(Para(Str('church'), Space, Str('court')))
+        >>> inquisition = DefinitionItem(term=term2, definitions=[def3])
+        >>> definition_list = DefinitionList(spam, inquisition)
+
+    :param args: Definition items (a term with definitions)
+    :type args: :class:`DefinitionItem`
+    :Base: :class:`Block`
      """
 
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = [(init_items(k, container=self, has_blocks=False),
-                       init_items(v, container=self, has_blocks=True, depth=2))
-                      for k, v in args]
+        self._set_content(args, DefinitionItem)
 
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
+
+
+class TableCell(Element):
+    """
+    Table Cell
+
+    :param args: elements
+    :type args: :class:`Block`
+    :Base: :class:`Element`
+     """
+    __slots__ = ['_content']
+
+    def __init__(self, *args):
+        self._set_content(args, Block)
+
+    def to_json(self):
+        return self.content.to_json()
+
+
+class TableRow(Element):
+    """
+    Table Row
+
+    :param args: cells
+    :type args: :class:`TableCell`
+    :Base: :class:`Element`
+     """
+    __slots__ = ['_content']
+
+    def __init__(self, *args):
+        self._set_content(args, TableCell)
+
+    def to_json(self):
+        return self.content.to_json()
 
 
 class Table(Block):
-    """Table, with caption, column alignments (required), relative column
-    widths (0 = default), column headers (each a list of blocks),
-    and rows (each a list of lists of blocks)
+    """Table, made by a list of table rows, and 
+    with optional caption, column alignments, relative column widths and
+    column headers.
 
-     Block Table(caption=[Inline] alignment=[Alignment] width=[Double]
-     header=[[Block]] items=[[[Block]]])
+    Example:
+
+        >>> x = [Para(Str('Something')), Para(Space, Str('else'))]
+        >>> c1 = TableCell(*x)
+        >>> c2 = TableCell(Header(Str('Title')))
+        >>> 
+        >>> rows = [TableRow(c1, c2)]
+        >>> table = Table(*rows, header=TableRow(c2,c1))
+
+    :param args: Table rows
+    :type args: :class:`TableRow`
+    :param header: A special row specifying the column headers
+    :type header: :class:`TableRow`
+    :param caption: The caption of the table
+    :type caption: [:class:`Inline`]
+    :param alignment: List of row alignments
+        (either 'AlignLeft', 'AlignRight', 'AlignCenter' or 'AlignDefault').
+    :type alignment: [:class:`str`]
+    :param width: Relative column widths (default is a list of 0.0s)
+    :type width: [:class:`float`]
+    :Base: :class:`Block`
      """
 
-    __slots__ = ['items', 'header', 'caption', 'alignment', 'width', 'rows',
-                 'cols']
+    __slots__ = ['_content', '_header', '_caption',
+                 'alignment', 'width', 'rows', 'cols']
 
-    def __init__(self, *args, header=None, caption=None, alignment=None,
-                 width=None):
-        self.items = init_items(args, container=self, has_blocks=True, depth=3)
-        self.rows = len(self.items)
-        self.cols = len(self.items[0])
+    def __init__(self, *args, header=None, caption=None,
+                 alignment=None, width=None):
 
-        self.header = init_items(header, container=self,
-                                 has_blocks=True, depth=2)
-        assert len(header) == self.cols
+        self._set_content(args, TableRow)
+        self.rows = len(self.content)
+        self.cols = len(self.content[0].content)
+        self.header =  header if header else []
+        self.caption = caption if caption else []
 
-        self.caption = init_items(caption, container=self, has_blocks=False)
+        if alignment is None:
+            self.alignment = ['AlignDefault'] * self.cols
+        else:
+            self.alignment = [check_group(a, TABLE_ALIGNMENT)
+                for a in alignment]
+            if len(self.alignment) != self.cols:
+                raise IndexError('alignment has an incorrect number of rows')
 
-        self.alignment = ['AlignDefault'] * len(self.items[0]) \
-            if alignment is None else alignment
-        assert all(item in TABLE_ALIGNMENT for item in alignment)
+        if width is None:
+            self.width = [0.0] * self.cols
+        else:
+            self.width = [check_type(w, (float, int)) for w in width]
+            if len(self.width) != self.cols:
+                raise IndexError('width has an incorrect number of rows')
 
-        self.width = [0.0] * len(self.items[0]) if width is None else width
-        assert all(item >= 0 for item in width)
+    @property
+    def header(self):
+        self._header.parent = self
+        self._header._container = '_header'
+        return self._header
 
-    def encode_content(self):
-        caption = [to_json(x) for x in self.caption]
+    @header.setter
+    def header(self, value):
+        value = value.content if isinstance(value, TableRow) else list(value)
+        self._header = TableRow(*value)
+        if len(value) != self.cols:
+            msg = 'table header has an incorrect number of rows'
+            raise IndexError(msg)
+
+    @property
+    def caption(self):
+        return self._caption
+
+    @caption.setter
+    def caption(self, value):
+        value = value.list if isinstance(value, Items) else list(value)
+        self._caption = Items(*value, oktypes=Inline, parent=self)
+        self._caption._container = '_caption'
+
+    def _slots_to_json(self):
+        caption = [chunk.to_json() for chunk in self.caption]
         alignment = [encode_dict(x, []) for x in self.alignment]
-        header = [[to_json(x) for x in cell] for cell in self.header]
-        items = encode_items(self)
+        header = self.header.to_json()
+        items = self.content.to_json()
         content = [caption, alignment, self.width, header, items]
         return content
 
-        return OrderedDict((k, metawalk(v)) for k, v in self.items.items())
-
-
-def metawalk(e):
-    t = type(e)
-    assert t in (str, list, bool, MetaInlines, MetaBlocks, OrderedDict), t
-
-    if t == str:
-        return e
-    elif t == MetaInlines:
-        return to_json(e)
-    elif t == MetaBlocks:
-        return to_json(e)
-    elif t == list:
-        return encode_dict('MetaList', [metawalk(ee) for ee in e])
-    elif t == OrderedDict:
-        return encode_dict('MetaMap', OrderedDict((k, metawalk(v))
-                                                  for k, v in e.items()))
-    elif t == bool:
-        return encode_dict('MetaBool', e)
-
 
 class MetaInlines(Element):
-    """MetaInlines
+    """
+    MetaInlines: list of arbitrary inlines within the metatata
 
-     MetaValue MetaInlines (items=[Inline])
+    :param args: contents of the metadata element
+    :type args: :class:`Inline`
+    :Base: :class:`Element`
+
      """
 
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=False)
+        self._set_content(args, Inline)
 
-    def __repr__(self):
-        return 'MetaInlines({})'.format(','.join(repr(x) for x in self.items))
-
-    def encode_content(self):
-        return encode_items(self)
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 class MetaBlocks(Element):
-    """MetaBlocks
+    """
+    MetaBlocks: list of arbitrary blocks within the metadata
 
-     MetaValue MetaBlocks (items=[Inline])
-     """
+    :param args: contents of the metadata element
+    :type args: :class:`Block`
+    :Base: :class:`Element`
+    """
 
-    __slots__ = ['items']
+    __slots__ = ['_content']
 
     def __init__(self, *args):
-        self.items = init_items(args, container=self, has_blocks=True)
+        self._set_content(args, Block)
 
-    def encode_content(self):
-        return encode_items(self)
-
-
-# ---------------------------
-# Classes not in Pandoc
-# ---------------------------
-
-class TableHeader(Element):
-    pass
-
-class TableRow(Element):
-    pass
-
-class TableCell(Element):
-    pass
-
-class ListItem(Element):
-    pass
-
-class Definition(Element):
-    pass
-
-class DefinitionTerm(Element):
-    pass
-
-
+    def _slots_to_json(self):
+        return self.content.to_json()
 
 
 # ---------------------------
@@ -800,6 +1053,8 @@ TABLE_ALIGNMENT = {'AlignLeft', 'AlignRight', 'AlignCenter', 'AlignDefault'}
 QUOTE_TYPES = {'SingleQuote', 'DoubleQuote'}
 
 CITATION_MODE = {'AuthorInText', 'SuppressAuthor', 'NormalCitation'}
+# AuthorInText: @foo - as John Doe (1921) said
+# SupressAuthor: [-@foo]
 
 MATH_FORMATS = {'DisplayMath', 'InlineMath'}
 
@@ -808,87 +1063,39 @@ RAW_FORMATS = {'html', 'tex', 'latex'}
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
     MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
 
-# ---------------------------
-# Aux Functions - Initialize
-# ---------------------------
-
-def validate(item, group=None, instance=None, instances=None):
-    if group is not None:
-        assert item in group, item
-    elif instance is not None:
-        assert isinstance(item, instance), item
-    else:
-        assert all(isinstance(elem, instances) for elem in item), item
-    return item
-
-
-def init_items(args, container, has_blocks, depth=1):
-    # TODO: If we create the TableCell, TableRow, etc. classes, we can set
-    # this as a method of the Element class
-
-    assert depth in (1, 2, 3)
-    if depth == 1:
-        ans = [validate_item(x, has_blocks, container) 
-               for x in args]
-    elif depth == 2:
-        ans = [[validate_item(x, has_blocks, container)
-                for x in y] for y in args]
-    else:
-        ans = [[[validate_item(x, has_blocks, container)
-                 for x in y] for y in z] for z in args]
-    return ans
-
-
-def validate_item(x, has_blocks, container):
-    def error_message(x):
-        expected = 'Block' if has_blocks else 'Inline'
-        container_name = type(container).__name__
-        child_name = type(x).__name__
-        err = '{}() element must contain {}s but received a {}()\n---\n{}\n---'
-        return err.format(container_name, expected, child_name, repr(x))
-
-    x = x() if callable(x) else x
-    assert isinstance(x, Block if has_blocks else Inline), error_message(x)
-    return x
-
-
-def init_ica(self, identifier, classes, attributes):
-    self.identifier = validate(identifier, instance=str)
-    self.classes = validate(classes.copy(), instances=str)
-    if type(attributes) == dict or type(attributes) == list:
-        attributes = OrderedDict(attributes)
-    self.attributes = validate(attributes.copy(), instance=OrderedDict)
-
-def init_ssd(self, start, style, delimiter):
-    self.start = start
-    self.style = style
-    self.delimiter = delimiter
-
-    assert (self.start == int(self.start)) and (0 <= self.start)
-    assert self.style in LIST_NUMBER_STYLES, self.style
-    assert self.delimiter in LIST_NUMBER_DELIMITERS, self.delimiter
-
-
-def init_ut(self, url, title):
-    self.url = validate(url, instance=str)
-    self.title = validate(title, instance=str)
 
 # ---------------------------
-# Main JSON Functions
+# Functions
 # ---------------------------
 
-def to_json(element):
-    tag = type(element)
-    if tag == Doc:
-        meta = element.metadata.items()
-        meta = OrderedDict((k, metawalk(v)) for k, v in meta)
-        return [{'unMeta': meta}, element.items]
-    else:
-        return encode_dict(tag.__name__, element.encode_content())
+def _decode_ica(lst):
+    return { 'identifier': lst[0],
+             'classes': lst[1],
+             'attributes': lst[2]}
+
+
+def _decode_citation(dct):
+    dct = dict(dct) # Convert from list of tuples to dict
+    return Citation(id=dct['citationId'],
+                    mode=dct['citationMode'],
+                    prefix=dct['citationPrefix'],
+                    suffix=dct['citationSuffix'],
+                    hash=dct['citationHash'],
+                    note_num=dct['citationNoteNum'])
+
+
+def _decode_definition_item(item):
+    term, definitions = item
+    definitions = [Definition(*x) for x in definitions]
+    return DefinitionItem(term=term, definitions=definitions)
+
+
+def _decode_row(row):
+    row = [TableCell(*x) for x in row]
+    return TableRow(*row)
 
 
 def from_json(data):
-
     # Empty metadata
     if data == []:
         return data
@@ -910,83 +1117,70 @@ def from_json(data):
     tag = data[0][1]
     c = data[1][1]
 
-    if tag == 'Null':
-        return Null()
-    elif tag == 'Space':
-        return Space()
-    elif tag == 'HorizontalRule':
-        return HorizontalRule()
-    elif tag == 'SoftBreak':
-        return SoftBreak()
-    elif tag == 'LineBreak':
-        return LineBreak()
+    # Maybe using globals() is too slow?
 
-    elif tag == 'Plain':
-        return Plain(*c)
-    elif tag == 'Para':
-        return Para(*c)
-    elif tag == 'BlockQuote':
-        return BlockQuote(*c)
-    elif tag == 'Emph':
-        return Emph(*c)
-    elif tag == 'Strong':
-        return Strong(*c)
-    elif tag == 'Strikeout':
-        return Strikeout(*c)
-    elif tag == 'Superscript':
-        return Superscript(*c)
-    elif tag == 'Subscript':
-        return Subscript(*c)
-    elif tag == 'SmallCaps':
-        return SmallCaps(*c)
-    elif tag == 'Note':
-        return Note(*c)
+    if tag == 'Str':
+        return Str(c)
+
+    elif tag in ('Null', 'Space', 'HorizontalRule', 'SoftBreak', 'LineBreak'):
+        return globals()[tag]()
+
+    elif tag in ('Plain', 'Para', 'BlockQuote', 'Emph', 'Strong', 'Strikeout',
+                 'Superscript', 'Subscript', 'SmallCaps', 'Note'):
+        return globals()[tag](*c)
+
+    elif tag in ('Div', 'Span'):
+        return globals()[tag](*c[1], **_decode_ica(c[0]))
 
     elif tag == 'Header':
-        return Header(*c[2], level=c[0], identifier=c[1][0], classes=c[1][1],
-                      attributes=c[1][2])
-    elif tag == 'Div':
-        return Div(*c[1], identifier=c[0][0], classes=c[0][1],
-                   attributes=c[0][2])
-    elif tag == 'Span':
-        return Span(*c[1], identifier=c[0][0], classes=c[0][1],
-                    attributes=c[0][2])
+        return Header(*c[2], level=c[0], **_decode_ica(c[1]))
+
     elif tag == 'Quoted':
         return Quoted(*c[1], quote_type=c[0])
-    elif tag == 'Cite':
-        return Cite(*c[1], citations=c[0])
-    elif tag == 'Link':
-        return Link(*c[1], url=c[2][0], title=c[2][1], identifier=c[0][0],
-                    classes=c[0][1], attributes=c[0][2])
-    elif tag == 'Image':
-        return Image(*c[1], url=c[2][0], title=c[2][1], identifier=c[0][0],
-                     classes=c[0][1], attributes=c[0][2])
 
-    elif tag == 'Str':
-        return Str(c)
+    elif tag == 'Link':
+        return Link(*c[1], url=c[2][0], title=c[2][1], **_decode_ica(c[0]))
+
+    elif tag == 'Image':
+        return Image(*c[1], url=c[2][0], title=c[2][1], **_decode_ica(c[0]))
+
     elif tag == 'CodeBlock':
-        return CodeBlock(text=c[1], identifier=c[0][0],
-                         classes=c[0][1], attributes=c[0][2])
+        return CodeBlock(text=c[1], **_decode_ica(c[0]))
+
     elif tag == 'RawBlock':
         return RawBlock(text=c[1], format=c[0])
+
     elif tag == 'Code':
-        return Code(text=c[1], identifier=c[0][0],
-                    classes=c[0][1], attributes=c[0][2])
+        return Code(text=c[1], **_decode_ica(c[0]))
+
     elif tag == 'Math':
         return Math(text=c[1], format=c[0])
+
     elif tag == 'RawInline':
         return RawInline(text=c[1], format=c[0])
 
+    elif tag == 'Cite':
+        items = [_decode_citation(dct) for dct in c[0]]
+        return Cite(*c[1], citations=items)
+
     elif tag == 'BulletList':
-        return BulletList(*c)
+        items = [ListItem(*item) for item in c]
+        return BulletList(*items)
+
     elif tag == 'OrderedList':
-        return OrderedList(*c[1], start=c[0][0],
+        items = [ListItem(*item) for item in c[1]]
+        return OrderedList(*items, start=c[0][0],
                            style=c[0][1], delimiter=c[0][2])
+
     elif tag == 'DefinitionList':
-        return DefinitionList(*c)
+        items = [_decode_definition_item(item) for item in c]
+        return DefinitionList(*items)
+
     elif tag == 'Table':
-        return Table(*c[4], caption=c[0], alignment=c[1], width=c[2],
-                     header=c[3])
+        header = _decode_row(c[3])
+        data = [_decode_row(x) for x in c[4]]
+        return Table(*data, caption=c[0], alignment=c[1], width=c[2],
+                     header=header)
 
     elif tag == 'MetaList':
         return c
@@ -1013,40 +1207,21 @@ def from_json(data):
         print('--')
         raise Exception('unknown tag ' + tag)
 
+def metawalk(e):
+    valid_types = (str, list, bool, OrderedDict, MetaInlines, MetaBlocks)
+    check_type(e, valid_types)
 
-# ---------------------------
-# Aux JSON Functions
-# ---------------------------
-
-def encode_dict(tag, content):
-    return OrderedDict((("t", tag), ("c", content)))
-
-
-def encode_items(self):
-    tag = type(self).__name__
-    if tag in ('BulletList', 'OrderedList'):
-        return [[to_json(x) for x in row] for row in self.items]
-    elif tag == 'DefinitionList':
-        return [[[to_json(x) for x in k], [[to_json(x) for x in y]
-                for y in v]] for (k, v) in self.items]
-    elif tag == 'Table':
-        return [[[to_json(x) for x in cell] for cell in row]
-                for row in self.items]
-    else:
-        return [to_json(x) for x in self.items]
-
-
-def encode_ica(self):
-    return [self.identifier, self.classes, list(self.attributes.items())]
-
-
-def encode_list(items):
-    return [x.to_json() for x in items]
-
-
-def decode_ica(self, attr):
-    if attr is None:
-        attr = ["", [], []]  # ID, classes, attribute pairs
-    self.identifier, self.classes, attributes = attr
-    self.attributes = dict(attributes)
+    # TODO: Simplify this logic, perhaps move to a Metadata base class
+    if isinstance(e, (MetaInlines, MetaBlocks)):
+        return e.to_json()
+    elif type(e) == str:
+        return e
+    elif type(e) == list:
+        return encode_dict('MetaList', [metawalk(ee) for ee in e])
+    elif type(e) == OrderedDict:
+        #content = OrderedDict((k, metawalk(v)) for k, v in e.content())
+        content = OrderedDict((k, metawalk(v)) for k, v in e.items())
+        return encode_dict('MetaMap', content)
+    elif type(e) == bool:
+        return encode_dict('MetaBool', e)
 
