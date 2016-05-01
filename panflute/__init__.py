@@ -72,7 +72,7 @@ from .elements import (
     Code, BlockQuote, Note, Div, Plain, Para, Emph, Strong, Strikeout,
     Superscript, Subscript, SmallCaps, Span, RawBlock, RawInline, Math,
     CodeBlock, Link, Image, BulletList, OrderedList, DefinitionList, Header,
-    Quoted, Cite, Table)
+    Quoted, Cite, Table, MetaInlines, MetaBlocks)
 
 # from .elements import from_json
 

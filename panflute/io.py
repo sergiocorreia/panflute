@@ -89,7 +89,6 @@ def toJSONFilters(actions,
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
-        #doc.content = walk(doc.content, action, doc)
         doc = doc.walk(action, doc)
     if finalize is not None:
         finalize(doc)
