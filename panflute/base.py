@@ -3,6 +3,7 @@
 # ---------------------------
 
 from collections import OrderedDict, MutableSequence
+from operator import attrgetter
 
 
 # ---------------------------
@@ -115,9 +116,6 @@ class Element(object):
         """
         Return position of element inside the parent.
 
-        If the element is TableCaption (and other corner cases), it will not
-        work.
-
         :rtype: ``int``
         """
         if self.parent:
@@ -178,6 +176,24 @@ class Element(object):
             return self.parent
         else:
             return self.parent.ancestor(n-1)
+
+    # ---------------------------
+    # Walking
+    # ---------------------------
+
+    def walk(self, action, doc):
+        for name in get_containers(self):
+            obj = attrgetter(name)(self)
+            if isinstance(obj, Element):
+                setattr(self, name, obj.walk(action, doc))
+            elif isinstance(obj, Items):
+                ans = [x.walk(action, doc) for x in obj]
+                ans = [x for x in ans if x != []]
+                setattr(self, name, ans)
+            else:
+                raise Exception(self)
+        altered = action(self, doc)
+        return self if altered is None else altered
 
 
 class Inline(Element):
@@ -278,3 +294,10 @@ def check_type(value, oktypes):
         raise TypeError(msg)
     else:
         return value
+
+
+def get_containers(e):
+    if e.tag == 'Doc':
+        return ['content']
+    else:
+        return [slot[1:] for slot in e.__slots__ if slot.startswith('_') and slot != '_container']

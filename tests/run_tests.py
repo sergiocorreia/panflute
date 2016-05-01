@@ -42,7 +42,7 @@ print(' - Length:', len(input_data) == len(output_data), len(input_data), len(ou
 print(' - Content:', input_data == output_data)
 
 print('\nApplying trivial filter...')
-doc.content = pf.walk(element=doc.content, action=empty_test, doc=doc)
+doc = doc.walk(action=empty_test, doc=doc)
 print(' - Done!')
 
 print(' - Dumping JSON...')

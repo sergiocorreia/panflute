@@ -76,66 +76,6 @@ def dump(doc, output_stream=None):
     )
 
 
-def is_container(element):
-    #return isinstance(element, (list, tuple, Element))
-    return isinstance(element, (Element, Items))
-
-
-def get_containers(element):
-    assert isinstance(element, Element)
-    items = (getattr(element, slot) for slot in element.__slots__)
-    items = [item for item in items if is_container(item)]
-    return items
-
-
-def walk(element, action, doc):
-    """Walk through every Pandoc element and apply action(element, doc)
-
-    The doc class contains the .metadata and .format attributes, as well as
-    any optional attributes (such as backmatter) which gives it
-    flexibility."""
-
-    # Use this when debugging, to bypass pandoc (which intercepts stdout)
-    # print("WARNING: ", element, file=sys.stderr)
-
-    assert is_container(element), type(element)
-
-    # element can be doc, a normal element, or a list
-
-    if element is doc:
-        doc.content = walk(doc.content, action, doc)
-        # TODO: Walk metadata?
-        return doc
-    elif isinstance(element, Element):
-        # Apply filter to the element
-        altered = action(element, doc)
-        # Returning [] is the same as deleting the element (pandocfilters.py)
-        if altered == []:
-            return []
-        # Returning None is the same as keeping it unchanged (pandocfilters.py)
-        elif altered is None:
-            altered = element
-        for item in get_containers(altered):
-            item = walk(item, action, doc)
-    else:
-        altered = []
-        for item in element:
-            if isinstance(item, Element):
-                item = walk(item, action, doc)
-                # Returning [] will drop the item if it was an Element
-                if item != []:
-                    altered.append(item)
-            elif isinstance(item, (list, tuple)):
-                item = walk(item, action, doc)
-                altered.append(item)
-            else:
-                altered.append(item)
-    # Remove this: assert that ans is not empty if input was not empty
-    if element:
-        assert altered != []
-    return altered
-
-
 def toJSONFilters(actions,
                   prepare=None, finalize=None,
                   input_stream=None, output_stream=None,
@@ -149,7 +89,8 @@ def toJSONFilters(actions,
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
-        doc.content = walk(doc.content, action, doc)
+        #doc.content = walk(doc.content, action, doc)
+        doc = doc.walk(action, doc)
     if finalize is not None:
         finalize(doc)
     dump(doc, output_stream=output_stream)

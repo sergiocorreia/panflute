@@ -3,7 +3,6 @@
 # ---------------------------
 
 from .elements import CodeBlock, Div, from_json, Str, Para, Inline
-from .io import walk
 
 import os
 import re
@@ -36,8 +35,7 @@ def replace_keyword(doc, keyword, replacement):
                 doc.replacement_ok = True
                 return replacement
 
-    #f = partial(replace_keyword, kwd=keyword, rep=replacement)
-    walk(doc, filter_kwd, doc)
+    doc = doc.walk(filter_kwd, doc)
 
 
 def debug(*args, **kwargs):

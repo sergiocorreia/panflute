@@ -76,6 +76,6 @@ from .elements import (
 
 # from .elements import from_json
 
-from .io import load, dump, walk, toJSONFilter, toJSONFilters, stringify
+from .io import load, dump, toJSONFilter, toJSONFilters, stringify
 
 from .tools import yaml_filter, shell, convert_markdown, debug, replace_keyword
