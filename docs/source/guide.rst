@@ -10,7 +10,7 @@ Creating a document from scratch
 
    The most complex example is this:
 
-   - The :class:`DefinitionList` element can contain mutiple :class:``DefinitionItem`.
+   - The :class:`DefinitionList` element can contain mutiple :class:`DefinitionItem`.
    - In turn, these contain multiple inlines under the ``.term`` attribute
      and multiple definitions.
    - Finally, each definition can contain multiple blocks.
@@ -40,8 +40,7 @@ $include(introduction.md)
 YAML blocks
 ***********
 
-.. automodule:: panflute.io
-   :members:
+
 
 EXPLAIN THE FIGURES FILTER
 

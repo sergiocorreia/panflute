@@ -32,9 +32,27 @@ VerticalSpaces = (Para, )
 
 def load(input_stream=None):
     """
-    Load JSON-encoded document and return Doc class
+    Load JSON-encoded document and return a :class:`.Doc` element.
 
-    If no input stream is set (a file handle), will load from stdin
+    The JSON input will be read from :data:`sys.stdin` unless an alternative 
+    text stream is given (a file handle).
+
+    To load from a file, you can do:
+
+        >>> import panflute as pf
+        >>> with open('some-document.json', encoding='utf-8') as f:
+        >>>     doc = pf.load(f)
+
+    To load from a string, you can do:
+
+        >>> import io
+        >>> raw = '[{"unMeta":{}},[{"t":"Para","c":[{"t":"Str","c":"Hello!"}]}]]'
+        >>> f = io.StringIO(raw)
+        >>> doc = pf.load(f)
+
+    :param input_stream: text stream used as input
+        (default is :data:`sys.stdin`)
+    :rtype: :class:`.Doc`
     """
 
     if input_stream is None:
@@ -57,7 +75,33 @@ def load(input_stream=None):
 
 def dump(doc, output_stream=None):
     """
-    ...
+    Dump a :class:`.Doc` object into a JSON-encoded text string.
+
+    The output will be sent to :data:`sys.stdout` unless an alternative 
+    text stream is given.
+
+    To dump to :data:`sys.stdout` just do:
+
+        >>> import panflute as pf
+        >>> doc = pf.Doc(Para(Str('a')))  # Create sample document
+        >>> pf.dump(doc)
+
+    To dump to file:
+
+        >>> with open('some-document.json', 'w'. encoding='utf-8') as f:
+        >>>     pf.dump(doc, f)
+
+    To dump to a  string:
+
+        >>> import io
+        >>> with io.StringIO() as f:
+        >>>     pf.dump(doc, f)
+        >>>     contents = f.getvalue()
+
+    :param doc: document, usually created with :func:`.load`
+    :type doc: :class:`.Doc`
+    :param output_stream: text stream used as output
+        (default is :data:`sys.stdout`)
     """
 
     assert type(doc) == Doc

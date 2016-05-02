@@ -33,10 +33,15 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.githubpages'
+    'sphinx.ext.viewcode',  # Allow click to view code
+    'sphinx.ext.autosummary',  # Allow autosummary tables
+    'sphinx.ext.githubpages',  # Add .nojekyll file (not used b/c symlink)
+    'sphinx.ext.intersphinx'
 ]
+
+# See http://www.sphinx-doc.org/en/stable/ext/intersphinx.html
+intersphinx_mapping = {'python': ('https://docs.python.org/3.5', None)}
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

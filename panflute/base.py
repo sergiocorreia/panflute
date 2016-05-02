@@ -86,9 +86,13 @@ class Element(object):
     def content(self):
         """
         Sequence of :class:`Element` objects (usually either :class:`Block`
-        or :class:`Inline`).
+        or :class:`Inline`) that are "children" of the current element.
 
         Only available for elements that accept ``*args``.
+
+        Note: some elements have children in attributes other than ``content``
+        (such as :class:`.Table` that has children in the header and
+        caption attributes).
         """
         return self._content
 
@@ -181,7 +185,43 @@ class Element(object):
     # Walking
     # ---------------------------
 
-    def walk(self, action, doc):
+    def walk(self, action, doc=None):
+        """
+        Walk through the element and all its children (sub-elements),
+        applying the provided function ``action``.
+
+        A trivial example would be:
+
+        .. code-block:: python
+
+            from panflute import *
+
+            def no_action(elem, doc):
+                pass
+
+            doc = Doc(Para(Str('a')))
+            altered = doc.walk(no_action)
+
+
+        :param action: function that takes (element, doc) as arguments.
+        :type action: :class:`function`
+        :param doc: root document; used to access metadata,
+            the output format (in ``.format``, other elements, and
+            other variables). Only use this variable if for some reason
+            you don't want to use the current document of an element.
+        :type doc: :class:`.Doc`
+        :rtype: :class:`Element` | ``[]`` | ``None``
+        """
+
+        # Infer the document thanks to .parent magic
+        if doc is None:
+            guess = self
+            while guess.parent is not None:
+                guess = guess.parent
+                if guess.tag == 'Doc':
+                    doc = guess
+                    break
+
         for name in get_containers(self):
             obj = attrgetter(name)(self)
             if isinstance(obj, Element):

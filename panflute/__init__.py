@@ -45,7 +45,7 @@ Detects common mistakes
 Comes with batteries included:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Convert markdown strings into python objects or other formats, with the `convert_markdown(text, format)` function (which calls Pandoc internally)
+- Convert markdown strings into python objects or other formats, with the `convert_text(text, input_format, output_format)` function (which calls Pandoc internally)
 - Use code blocks to hold YAML options and other data (such as CSV) with `yaml_filter(element, doc, tag, function)`.
 - Called external programs to fetch results with `shell()`.
 - Modifying the entire document (e.g. moving all the figures and tables to the back of a PDF) are easy to use, thanks to the `prepare` and `finalize` options of `toJSONFilter`, and to the `replace_keyword` function
@@ -78,4 +78,4 @@ from .elements import (
 
 from .io import load, dump, toJSONFilter, toJSONFilters, stringify
 
-from .tools import yaml_filter, shell, convert_markdown, debug, replace_keyword
+from .tools import yaml_filter, shell, convert_text, debug, replace_keyword

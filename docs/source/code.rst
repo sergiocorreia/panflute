@@ -17,8 +17,13 @@ Base elements
       
       Element that contains the current one.
 
+      **Note:** the ``.parent`` and related
+      attributes are not implemented for metadata elements.
+
+
       :rtype: :class:`Element` | ``None``
 
+   .. automethod:: panflute.base.Element.walk
    .. autoattribute:: panflute.base.Element.content
    .. autoattribute:: panflute.base.Element.index
    .. automethod:: panflute.base.Element.ancestor
@@ -73,9 +78,9 @@ These are the standard Pandoc elements, as described `here <https://hackage.hask
        >>> hasattr(h, 'parent')
        True
 
-.. warning::
-   Exception: the ``.content`` attribute is only
-   inherited by elements that accept the ``*args`` argument.
+   **Exception:** the ``.content`` attribute is only
+   inherited by elements that accept the ``*args`` argument (so we can do
+   ``Para().content`` but not ``Str().content``).
 
 .. automodule:: panflute.elements
    :members: Doc
@@ -90,8 +95,6 @@ These are the standard Pandoc elements, as described `here <https://hackage.hask
 Standard functions
 ********************************************
 
-These are the same functions exposed by `pandocfilters <https://github.com/jgm/pandocfilters>`_, although with different arguments.
-
 .. currentmodule:: panflute.io
 
 .. autosummary::
@@ -100,9 +103,22 @@ These are the same functions exposed by `pandocfilters <https://github.com/jgm/p
    toJSONFilters
    load
    dump
-   walk
    stringify
 
+.. note::
+   The ``walk()`` function has been replaced by the ``.walk()`` method of
+   each element. To walk through the entire document,
+   do ``altered = doc.walk()``.
+
+.. currentmodule:: panflute.base
+
+.. seealso:: :meth:`.base.walk`
+
+.. seealso:: :meth:`.base.Element.walk`
+
+.. seealso:: :meth:`.base.Element.walk`
+
+.. seealso:: :meth:`.Element.walk`
 
 .. automodule:: panflute.io
    :members:

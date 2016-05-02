@@ -41,9 +41,6 @@ class Doc(Element):
         >>> content = [Header(Str('Title')), Para(Str('Hello!'))]
         >>> doc = Doc(*content, metadata=meta, format='pdf')
         >>> doc.figure_count = 0 #  You can add attributes freely
-
-    .. warning:: The ``.parent`` and related methods are not implemented
-       in the metadata.
     """
 
     def __init__(self, *args, metadata={}, format='html'):

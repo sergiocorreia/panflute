@@ -2,7 +2,7 @@
 # Imports
 # ---------------------------
 
-from .elements import CodeBlock, Div, from_json, Str, Para, Inline
+from .elements import CodeBlock, Div, from_json, Str, Para, Inline, Doc
 
 import os
 import re
@@ -44,7 +44,7 @@ def debug(*args, **kwargs):
     """
     print(*args, **kwargs, file=sys.stderr)
 
-def convert_markdown(text, format='json'):
+def convert_text(text, input_format='markdown', output_format='json'):
     """
     Pandoc Wrapper; based on pyandoc by Kenneth Reitz
 
@@ -54,7 +54,11 @@ def convert_markdown(text, format='json'):
     pandoc_path = which('pandoc')
     if not os.path.exists(pandoc_path):
         raise OSError("Path to pandoc executable does not exists")
-    args = [pandoc_path, '--from=markdown', '--to={}'.format(format)]
+    out_fmt = 'json' if output_format == 'doc' else output_format
+
+    from_arg = '--from={}'.format(input_format)
+    to_arg = '--to={}'.format(out_fmt)
+    args = [pandoc_path, from_arg, to_arg]
     proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = proc.communicate(input=text.encode('utf-8'))
     exitcode = proc.returncode
@@ -62,10 +66,17 @@ def convert_markdown(text, format='json'):
         raise IOError(err)
 
     out = out.decode('utf-8')
-    if format == 'json':
+
+    if output_format == 'json':
         out = json.loads(out, object_pairs_hook=from_json)[1]
+
+    elif output_format == 'doc':  # Entire document including metadata
+        metadata, items = json.loads(out, object_pairs_hook=from_json)
+        out = Doc(*items, metadata=metadata)  
+    
     else:
         out = "\n".join(out.splitlines()) #  Replace \r\n with \n
+    
     return out
 
 
