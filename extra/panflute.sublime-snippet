@@ -1,0 +1,32 @@
+<snippet>
+	<content><![CDATA[
+"""
+${1:Pandoc filter using panflute}
+"""
+
+import panflute as pf
+
+
+def prepare(doc):
+    ${5:pass}
+
+
+def action(elem, doc):
+    if isinstance(elem, pf.${2:Element}) and doc.format == '${3:latex}':
+        ${4:pass}
+        # return None -> element unchanged
+        # return [] -> delete element
+
+
+def finalize(doc):
+    ${6:pass}
+
+
+if __name__ == '__main__':
+    pf.toJSONFilter(action, prepare, finalize)
+
+]]></content>
+	<tabTrigger>panflute</tabTrigger>
+	<scope>source.python</scope>
+	<description>Pandoc filter with panflute</description>
+</snippet>

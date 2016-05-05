@@ -2,7 +2,8 @@
 # Imports
 # ---------------------------
 
-from .elements import CodeBlock, Div, from_json, Str, Para, Inline, Doc
+from .base import Element
+from .elements import *
 
 import os
 import re
@@ -12,15 +13,58 @@ import yaml
 import shlex
 from shutil import which
 from subprocess import Popen, PIPE, call
+from functools import partial
+
+
+# ---------------------------
+# Constants
+# ---------------------------
+
+Spaces = (Space, LineBreak, SoftBreak)
+
+VerticalSpaces = (Para, )
+
 
 # ---------------------------
 # Functions
 # ---------------------------
 
+def stringify(element):
+    """
+    Return the raw text version of an elements (and its children element).
+
+    Example:
+
+        >>> from panflute import *
+        >>> e1 = Emph(Str('Hello'), Space, Str('world!'))
+        >>> e2 = Strong(Str('Bye!'))
+        >>> para = Para(e1, e2)
+        >>> stringify(para)
+        'Hello world! Bye!'
+    """
+
+    def attach_str(e, doc, partial_str):
+        if type(e) == Citation:
+            ans = ''
+        if hasattr(e, 'text'):
+            ans = e.text
+        elif isinstance(e, Spaces):
+            ans = ' '
+        elif isinstance(e, VerticalSpaces):
+            ans = '\n\n'
+        else:
+            ans = ''
+        partial_str.append(ans)
+
+    partial_str = []
+    partial_attach_str = partial(attach_str, partial_str=partial_str)
+    element.walk(partial_attach_str)
+    return ''.join(partial_str)
+
+
 def replace_keyword(doc, keyword, replacement):
     """
     ...
-    
     .. note:: may not be robust to corner cases (handling spaces, etc.)
     """
 
@@ -29,7 +73,7 @@ def replace_keyword(doc, keyword, replacement):
             if isinstance(replacement, Inline):
                 doc.replacement_ok = True
                 return replacement
-        elif type(e) == Para and len(e.items)==1:
+        elif type(e) == Para and len(e.items) == 1:
             ee = e.items[0]
             if type(ee) == Str and ee.text == keyword:
                 doc.replacement_ok = True
@@ -43,6 +87,7 @@ def debug(*args, **kwargs):
     ...
     """
     print(*args, **kwargs, file=sys.stderr)
+
 
 def convert_text(text, input_format='markdown', output_format='json'):
     """
@@ -62,7 +107,7 @@ def convert_text(text, input_format='markdown', output_format='json'):
     proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = proc.communicate(input=text.encode('utf-8'))
     exitcode = proc.returncode
-    if exitcode!=0:
+    if exitcode != 0:
         raise IOError(err)
 
     out = out.decode('utf-8')
@@ -72,11 +117,11 @@ def convert_text(text, input_format='markdown', output_format='json'):
 
     elif output_format == 'doc':  # Entire document including metadata
         metadata, items = json.loads(out, object_pairs_hook=from_json)
-        out = Doc(*items, metadata=metadata)  
-    
+        out = Doc(*items, metadata=metadata)
+
     else:
-        out = "\n".join(out.splitlines()) #  Replace \r\n with \n
-    
+        out = "\n".join(out.splitlines())  # Replace \r\n with \n
+
     return out
 
 
@@ -84,9 +129,9 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None):
     """
     ...
     """
-    
+
     # Allow for either tag+function or a dict {tag: function}
-    assert (tag is None) + (tags is None) == 1 #  XOR
+    assert (tag is None) + (tags is None) == 1  # XOR
     if tags is None:
         tags = {tag: function}
 
@@ -97,7 +142,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None):
                 # Split yaml and data parts (separated by ... or ---)
                 raw = re.split("^([.]{3,}|[-]{3,})$",
                                element.text, 1, re.MULTILINE)
-                data = raw[2] if len(raw)>2 else ''
+                data = raw[2] if len(raw) > 2 else ''
                 raw = raw[0]
                 options = yaml.load(raw)
                 return function(options=options, data=data,
@@ -111,20 +156,19 @@ def shell(args, wait=True, msg=None):
 
     # Fix Windows error if passed a string
     if isinstance(args, str):
-        args = shlex.split(args, posix=(os.name!="nt"))
-        args = [arg.replace('/','\\') for arg in args]
+        args = shlex.split(args, posix=(os.name != "nt"))
+        args = [arg.replace('/', '\\') for arg in args]
 
     if wait:
         proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate(input=msg)
         exitcode = proc.returncode
-        if exitcode!=0:
+        if exitcode != 0:
             raise IOError(err)
         return out
     else:
         DETACHED_PROCESS = 0x00000008
         proc = Popen(args, creationflags=DETACHED_PROCESS)
-
 
 #def get_exe_path():
 #    reg = winreg.ConnectRegistry(None,winreg.HKEY_CLASSES_ROOT)

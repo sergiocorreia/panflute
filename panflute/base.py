@@ -1,9 +1,16 @@
+"""
+Base classes and methods of all Pandoc elements
+"""
+
 # ---------------------------
 # Imports
 # ---------------------------
 
-from collections import OrderedDict, MutableSequence
 from operator import attrgetter
+from collections import OrderedDict, MutableSequence, MutableMapping
+
+from .containers import ListContainer, DictContainer
+from .utils import check_type, encode_dict  # check_group
 
 
 # ---------------------------
@@ -15,6 +22,7 @@ class Element(object):
     Base class of all Pandoc elements
     """
     __slots__ = ['parent', '_container']
+    _children = []
 
     def __new__(cls, *args, **kwargs):
         # This is just to initialize self.parent to None
@@ -27,7 +35,6 @@ class Element(object):
     def tag(self):
         tag = type(self).__name__
         return tag
-
 
     # ---------------------------
     # Base methods
@@ -99,8 +106,8 @@ class Element(object):
     @content.setter
     def content(self, value):
         oktypes = self._content.oktypes
-        value = value.list if isinstance(value, Items) else list(value)
-        self._content = Items(*value, oktypes=oktypes, parent=self)
+        value = value.list if isinstance(value, ListContainer) else list(value)
+        self._content = ListContainer(*value, oktypes=oktypes, parent=self)
 
     def _set_content(self, value, oktypes):
         """
@@ -108,8 +115,7 @@ class Element(object):
         """
         if value is None:
             value = []
-        self._content = Items(*value, oktypes=oktypes, parent=self)
-
+        self._content = ListContainer(*value, oktypes=oktypes, parent=self)
 
     # ---------------------------
     # Navigation
@@ -131,7 +137,7 @@ class Element(object):
         if self._container is None:
             return self.parent.content
         else:
-            return getattr(self.parent, self._container) #  Slow??
+            return getattr(self.parent, self._container)
 
     def offset(self, n):
         """
@@ -222,16 +228,22 @@ class Element(object):
                     doc = guess
                     break
 
-        for name in get_containers(self):
-            obj = attrgetter(name)(self)
+        # First iterate over children
+        for child in self._children:
+            obj = getattr(self, child)
             if isinstance(obj, Element):
-                setattr(self, name, obj.walk(action, doc))
-            elif isinstance(obj, Items):
-                ans = [x.walk(action, doc) for x in obj]
-                ans = [x for x in ans if x != []]
-                setattr(self, name, ans)
+                ans = obj.walk(action, doc)
+            elif isinstance(obj, ListContainer):
+                ans = [item.walk(action, doc) for item in obj]
+                ans = [item for item in ans if item != []]
+            elif isinstance(obj, DictContainer):
+                ans = [(k, v.walk(action, doc)) for k, v in obj.items()]
+                ans = [(k, v) for k, v in ans if v != []]
             else:
-                raise Exception(self)
+                raise TypeError(type(obj))
+            setattr(self, child, ans)
+
+        # Then apply the action to the element
         altered = action(self, doc)
         return self if altered is None else altered
 
@@ -250,94 +262,8 @@ class Block(Element):
     __slots__ = []
 
 
-class Items(MutableSequence):
+class MetaValue(Element):
     """
-    Wrapper around a list, to track the elements' parents.
-    **This class shouldn't be instantiated directly by users,
-    but by the elements that contain it**.
-
-    :param args: elements contained in the list--like object
-    :param oktypes: type or tuple of types that are allowed as items
-    :type oktypes: ``type`` | ``tuple``
-    :param parent: the parent element
-    :type parent: ``Element``
+    Base class of all Metadata elements
     """
-    # Based on http://stackoverflow.com/a/3488283
-    # See also https://docs.python.org/3/library/collections.abc.html
-
-    __slots__ = ['list', 'oktypes', 'parent', '_container']
-
-    def __init__(self, *args, oktypes=object, parent=None):
-        self.oktypes = oktypes
-        self.parent = check_type(parent, (Element, type(None)))
-        self._container = None
-        self.list = list()
-        self.extend(args)
-
-    def __contains__(self, item):
-        return item in self.list
-
-    def __len__(self):
-        return len(self.list)
-
-    def __getitem__(self, i):
-        self.list[i].parent = self.parent
-        self.list[i]._container = self._container
-        return self.list[i]
-
-    def __delitem__(self, i):
-        del self.list[i]
-
-    def __setitem__(self, i, v):
-        v = check_type(v, self.oktypes)
-        self.list[i] = v
-
-    def insert(self, i, v):
-        v = check_type(v, self.oktypes)
-        self.list.insert(i, v)
-
-    def __str__(self):
-        return self.__repr__()
-
-    def __repr__(self):
-        return 'Items({})'.format(' '.join(repr(x) for x in self.list))
-
-    def to_json(self):
-        return [item.to_json() for item in self.list]
-
-
-# ---------------------------
-# Aux Functions
-# ---------------------------
-
-def encode_dict(tag, content):
-    return OrderedDict((("t", tag), ("c", content)))
-
-
-def check_group(value, group):
-    assert not isinstance(value, Element)  # Otherwise, use check_type
-    if value not in group:
-        tag = type(value).__name__
-        msg = 'element {} not in group {}'.format(tag, repr(group))
-        raise TypeError(msg)
-    else:
-        return value
-
-
-def check_type(value, oktypes):
-    # This allows 'Space' instead of 'Space()'
-    if callable(value):
-        value = value()
-    if not isinstance(value, oktypes):
-        tag = type(value).__name__
-        msg = 'received {} but expected {}'.format(tag, oktypes)
-        raise TypeError(msg)
-    else:
-        return value
-
-
-def get_containers(e):
-    if e.tag == 'Doc':
-        return ['content']
-    else:
-        return [slot[1:] for slot in e.__slots__ if slot.startswith('_') and slot != '_container']
+    __slots__ = []

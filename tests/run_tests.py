@@ -60,19 +60,14 @@ print('   - Length:', len(input_data) == len(output_data), len(input_data), len(
 print('   - Content:', input_data == output_data)
 
 
-
-assert 0
-
-
-
-
+assert input_data == output_data
 
 
 
 print('Testing stringify()')
 with open(input_fn, encoding='utf-8') as f:
 	doc = pf.load(f)
-ans = pf.stringify(doc.content)
+ans = pf.stringify(doc)
 #print(repr(ans).encode('utf-8'))
 with open(output_txt_panflute, encoding='utf-8', mode='w') as f:
 	f.write(ans)

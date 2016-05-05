@@ -6,7 +6,7 @@ Serialize JSON dump into an element tree and vice versa
 # Imports
 # ---------------------------
 
-from .elements import Element, Doc, from_json, Items
+from .elements import Element, Doc, from_json, ListContainer
 from .elements import Space, LineBreak, SoftBreak, Para
 
 import io
@@ -18,15 +18,6 @@ from functools import partial
 
 
 # ---------------------------
-# Constants
-# ---------------------------
-
-Spaces = (Space, LineBreak, SoftBreak)
-
-VerticalSpaces = (Para, )
-
-
-# ---------------------------
 # Functions
 # ---------------------------
 
@@ -34,7 +25,7 @@ def load(input_stream=None):
     """
     Load JSON-encoded document and return a :class:`.Doc` element.
 
-    The JSON input will be read from :data:`sys.stdin` unless an alternative 
+    The JSON input will be read from :data:`sys.stdin` unless an alternative
     text stream is given (a file handle).
 
     To load from a file, you can do:
@@ -46,7 +37,8 @@ def load(input_stream=None):
     To load from a string, you can do:
 
         >>> import io
-        >>> raw = '[{"unMeta":{}},[{"t":"Para","c":[{"t":"Str","c":"Hello!"}]}]]'
+        >>> raw = '[{"unMeta":{}},
+        [{"t":"Para","c":[{"t":"Str","c":"Hello!"}]}]]'
         >>> f = io.StringIO(raw)
         >>> doc = pf.load(f)
 
@@ -68,7 +60,7 @@ def load(input_stream=None):
     format = sys.argv[1] if len(sys.argv) > 1 else 'html'
 
     doc = Doc(*items, metadata=metadata, format=format)
-    
+
     # Augment doc with an open Pandoc process
     return doc
 
@@ -77,7 +69,7 @@ def dump(doc, output_stream=None):
     """
     Dump a :class:`.Doc` object into a JSON-encoded text string.
 
-    The output will be sent to :data:`sys.stdout` unless an alternative 
+    The output will be sent to :data:`sys.stdout` unless an alternative
     text stream is given.
 
     To dump to :data:`sys.stdout` just do:
@@ -139,33 +131,8 @@ def toJSONFilters(actions,
     dump(doc, output_stream=output_stream)
 
 
-def toJSONFilter(action, *args, **kwargs):
+def toJSONFilter(action, **kwargs):
     """
     ...
     """
-    return toJSONFilters([action], *args, **kwargs)
-
-# ---------------------------
-# Useful Functions
-# ---------------------------
-
-def stringify(element):
-    """
-    ...
-    """
-    assert is_container(element)
-    ans = []
-
-    if isinstance(element, Element):
-        if hasattr(element, 'text'):
-            ans.append(element.text)
-        for item in get_containers(element):
-            ans.append(stringify(item))
-        if isinstance(element, Spaces):
-            ans.append(' ')
-        if isinstance(element, VerticalSpaces):
-            ans.append('\n\n')
-    else:
-        for item in element:
-            ans.append(stringify(item) if is_container(item) else str(item))
-    return ''.join(ans)
+    return toJSONFilters([action], **kwargs)

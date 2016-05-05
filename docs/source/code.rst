@@ -55,7 +55,7 @@ These two elements inherit from :class:`Element`:
      2. By replacing the entire list: ``e.contents = other_items``
 
      We deal with the first problem with wrapping the list of items
-     with an Items class of type :class:`collections.MutableSequence`.
+     with a ListContainer class of type :class:`collections.MutableSequence`.
      This class updates the ``.parent`` attribute to elements returned
      through ``__getitem__`` calls.
 
