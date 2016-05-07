@@ -1,7 +1,27 @@
 from panflute import *
 x = Para(Str('Hello'), Str('world!'))
-doc = Doc(x)
+
+m = {'a': True, 'b': 123.4, 'c': Para(Str('!'))}
+
+doc = Doc(x, metadata=m)
 doc.content.append(Para(Str('More')))
+doc.metadata['d'] = False
+doc.metadata['e'] = MetaBool(True)
+doc.metadata['f'] = {'A': 1233435353, 'B': 456}
+doc.metadata['f']['g'] = [1,2,3,4,5]
+
+print(type(doc.get_metadata('d')))
+print(type(doc.get_metadata('e')))
+print(type(doc.get_metadata('f.B')))
+
+print(doc.get_metadata('f.A'))
+
+print('<<<<<')
+print(type(doc.get_metadata('f.g')))
+print(doc.get_metadata('f.g'))
+print('>>>>>')
+
+
 p = doc.content[0]
 p.content.append(Str('3434'))
 print(p)
@@ -104,3 +124,33 @@ table = Table(*rows, header=TableRow(c2,c1))
 
 print(table)
 
+
+# REPLACE KEYWORD FUNCTION
+p1 = Para(Str('Spam'), Space, Emph(Str('and'), Space, Str('eggs')))
+p2 = Para(Str('eggs'))
+p3 = Plain(Emph(Str('eggs')))
+doc = Doc(p1, p2, p3)
+
+print(doc.content.list)
+print(stringify(doc))
+
+print('-'*20)
+
+doc.replace_keyword(keyword='eggs', replacement=Str('salad'))
+print('<', stringify(doc), '>')
+
+print('-'*20)
+
+doc.replace_keyword(keyword='salad', replacement=Para(Str('PIZZA')))
+print(doc.content.list)
+print('<', stringify(doc), '>')
+
+
+
+
+
+# CONVERT TEXT (MD, ETC)
+md = 'Some *markdown* **text** ~xyz~'
+tex = 'Some $x^y$ or $x_n = \sqrt{a + b}$ \textit{a}'
+print(convert_text(md))
+print(convert_text(tex))

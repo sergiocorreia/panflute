@@ -66,11 +66,15 @@ class Doc(Element):
         meta = self.metadata.content.to_json()
         return [{'unMeta': meta}, self.content.to_json()]
 
-    def get_metadata(self, key, default):
+    def get_metadata(self, key, default=None):
         """Retrieve metadata with nested keys separated by dots.
 
         This is useful to avoid repeatedly checking if a dict exists, as
         the frontmatter might not have the keys that we expect.
+
+        It also returns values of built-in types instead of
+        :class:`.MetaValue` elements. EG: instead of returning a MetaBool
+        it will return True|False.
 
         :param key: string with the keys separated by a dot ('key1.key2')
         :type key: ``str``
@@ -79,19 +83,19 @@ class Doc(Element):
         :Example:
 
             >>> doc.metadata['format']['show-frame'] = True
-            >>> #  ...
-            >>> #  afterwards:
+            >>> # ...
+            >>> # afterwards:
             >>> show_frame = doc.get_metadata('format.show-frame', False)
             >>> stata_path = doc.get_metadata('media.path.figures', '.')
         """
 
-        meta = self.metadata.content
+        meta = self.metadata
         for k in key.split('.'):
-            if k in meta:
+            if isinstance(meta, MetaMap) and k in meta.content:
                 meta = meta[k]
             else:
                 return default
-        return meta
+        return meta2builtin(meta)
 
 
 # ---------------------------
@@ -481,8 +485,6 @@ class Citation(Element):
     :param hash: (Not sure...)
     :type hash: ``int``
     :Base: :class:`Element`
-
-    TODO: Look up and add more documentation about this object
     """
 
     __slots__ = ['id', 'mode', '_prefix', '_suffix', 'note_num', 'hash']
@@ -996,14 +998,14 @@ class Table(Block):
             self.alignment = [check_group(a, TABLE_ALIGNMENT)
                               for a in alignment]
             if len(self.alignment) != self.cols:
-                raise IndexError('alignment has an incorrect number of rows')
+                raise IndexError('alignment has an incorrect number of cols')
 
         if width is None:
             self.width = [0.0] * self.cols
         else:
             self.width = [check_type(w, (float, int)) for w in width]
             if len(self.width) != self.cols:
-                raise IndexError('width has an incorrect number of rows')
+                raise IndexError('width has an incorrect number of cols')
 
     @property
     def header(self):
@@ -1016,7 +1018,8 @@ class Table(Block):
         value = value.content if isinstance(value, TableRow) else list(value)
         self._header = TableRow(*value)
         if len(value) != self.cols:
-            msg = 'table header has an incorrect number of rows'
+            msg = 'table header has an incorrect number of cols:'
+            msg += ' {} rows but expected {}'.format(len(value), self.cols)
             raise IndexError(msg)
 
     @property
@@ -1049,10 +1052,65 @@ class MetaList(MetaValue):
     _children = ['content']
 
     def __init__(self, *args):
+        args = [builtin2meta(v) for v in args]
         self._set_content(args, MetaValue)
 
     def _slots_to_json(self):
         return self.content.to_json()
+
+    def __getitem__(self, i):
+        return self.content[i]
+
+    def __setitem__(self, i, v):
+        self.content[i] = builtin2meta(v)
+
+
+class MetaMap(MetaValue):
+    """Metadata container for ordered dicts
+
+    :param args: (key, value) tuples
+    :type args: :class:`MetaValue`
+    :param kwargs: named arguments
+    :type kwargs: :class:`MetaValue`
+    :Base: :class:`MetaValue`
+    """
+    __slots__ = ['_content']
+    _children = ['content']
+
+    def __init__(self, *args, **kwargs):
+        args = list(args)
+        if kwargs:
+            args.extend(kwargs.items())
+        args = [(k, builtin2meta(v)) for k, v in args]
+        self._content = DictContainer(*args, oktypes=MetaValue, parent=self)
+
+    def _slots_to_json(self):
+        return self.content.to_json()
+
+    # ---------------------------
+    # replace .content container (ListContainer to DictContainer)
+    # ---------------------------
+
+    @property
+    def content(self):
+        """
+        Map of :class:`MetaValue` objects.
+        """
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        if isinstance(value, dict):
+            value = value.dict.items()
+        self._content = DictContainer(*value, oktypes=MetaValue, parent=self)
+
+    # These two are convenience functions, not sure if really needed...
+    # (they save typing the .content and converting to metavalues)
+    def __getitem__(self, i):
+        return self.content[i]
+
+    def __setitem__(self, i, v):
+        self.content[i] = builtin2meta(v)
 
 
 class MetaInlines(MetaValue):
@@ -1135,47 +1193,6 @@ class MetaBool(MetaValue):
 
     def _slots_to_json(self):
         return self.boolean
-
-
-class MetaMap(MetaValue):
-    """Metadata container for ordered dicts
-
-    :param args: (key, value) tuples
-    :type args: :class:`MetaValue`
-    :param kwargs: named arguments
-    :type kwargs: :class:`MetaValue`
-    :Base: :class:`MetaValue`
-    """
-    __slots__ = ['_content']
-    _children = ['content']
-
-    def __init__(self, *args, **kwargs):
-        if not args:
-            args = []
-        if not kwargs:
-            kwargs = {}
-        self._content = DictContainer(*args, *kwargs.items(),
-                                      oktypes=MetaValue, parent=self)
-
-    def _slots_to_json(self):
-        return self.content.to_json()
-
-    # ---------------------------
-    # replace .content container (ListContainer to DictContainer)
-    # ---------------------------
-
-    @property
-    def content(self):
-        """
-        Map of :class:`MetaValue` objects.
-        """
-        return self._content
-
-    @content.setter
-    def content(self, value):
-        if isinstance(value, dict):
-            value = value.dict.items()
-        self._content = DictContainer(*value, oktypes=MetaValue, parent=self)
 
 
 # ---------------------------
@@ -1347,3 +1364,31 @@ def from_json(data):
         print(c)
         print('--')
         raise Exception('unknown tag ' + tag)
+
+def builtin2meta(val):
+    if isinstance(val, bool):
+        return MetaBool(val)
+    elif isinstance(val, (float, int)):
+        return MetaString(str(val))
+    elif isinstance(val, list):
+        return MetaList(*val)
+    elif isinstance(val, dict):
+        return MetaMap(*val.items())
+    elif isinstance(val, Block):
+        return MetaBlocks(val)
+    elif isinstance(val, Inline):
+        return MetaInlines(val)
+    else:
+        return val
+
+def meta2builtin(meta):
+    if isinstance(meta, MetaBool):
+        return meta.boolean
+    elif isinstance(meta, MetaString):
+        return meta.text
+    elif isinstance(meta, MetaList):
+        return [meta2builtin(v) for v in meta.content.list]
+    elif isinstance(meta, MetaMap):
+        return OrderedDict((k, meta2builtin(v)) for (k,v) in meta.content.dict)
+    else:
+        return meta

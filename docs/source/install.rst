@@ -1,16 +1,12 @@
-Install
+Installation
 ===================
 
-Panflute requires Python 3.2+. Writing a port for Python 2.7 shouldn't be hard though, as most of the differences lie in a few IO functions.
-
-User Install
-***************
-
-Just run::
+To install panflute, open the command line and type::
 
     pip install git+git://github.com/sergiocorreia/panflute.git
 
-Windows note: open the command line (``cmd``) as administrator.
+- Requires Python 3.2 or later.
+- On windows, the command line (``cmd``) must be run as administrator.
 
 Dev Install
 ***************
@@ -22,3 +18,8 @@ Install the package locally::
 Install locally through a symlink, so changes are automatically updated::
 
     python setup.py develop
+
+Source Code
+***************
+
+To browse the source code or contribute, check the `github repository <https://github.com/sergiocorreia/panflute/>`_.

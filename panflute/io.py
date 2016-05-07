@@ -1,7 +1,3 @@
-"""
-Serialize JSON dump into an element tree and vice versa
-"""
-
 # ---------------------------
 # Imports
 # ---------------------------
@@ -117,7 +113,36 @@ def toJSONFilters(actions,
                   input_stream=None, output_stream=None,
                   **kwargs):
     """
-    ...
+    Receive a Pandoc document from stdin, walk through it applying
+    the functions in *actions* to each element, and write it back to stdout.
+
+    Notes:
+
+    - It receives and writes the Pandoc documents as JSON--encoded strings;
+      this is done through the :func:`.load` and :func:`.dump` functions.
+    - It walks through the document once for every function in *actions*,
+      so the actions are applied sequentially.
+    - By default, it will read from stdin and write to stdout,
+      but these can be modified.
+    - It can also apply functios to the entire document at the beginning and
+      end; this allows for global operations on the document.
+
+    :param actions: sequence of functions; each function takes (element, doc)
+     as argument, so a valid header would be ``def action(elem, doc):``.
+    :type actions: [:class:`function`]
+    :param prepare: function executed at the beginning;
+     right after the document is received and parsed.
+    :type prepare: :class:`function`
+    :param finalize: function executed at the end;
+     right before the document is converted back to JSON and written to stdout.
+    :type finalize: :class:`function`
+    :param input_stream: text stream used as input
+        (default is :data:`sys.stdin`)
+    :param output_stream: text stream used as output
+        (default is :data:`sys.stdout`)    
+    :param \*kwargs: keyword arguments will be passed through to the *action*
+     functions (so they can actually receive more than just two arguments
+     (*element* and *doc*).
     """
     doc = load(input_stream=input_stream)
     if prepare is not None:
@@ -131,8 +156,11 @@ def toJSONFilters(actions,
     dump(doc, output_stream=output_stream)
 
 
-def toJSONFilter(action, **kwargs):
+def toJSONFilter(action, *args, **kwargs):
     """
-    ...
+    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
+    Receive a Pandoc document from stdin, apply the *action* function to each element, and write it back to stdout.
+
+    See :func:`.toJSONFilters`    
     """
-    return toJSONFilters([action], **kwargs)
+    return toJSONFilters([action], *args, **kwargs)

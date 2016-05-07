@@ -1,6 +1,4 @@
 """
-Parent-aware list and OrderedDict containers
-
 These containers keep track of the identity of the parent
 object, and the attribute of the parent object that they correspond to.
 """
@@ -53,7 +51,14 @@ class ListContainer(MutableSequence):
         return len(self.list)
 
     def __getitem__(self, i):
-        return attach(self.list[i], self.parent, self._container)
+        if isinstance(i, int):
+            return attach(self.list[i], self.parent, self._container)
+        else:
+            newlist = self.list.__getitem__(i)
+            obj = ListContainer(*newlist,
+                  oktypes=self.oktypes, parent=self.parent)
+            obj._container = self._container
+            return obj
 
     def __delitem__(self, i):
         del self.list[i]

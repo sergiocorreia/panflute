@@ -5,7 +5,6 @@
 
 .. automodule:: panflute
 
-
 It is a pythonic alternative to John MacFarlane's
 `pandocfilters <https://github.com/jgm/pandocfilters>`_,
 from which it is heavily inspired.
@@ -16,7 +15,7 @@ and call it through `toJSONFilter <code.html#panflute.io.toJSONFilter>`_::
     from panflute import *
 
     def increase_header_level(elem, doc):
-        if type(elem)==Header:
+        if type(elem) == Header:
             if elem.level < 6:
                 elem.level += 1
             else:
@@ -29,10 +28,9 @@ and call it through `toJSONFilter <code.html#panflute.io.toJSONFilter>`_::
 Motivation
 ====================================
 
-Panflute aims to replace pandocfilters with a pythonic alternative that
-comes with batteries included, to help with some of the most common tasks.
+Our goal is to make writing pandoc filters *as simple and clear as possible*. Starting from pandocfilters, we make it pythonic, add error and type checking, and include batteries for common tasks. In more detail:
 
-It's Pythonic
+1. Pythonic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Elements are easier to modify. For instance, to change the level of a
@@ -42,8 +40,9 @@ It's Pythonic
 - Elements are easier to create. Thus, to create a header you can do
   ``Header(Str(The), Space, Str(Title), level=1, identifier=foo)``
   instead of ``Header([1,["foo",[],[]],[{"t":"Str","c":"The"},{"t":"Space","c":[]},{"t":"Str","c":"Title"}])``
+- You can navigate across elements. Thus, you can check if ``isinstance(elem.parent, Inline)`` or if ``type(elem.next) == Space``
 
-Detects common mistakes
+2. Detects common mistakes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Check that the elements contain the correct types. Trying to create
@@ -51,10 +50,11 @@ Detects common mistakes
   but received a str()", instead of just failing silently when running the
   filter.
 
-Comes with batteries included:
+3. Comes with batteries included
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Convert markdown strings into python objects or other formats, with the
+- Convert markdown and other formatted strings into python objects or
+  other formats, with the
   `convert_text(text, input_format, output_format)` function (which calls
   Pandoc internally)
 - Use code blocks to hold YAML options and other data (such as CSV) with
@@ -64,9 +64,13 @@ Comes with batteries included:
   back of a PDF) are easy to use, thanks to the `prepare` and `finalize`
   options of `toJSONFilter`, and to the `replace_keyword` function
 
-
-More about Pandoc filters:
+Examples of panflute filters
 ====================================
+
+Ports of existing pandocfilter modules are in the `github repo <https://github.com/sergiocorreia/panflute/tree/master/examples/panflute>`_; additional and more advanced examples are in a `separate repository <https://github.com/sergiocorreia/panflute-filters>`_.
+
+Filters that use pandocfilters instead
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - For a guide to pandocfilters, see the
   `repository <https://github.com/jgm/pandocfilters>`_
@@ -80,7 +84,7 @@ Contents:
 ====================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    guide
    install

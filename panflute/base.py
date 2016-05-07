@@ -191,6 +191,16 @@ class Element(object):
     # Walking
     # ---------------------------
 
+    @property
+    def doc(self):
+        """
+        Return the root Doc element (if there is one)
+        """
+        guess = self
+        while guess is not None and guess.tag != 'Doc':
+            guess = guess.parent  # If no parent, this will be None
+        return guess  # Returns either Doc or None
+
     def walk(self, action, doc=None):
         """
         Walk through the element and all its children (sub-elements),
@@ -221,12 +231,7 @@ class Element(object):
 
         # Infer the document thanks to .parent magic
         if doc is None:
-            guess = self
-            while guess.parent is not None:
-                guess = guess.parent
-                if guess.tag == 'Doc':
-                    doc = guess
-                    break
+            doc = self.doc
 
         # First iterate over children
         for child in self._children:
@@ -264,6 +269,6 @@ class Block(Element):
 
 class MetaValue(Element):
     """
-    Base class of all Metadata elements
+    Base class of all metadata elements
     """
     __slots__ = []

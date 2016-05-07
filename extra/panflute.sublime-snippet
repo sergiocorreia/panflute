@@ -23,7 +23,7 @@ def finalize(doc):
 
 
 if __name__ == '__main__':
-    pf.toJSONFilter(action, prepare, finalize)
+    pf.toJSONFilter(action, prepare=prepare, finalize=finalize)
 
 ]]></content>
 	<tabTrigger>panflute</tabTrigger>

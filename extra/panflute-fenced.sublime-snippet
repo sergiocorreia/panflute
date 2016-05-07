@@ -1,0 +1,34 @@
+<snippet>
+	<content><![CDATA[
+"""
+${1:Pandoc filter using panflute, for fenced code blocks}
+"""
+
+import panflute as pf
+
+
+def prepare(doc):
+    ${5:pass}
+
+
+def fenced_action(options, data, element, doc):
+    if doc.format == '${3:latex}':
+        ${4:pass}
+        # return None -> element unchanged
+        # return [] -> delete element
+
+
+def finalize(doc):
+    ${6:pass}
+
+
+if __name__ == '__main__':
+    pf.toJSONFilter(pf.yaml_filter, prepare=prepare, finalize=finalize, tag='${2:sometag}', function=fenced_action)
+    # tags = {'sometag': fenced_action, 'another_tag': another_action}
+    # pf.toJSONFilter(pf.yaml_filter, prepare=prepare, finalize=finalize, tags=tags)
+
+]]></content>
+	<tabTrigger>panflute-fenced</tabTrigger>
+	<scope>source.python</scope>
+	<description>Fenced Code panflute filter</description>
+</snippet>
