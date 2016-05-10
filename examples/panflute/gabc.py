@@ -10,7 +10,7 @@ import os
 from sys import getfilesystemencoding, stderr
 from subprocess import Popen, call, PIPE, DEVNULL
 from hashlib import sha1
-from pandocfilters import toJSONFilter, RawBlock, RawInline, Para, Image
+from panflute import toJSONFilter, RawBlock, RawInline, Para, Image, Code, CodeBlock
 
 
 IMAGEDIR = "tmp_gabc"
@@ -31,17 +31,17 @@ def sha(code):
 
 def latex(code):
     """LaTeX inline"""
-    return RawInline('latex', code)
+    return RawInline(code, format='latex')
 
 
 def latexblock(code):
     """LaTeX block"""
-    return RawBlock('latex', code)
+    return RawBlock(code, format='latex')
 
 
 def htmlblock(code):
     """Html block"""
-    return RawBlock('html', code)
+    return RawBlock(code, format='html')
 
 
 def latexsnippet(code, kvs):
@@ -117,59 +117,44 @@ def png(contents, latex_command):
     return src
 
 
-def gabc(key, value, fmt, meta):                   # pylint:disable=I0011,W0613
+def gabc(elem, doc):
     """Handle gabc file inclusion and gabc code block."""
-    if key == 'Code':
-        [[ident, classes, kvs], contents] = value  # pylint:disable=I0011,W0612
-        kvs = {key: value for key, value in kvs}
-        if "gabc" in classes:
-            if fmt == "latex":
-                if ident == "":
-                    label = ""
-                else:
-                    label = '\\label{' + ident + '}'
-                return latex(
-                    "\n\\smallskip\n{%\n" +
-                    latexsnippet('\\gregorioscore{' + contents + '}', kvs) +
-                    "%\n}" +
-                    label
-                )
+    if type(elem) == Code and "gabc" in elem.classes:
+        if doc.format == "latex":
+            if elem.identifier == "":
+                label = ""
             else:
-                infile = contents + (
-                    '.gabc' if '.gabc' not in contents else ''
-                )
-                with open(infile, 'r') as doc:
-                    code = doc.read().split('%%\n')[1]
-                return [Image(['', [], []], [], [
-                    png(
-                        contents,
-                        latexsnippet('\\gregorioscore', kvs)
-                    ),
-                    ""
-                ])]
-    elif key == 'CodeBlock':
-        [[ident, classes, kvs], contents] = value
-        kvs = {key: value for key, value in kvs}
-        if "gabc" in classes:
-            if fmt == "latex":
-                if ident == "":
-                    label = ""
-                else:
-                    label = '\\label{' + ident + '}'
-                return [latexblock(
-                    "\n\\smallskip\n{%\n" +
-                    latexsnippet('\\gabcsnippet{' + contents + '}', kvs) +
-                    "%\n}" +
-                    label
-                    )]
+                label = '\\label{' + elem.identifier + '}'
+            return latex(
+                "\n\\smallskip\n{%\n" +
+                latexsnippet('\\gregorioscore{' + elem.text + '}', elem.attributes) +
+                "%\n}" +
+                label
+            )
+        else:
+            infile = elem.text + (
+                '.gabc' if '.gabc' not in elem.text else ''
+            )
+            with open(infile, 'r') as doc:
+                code = doc.read().split('%%\n')[1]
+            return Image(png(
+                    elem.text,
+                    latexsnippet('\\gregorioscore', elem.attributes)
+                ))
+    elif type(elem) == CodeBlock and "gabc" in elem.classes:
+        if doc.format == "latex":
+            if elem.identifier == "":
+                label = ""
             else:
-                return Para([Image(['', [], []], [], [
-                    png(
-                        contents,
-                        latexsnippet('\\gabcsnippet', kvs)
-                    ),
-                    ""
-                ])])
+                label = '\\label{' + elem.identifier + '}'
+            return latexblock(
+                "\n\\smallskip\n{%\n" +
+                latexsnippet('\\gabcsnippet{' + elem.text + '}', elem.attributes) +
+                "%\n}" +
+                label
+                )
+        else:
+            return Para(Image(url=png(elem.text, latexsnippet('\\gabcsnippet', elem.attributes))))
 
 
 if __name__ == "__main__":

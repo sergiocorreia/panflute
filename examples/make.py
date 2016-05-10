@@ -30,9 +30,10 @@ def main():
 
     pandoc_filters = os.listdir('./pandocfilters')
     panflute_filters = os.listdir('./panflute')
+    excluded = ('abc.py', 'plantuml.py', 'tikz')
 
     for fn in pandoc_filters:
-        if fn in panflute_filters:
+        if fn in panflute_filters and not fn.startswith('__') and not fn in excluded:
             print(' - Testing', fn)
             benchmark_cmd, panflute_cmd = build_cmds(fn)
             
@@ -53,7 +54,7 @@ def main():
                     f.write(panflute)
 
                 print('\n\n!!! Not equal.. check why!\n')
-                if fn not in ('caps.py'):
+                if fn not in ('metavars.py',):
                     raise Exception
 
             print()

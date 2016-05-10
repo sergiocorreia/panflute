@@ -11,7 +11,7 @@ import os
 from sys import getfilesystemencoding, stderr
 from subprocess import Popen, call, PIPE
 from hashlib import sha1
-from pandocfilters import toJSONFilter, Para, Image, RawInline, RawBlock
+from panflute import toJSONFilter, Para, Image, RawInline, RawBlock, Code, CodeBlock
 
 IMAGEDIR = "tmp_ly"
 LATEX_DOC = """\\documentclass{article}
@@ -30,12 +30,12 @@ def sha(x):
 
 def latex(code):
     """LaTeX inline"""
-    return RawInline('latex', code)
+    return RawInline(code, format='latex')
 
 
 def latexblock(code):
     """LaTeX block"""
-    return RawBlock('latex', code)
+    return RawBlock(code, format='latex')
 
 
 def ly2png(lily, outfile, staffsize):
@@ -83,46 +83,39 @@ def png(contents, staffsize):
     return src
 
 
-def lily(key, value, fmt, meta):
-    if key == 'Code':
-        [[ident, classes, kvs], contents] = value  # pylint:disable=I0011,W0612
-        kvs = {key: value for key, value in kvs}
-        if "ly" in classes:
-            staffsize = kvs['staffsize'] if 'staffsize' in kvs else 20
-            if fmt == "latex":
-                if ident == "":
-                    label = ""
-                else:
-                    label = '\\label{' + ident + '}'
-                return latex(
-                    '\\includely[staffsize=%s]{%s}' % (staffsize, contents) +
-                    label
-                )
+def lily(elem, doc):
+    if type(elem) == Code and 'ly' in elem.classes:
+        staffsize = int(elem.attributes.get('staffsize', '20'))
+        if doc.format == "latex":
+            if elem.identifier == "":
+                label = ""
             else:
-                infile = contents + (
-                    '.ly' if '.ly' not in contents else ''
-                )
-                with open(infile, 'r') as doc:
-                    code = doc.read()
-                return [
-                    Image(['', [], []], [], [png(code, staffsize), ""])
-                ]
-    if key == 'CodeBlock':
-        [[ident, classes, kvs], code] = value
-        kvs = {key: value for key, value in kvs}
-        if "ly" in classes:
-            staffsize = kvs['staffsize'] if 'staffsize' in kvs else 20
-            if fmt == "latex":
-                if ident == "":
-                    label = ""
-                else:
-                    label = '\\label{' + ident + '}'
-                return latexblock(
-                    '\\lily[staffsize=%s]{%s}' % (staffsize, code) +
-                    label
-                )
+                label = '\\label{' + elem.identifier + '}'
+            return latex(
+                '\\includely[staffsize=%s]{%s}' % (staffsize, contents) +
+                label
+            )
+        else:
+            infile = contents + (
+                '.ly' if '.ly' not in contents else ''
+            )
+            with open(infile, 'r') as doc:
+                code = doc.read()
+            return Image(url=png(code, staffsize))
+
+    if type(elem) == CodeBlock and 'ly' in elem.classes:
+        staffsize = int(elem.attributes.get('staffsize', '20'))
+        if doc.format == "latex":
+            if elem.identifier == "":
+                label = ""
             else:
-                return Para([Image(['', [], []], [], [png(code, staffsize), ""])])
+                label = '\\label{' + elem.identifier + '}'
+            return latexblock(
+                '\\lily[staffsize=%s]{%s}' % (staffsize, code) +
+                label
+            )
+        else:
+            return Para(Image(url=png(code, staffsize)))
 
 if __name__ == "__main__":
     toJSONFilter(lily)

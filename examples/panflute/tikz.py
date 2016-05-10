@@ -12,7 +12,7 @@ import re
 import os
 import sys
 import shutil
-from pandocfilters import toJSONFilter, Para, Image
+from panflute import toJSONFilter, Para, Image, RawBlock
 from subprocess import Popen, PIPE, call
 from tempfile import mkdtemp
 
@@ -44,17 +44,12 @@ def tikz2image(tikz, filetype, outfile):
     shutil.rmtree(tmpdir)
 
 
-def tikz(key, value, format, meta):
-    if key == 'RawBlock':
-        [fmt, code] = value
-        if fmt == "latex" and re.match("\\\\begin{tikzpicture}", code):
+def tikz(elem, doc):
+    if type(elem) == RawBlock and elem.format == "latex":
+        code = elem.text
+        if re.match("\\\\begin{tikzpicture}", code):
             outfile = imagedir + '/' + sha1(code)
-            if format == "html":
-                filetype = "png"
-            elif format == "latex":
-                filetype = "pdf"
-            else:
-                filetype = "png"
+            filetype = {'html': 'png', 'latex': 'pdf'}.get(doc.format, 'png')
             src = outfile + '.' + filetype
             if not os.path.isfile(src):
                 try:
@@ -64,7 +59,8 @@ def tikz(key, value, format, meta):
                     pass
                 tikz2image(code, filetype, outfile)
                 sys.stderr.write('Created image ' + src + '\n')
-            return Para([Image(['', [], []], [], [src, ""])])
+            return Para(Image(url=src))
+
 
 if __name__ == "__main__":
     toJSONFilter(tikz)

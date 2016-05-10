@@ -816,7 +816,7 @@ class Definition(Element):
     It can include code and all other block elements.
 
     :param args: elements
-    :type args: :class:`Inline`
+    :type args: :class:`Block`
     :Base: :class:`Element`
      """
     __slots__ = ['_content']
@@ -839,7 +839,7 @@ class DefinitionItem(Element):
 
     :param term: Term of the definition (an inline holder)
     :type term: [:class:`Inline`]
-    :param definition: List of definitions or descriptions
+    :param definitions: List of definitions or descriptions
         (each a block holder)
     :type definition: [:class:`Definition`]
     :Base: :class:`Element`

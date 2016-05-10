@@ -1,2 +1,2 @@
 
-This is the caps sample with Äüö.
+This is the caps sample with lorem.
