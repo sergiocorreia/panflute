@@ -8,6 +8,7 @@ Base classes and methods of all Pandoc elements
 
 from operator import attrgetter
 from collections import OrderedDict, MutableSequence, MutableMapping
+from itertools import chain
 
 from .containers import ListContainer, DictContainer
 from .utils import check_type, encode_dict  # check_group
@@ -239,8 +240,12 @@ class Element(object):
             if isinstance(obj, Element):
                 ans = obj.walk(action, doc)
             elif isinstance(obj, ListContainer):
-                ans = [item.walk(action, doc) for item in obj]
-                ans = [item for item in ans if item != []]
+                ans = (item.walk(action, doc) for item in obj)
+                # We need to convert single elements to iterables, so that they
+                # can be flattened later
+                ans = ((item,) if type(item) != list else item for item in ans)
+                # Flatten the list, by expanding any sublists
+                ans = list(chain.from_iterable(ans))
             elif isinstance(obj, DictContainer):
                 ans = [(k, v.walk(action, doc)) for k, v in obj.items()]
                 ans = [(k, v) for k, v in ans if v != []]
