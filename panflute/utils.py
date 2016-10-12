@@ -9,10 +9,10 @@ Auxiliary functions that have no dependencies
 from six import string_types
 from collections import OrderedDict
 
-
 # ---------------------------
 # Functions
 # ---------------------------
+
 
 def check_type(value, oktypes):
     # This allows 'Space' instead of 'Space()'
