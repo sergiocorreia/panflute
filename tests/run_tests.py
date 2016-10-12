@@ -1,3 +1,6 @@
+from __future__ import print_function
+from builtins import open
+
 import panflute as pf
 
 input_fn = '../tests/1/benchmark.json'
