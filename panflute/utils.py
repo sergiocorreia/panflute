@@ -6,6 +6,7 @@ Auxiliary functions that have no dependencies
 # Imports
 # ---------------------------
 
+from six import string_types
 from collections import OrderedDict
 
 
@@ -17,6 +18,8 @@ def check_type(value, oktypes):
     # This allows 'Space' instead of 'Space()'
     if callable(value):
         value = value()
+    if oktypes == str:
+        oktypes = string_types
     if not isinstance(value, oktypes):
         tag = type(value).__name__
         msg = 'received {} but expected {}'.format(tag, oktypes)
