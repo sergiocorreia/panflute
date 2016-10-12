@@ -42,7 +42,7 @@ class Doc(Element):
 
     _children = ['metadata', 'content']
 
-    def __init__(self, *args, metadata={}, format='html'):
+    def __init__(self, metadata={}, format='html', *args, **kwargs):
         self._set_content(args, Block)
         self.metadata = metadata
         self.format = format  # Output format
@@ -350,8 +350,8 @@ class Header(Block):
     __slots__ = ['level', '_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, level=1,
-                 identifier='', classes=[], attributes={}):
+    def __init__(self, level=1,
+                 identifier='', classes=[], attributes={}, *args):
         self.level = check_type(level, int)
         if not 0 < self.level <= 6:
             raise TypeError('Header level not between 1 and 6')
@@ -379,7 +379,7 @@ class Div(Block):
     __slots__ = ['_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, identifier='', classes=[], attributes={}):
+    def __init__(self, identifier='', classes=[], attributes={}, *args):
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Block)
 
@@ -404,7 +404,7 @@ class Span(Inline):
     __slots__ = ['_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, identifier='', classes=[], attributes={}):
+    def __init__(self, identifier='', classes=[], attributes={}, *args):
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Inline)
 
@@ -425,7 +425,7 @@ class Quoted(Inline):
     __slots__ = ['quote_type', '_content']
     _children = ['content']
 
-    def __init__(self, *args, quote_type='DoubleQuote'):
+    def __init__(self, quote_type='DoubleQuote', *args):
         self.quote_type = check_group(quote_type, QUOTE_TYPES)
         self._set_content(args, Inline)
 
@@ -447,7 +447,7 @@ class Cite(Inline):
     __slots__ = ['_content', '_citations']
     _children = ['content', 'citations']
 
-    def __init__(self, *args, citations=[]):
+    def __init__(self, citations=[], *args):
         self._set_content(args, Inline)
         self.citations = citations
 
@@ -554,8 +554,8 @@ class Link(Inline):
                  'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, url='', title='',
-                 identifier='', classes=[], attributes={}):
+    def __init__(self, url='', title='',
+                 identifier='', classes=[], attributes={}, *args):
         self._set_content(args, Inline)
         self._set_ica(identifier, classes, attributes)
         self.url = check_type(url, str)
@@ -589,8 +589,8 @@ class Image(Inline):
                  'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, url='', title='',
-                 identifier='', classes=[], attributes={}):
+    def __init__(self, url='', title='',
+                 identifier='', classes=[], attributes={}, *args):
         self._set_content(args, Inline)
         self._set_ica(identifier, classes, attributes)
         self.url = check_type(url, str)
@@ -798,7 +798,7 @@ class OrderedList(Block):
     __slots__ = ['_content', 'start', 'style', 'delimiter']
     _children = ['content']
 
-    def __init__(self, *args, start=1, style='Decimal', delimiter='Period'):
+    def __init__(self, start=1, style='Decimal', delimiter='Period', *args):
         self._set_content(args, ListItem)
         self.start = check_type(start, int)
         self.style = check_group(style, LIST_NUMBER_STYLES)
@@ -983,8 +983,8 @@ class Table(Block):
                  'alignment', 'width', 'rows', 'cols']
     _children = ['header', 'content', 'caption']
 
-    def __init__(self, *args, header=None, caption=None,
-                 alignment=None, width=None):
+    def __init__(self, header=None, caption=None,
+                 alignment=None, width=None, *args):
 
         self._set_content(args, TableRow)
         self.rows = len(self.content)

@@ -36,7 +36,7 @@ class ListContainer(MutableSequence):
 
     __slots__ = ['list', 'oktypes', 'parent', '_container']
 
-    def __init__(self, *args, oktypes=object, parent=None):
+    def __init__(self, oktypes=object, parent=None, *args):
         self.oktypes = oktypes
         self.parent = parent
         self._container = None  # Cannot be set through __init__
@@ -96,7 +96,7 @@ class DictContainer(MutableMapping):
 
     __slots__ = ['dict', 'oktypes', 'parent', '_container']
 
-    def __init__(self, *args, oktypes=object, parent=None, **kwargs):
+    def __init__(self, oktypes=object, parent=None, *args, **kwargs):
         self.oktypes = oktypes
         self.parent = parent
         self._container = None
