@@ -1,9 +1,15 @@
+from __future__ import print_function
+from builtins import open
+
+import os
 import panflute as pf
 
-input_fn = '../tests/1/benchmark.json'
-output_fn = '../tests/1/panflute.json'
-output_txt_benchmark = '../tests/1/benchmark.txt'
-output_txt_panflute = '../tests/1/panflute.txt'
+current_directory = os.path.dirname(os.path.realpath(__file__))
+
+input_fn = os.path.join(current_directory, '../tests/1/benchmark.json')
+output_fn = os.path.join(current_directory, '../tests/1/panflute.json')
+output_txt_benchmark = os.path.join(current_directory, '../tests/1/benchmark.txt')
+output_txt_panflute = os.path.join(current_directory, '../tests/1/panflute.txt')
 
 def empty_test(element, doc):
     return

@@ -36,9 +36,13 @@ class ListContainer(MutableSequence):
 
     __slots__ = ['list', 'oktypes', 'parent', '_container']
 
-    def __init__(self, *args, oktypes=object, parent=None):
-        self.oktypes = oktypes
-        self.parent = parent
+    def __init__(self, *args, **kwargs):
+        self.oktypes = kwargs.pop('oktypes', object)
+        self.parent = kwargs.pop('parent', None)
+
+        if len(kwargs) > 0:
+            raise TypeError("Received unexpected argument {}".format(kwargs))
+
         self._container = None  # Cannot be set through __init__
 
         self.list = list()
@@ -96,9 +100,9 @@ class DictContainer(MutableMapping):
 
     __slots__ = ['dict', 'oktypes', 'parent', '_container']
 
-    def __init__(self, *args, oktypes=object, parent=None, **kwargs):
-        self.oktypes = oktypes
-        self.parent = parent
+    def __init__(self, *args, **kwargs):
+        self.oktypes = kwargs.pop('oktypes', object)
+        self.parent = kwargs.pop('parent', None)
         self._container = None
 
         self.dict = OrderedDict()
