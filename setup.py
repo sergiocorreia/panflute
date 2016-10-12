@@ -83,7 +83,8 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=['pyyaml',
                     'shutilwhich>=1.1.0',
-                    'future>=0.15.2'],
+                    'future>=0.15.2',
+                    'six>=1.10.0'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
