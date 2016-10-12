@@ -77,7 +77,7 @@ def debug(*args, **kwargs):
     Same as print, but prints to ``stderr``
     (which is not intercepted by Pandoc).
     """
-    print(file=sys.stderr,*args, **kwargs)
+    print(file=sys.stderr, *args, **kwargs)
 
 
 def convert_text(text, input_format='markdown', output_format='json',
