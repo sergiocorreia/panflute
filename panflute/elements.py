@@ -1365,6 +1365,7 @@ def from_json(data):
         print('--')
         raise Exception('unknown tag ' + tag)
 
+
 def builtin2meta(val):
     if isinstance(val, bool):
         return MetaBool(val)
@@ -1381,6 +1382,7 @@ def builtin2meta(val):
     else:
         return val
 
+
 def meta2builtin(meta):
     if isinstance(meta, MetaBool):
         return meta.boolean
@@ -1389,6 +1391,6 @@ def meta2builtin(meta):
     elif isinstance(meta, MetaList):
         return [meta2builtin(v) for v in meta.content.list]
     elif isinstance(meta, MetaMap):
-        return OrderedDict((k, meta2builtin(v)) for (k,v) in meta.content.dict)
+        return OrderedDict((k, meta2builtin(v)) for (k, v) in meta.content.dict)
     else:
         return meta
