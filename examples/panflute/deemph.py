@@ -10,16 +10,16 @@ from caps import caps
 
 
 def deemph(elem, doc):
-	if type(elem) == Emph:
-		# Make Str elements in Emph uppercase
-		elem.walk(caps)
+    if type(elem) == Emph:
+        # Make Str elements in Emph uppercase
+        elem.walk(caps)
 
-		# Append them to Emph's parent (after the emph)
-		for i, item in enumerate(elem.content, elem.index + 1):
-			elem.parent.content.insert(i, item)
-		
-		# Delete the emph
-		return []
+        # Append them to Emph's parent (after the emph)
+        for i, item in enumerate(elem.content, elem.index + 1):
+            elem.parent.content.insert(i, item)
+
+        # Delete the emph
+        return []
 
 
 if __name__ == "__main__":

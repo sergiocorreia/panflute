@@ -3,6 +3,7 @@ import sys
 from shutil import which
 from subprocess import Popen, PIPE, call
 
+
 def shell(args, msg=None):
     # Fix Windows error if passed a string
     proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -15,6 +16,7 @@ def shell(args, msg=None):
         raise IOError
     return out
 
+
 def build_cmds(fn):
     pandoc_path = which('pandoc')
     input_fn = './input/' + os.path.splitext(fn)[0] + '-sample.md'
@@ -23,6 +25,7 @@ def build_cmds(fn):
         filter_fn = './{}/{}'.format(path, fn)
         cmds.append([pandoc_path, '-F', filter_fn, input_fn])
     return cmds
+
 
 def main():
     print('Verify that the panflute filters are the same as'
@@ -33,7 +36,7 @@ def main():
     excluded = ('abc.py', 'plantuml.py', 'tikz')
 
     for fn in pandoc_filters:
-        if fn in panflute_filters and not fn.startswith('__') and not fn in excluded:
+        if fn in panflute_filters and not fn.startswith('__') and fn not in excluded:
             print(' - Testing', fn)
             benchmark_cmd, panflute_cmd = build_cmds(fn)
             
@@ -62,5 +65,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

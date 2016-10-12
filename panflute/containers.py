@@ -56,7 +56,7 @@ class ListContainer(MutableSequence):
         else:
             newlist = self.list.__getitem__(i)
             obj = ListContainer(*newlist,
-                  oktypes=self.oktypes, parent=self.parent)
+                                oktypes=self.oktypes, parent=self.parent)
             obj._container = self._container
             return obj
 

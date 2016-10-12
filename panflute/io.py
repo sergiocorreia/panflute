@@ -139,7 +139,7 @@ def toJSONFilters(actions,
     :param input_stream: text stream used as input
         (default is :data:`sys.stdin`)
     :param output_stream: text stream used as output
-        (default is :data:`sys.stdout`)    
+        (default is :data:`sys.stdout`)
     :param \*kwargs: keyword arguments will be passed through to the *action*
      functions (so they can actually receive more than just two arguments
      (*element* and *doc*).
@@ -161,6 +161,6 @@ def toJSONFilter(action, *args, **kwargs):
     toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
     Receive a Pandoc document from stdin, apply the *action* function to each element, and write it back to stdout.
 
-    See :func:`.toJSONFilters`    
+    See :func:`.toJSONFilters`
     """
     return toJSONFilters([action], *args, **kwargs)

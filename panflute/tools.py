@@ -156,7 +156,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None):
     code blocks that have specific classes.
 
     It is used as an argument of ``toJSONFilter``, with two additional options:
-    ``tag`` and ``function``. 
+    ``tag`` and ``function``.
 
     Using this is equivalent to having filter functions that:
 
@@ -176,12 +176,12 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None):
        (options, data, element, doc). Note that options is a dict and data
        is a raw string. Notice that this is similar to the ``action``
        functions of standard filters, but with *options* and *data* as the
-       new ones.    
+       new ones.
 
     Note: if you want to apply multiple functions to separate classes,
     you can use the ``tags`` argument, which receives a dict of
     ``tag: function`` pairs.
-    
+
     Example::
 
         """
@@ -278,7 +278,7 @@ def _replace_keyword(self, keyword, replacement, count=0):
     Note: If the replacement is a block, it cannot be put in place of
     a Str element. As a solution, the closest ancestor (e.g. the parent)
     will be replaced instead, but only if possible
-    (if the parent only has one child). 
+    (if the parent only has one child).
 
     Example:
 

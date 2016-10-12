@@ -23,7 +23,7 @@ from .elements import (
     Quoted, Cite, Table)
 
 from .elements import (
-	MetaList, MetaMap, MetaString, MetaBool, MetaInlines, MetaBlocks)
+    MetaList, MetaMap, MetaString, MetaBool, MetaInlines, MetaBlocks)
 
 from .io import load, dump, toJSONFilter, toJSONFilters
 

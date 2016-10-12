@@ -10,17 +10,17 @@ from panflute import toJSONFilter, DefinitionList, BulletList, ListItem, Para, S
 
 
 def deflists(elem, doc):
-	if type(elem) == DefinitionList:
-		bullets = [tobullet(item) for item in elem.content]
-		return BulletList(*bullets)
+    if type(elem) == DefinitionList:
+        bullets = [tobullet(item) for item in elem.content]
+        return BulletList(*bullets)
 
 
 def tobullet(item):
-	ans = [Para(Strong(*item.term))]
-	for definition in item.definitions:
-		for block in definition.content:
-			ans.append(block)
-	return ListItem(*ans)
+    ans = [Para(Strong(*item.term))]
+    for definition in item.definitions:
+        for block in definition.content:
+            ans.append(block)
+    return ListItem(*ans)
 
 
 if __name__ == "__main__":
