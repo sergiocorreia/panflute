@@ -12,7 +12,12 @@ import sys
 import json
 import yaml
 import shlex
-from shutil import which
+
+try:
+    from shutil import which
+except ImportError:
+    from shutilwhich import which
+
 from subprocess import Popen, PIPE, call
 from functools import partial
 
