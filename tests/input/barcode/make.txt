@@ -1,0 +1,1 @@
+pandoc --smart --parse-raw --to=json index.md > benchmark.json
