@@ -99,13 +99,12 @@ def dump(doc, output_stream=None):
 
     json_serializer = lambda elem: elem.to_json()
 
-    json.dump(
+    output_stream.write(json.dumps(
         obj=doc,
-        fp=output_stream,
         default=json_serializer,  # Serializer
         separators=(',', ':'),  # Compact separators, like Pandoc
         ensure_ascii=False  # For Pandoc compat
-    )
+    ))
 
 
 def toJSONFilters(actions,
