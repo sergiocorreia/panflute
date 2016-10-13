@@ -102,6 +102,7 @@ def dump(doc, output_stream=None):
     output_stream.write(json.dumps(
         obj=doc,
         default=json_serializer,  # Serializer
+        check_circular=False,
         separators=(',', ':'),  # Compact separators, like Pandoc
         ensure_ascii=False  # For Pandoc compat
     ))
