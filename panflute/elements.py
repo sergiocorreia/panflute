@@ -42,10 +42,18 @@ class Doc(Element):
 
     _children = ['metadata', 'content']
 
-    def __init__(self, *args, metadata={}, format='html'):
+    def __init__(self, *args, metadata={}, format='html', api_version=None):
         self._set_content(args, Block)
         self.metadata = metadata
         self.format = format  # Output format
+
+        if api_version is None:
+            self.api_version = None # No versioning
+        elif len(api_version) != 3:
+            raise TypeError("invalid api version")
+        else:
+            self.api_version = tuple(check_type(v, int)  for v in api_version)
+
 
     @property
     def metadata(self):
@@ -64,7 +72,16 @@ class Doc(Element):
     def to_json(self):
         # Overrides default method
         meta = self.metadata.content.to_json()
-        return [{'unMeta': meta}, self.content.to_json()]
+        block = self.content.to_json()
+
+        if self.api_version is None:
+            return [{'unMeta': meta}, blocks]
+        else:
+            ans = OrderedDict()
+            ans['pandoc-api-version'] = self.api_version
+            ans['meta'] = meta
+            ans['blocks'] = blocks
+            return ans
 
     def get_metadata(self, key, default=None):
         """Retrieve metadata with nested keys separated by dots.
@@ -1258,7 +1275,13 @@ def from_json(data):
     if data == []:
         return data
 
-    # Odd cases
+    # Document
+    # Todo: move it at the end as it happens at most once
+
+
+
+    # Odd cases; old API
+    # [{"unMeta": META}, [BLOCKS]]
     if data[0][0] != 't':
         tag = data[0][0]
 
@@ -1276,6 +1299,7 @@ def from_json(data):
     c = data[1][1]
 
     # Maybe using globals() is too slow?
+    # TODO: Try w/out globals, as json.load() is a bit slow
 
     if tag == 'Str':
         return Str(c)

@@ -35,4 +35,8 @@ def check_group(value, group):
 
 
 def encode_dict(tag, content):
+    # TODO: with the new API, do something like:
+    # if not content:
+    #   return OrderedDict((("t", tag)))
+    # else: ...
     return OrderedDict((("t", tag), ("c", content)))
