@@ -139,8 +139,12 @@ def convert_text(text, input_format='markdown', output_format='json',
         out = json.loads(out, object_pairs_hook=from_json)[1]
 
     elif output_format == 'doc':  # Entire document including metadata
-        metadata, items = json.loads(out, object_pairs_hook=from_json)
-        out = Doc(*items, metadata=metadata)
+        out = json.loads(out, object_pairs_hook=from_json)
+        if isinstance(out, Doc):
+            return out
+        else:
+            metadata, items = out
+            out = Doc(*items, metadata=metadata)
 
     else:
         out = "\n".join(out.splitlines())  # Replace \r\n with \n

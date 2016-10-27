@@ -48,16 +48,41 @@ def load(input_stream=None):
 
     # Load JSON and validate it
     doc = json.load(input_stream, object_pairs_hook=from_json)
-    assert len(doc) == 2, 'json.load returned list with unexpected size:'
-    metadata, items = doc
-    assert type(items) == list
+
+    # Notes: 
+    # - We use 'object_pairs_hook' instead of 'object_hook' to preserve the 
+    #   order of the metadata.
+    # - The hook gets called for dicts (not lists), and the deepest dicts
+    #   get called first (so you can ensure that when you receive a dict,
+    #   its contents have already been fed to the hook).
+
+    # Compatibility:
+    # - Before Pandoc 1.8 (1.7 or earlier, AKA "Pandoc Legacy"), the JSON is a list:
+    #   [{"unMeta":{META}},[BLOCKS]]
+    # - Afterwards, it's a dict:
+    #   {"pandoc-api-version" : [MAJ, MIN, REV], "meta" : META, "blocks": BLOCKS} 
+    # - This means that on legacy, the hook WILL NOT get called on the entire
+    #   document and we need to create the Doc() element by hand
+
+    # Corner cases:
+    # - If META is missing, 'object_pairs_hook' will receive an empty list
+    # - 
 
     # Output format
     format = sys.argv[1] if len(sys.argv) > 1 else 'html'
 
-    doc = Doc(*items, metadata=metadata, format=format)
+    # API Version
+    if isinstance(doc, Doc):
+        # Modern Pandoc
+        doc.format = format
+        pass
+    else:
+        # Legacy Pandoc
+        assert type(items) == list
+        assert len(doc) == 2, 'json.load returned list with unexpected size:'
+        metadata, items = doc
+        doc = Doc(*items, api_version=api, metadata=metadata, format=format)
 
-    # Augment doc with an open Pandoc process
     return doc
 
 
@@ -96,6 +121,11 @@ def dump(doc, output_stream=None):
     if output_stream is None:
         sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
         output_stream = sys.stdout
+
+    if doc.api is None:
+        Element.to_json = Element.to_json_legacy
+    else:
+        Element.to_json = Element.to_json_new
 
     json_serializer = lambda elem: elem.to_json()
 

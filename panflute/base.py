@@ -68,6 +68,16 @@ class Element(object):
             return self.tag
 
     def to_json(self):
+        return to_json_new(self)
+
+    def to_json_new(self):
+        if self.__slots__:
+            return encode_dict(self.tag, self._slots_to_json())
+        else:
+            #return OrderedDict((("t", tag),))
+            return {"t": tag}
+
+    def to_json_legacy(self):
         return encode_dict(self.tag, self._slots_to_json())
 
     def _slots_to_json(self):

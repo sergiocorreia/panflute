@@ -29,6 +29,8 @@ class Doc(Element):
     :type metadata: ``dict``
     :param format: output format, such as 'markdown', 'latex' and 'html'
     :type format: ``str``
+    :param api_version: A tuple of three ints of the form (1, 18, 0)
+    :type api_version: ``tuple``
     :return: Document with base class :class:`Element`
     :Base: :class:`Element`
 
@@ -48,11 +50,13 @@ class Doc(Element):
         self.format = format  # Output format
 
         if api_version is None:
-            self.api_version = None # No versioning
+            self.api_version = (1, 17, 0) # Pandoc Legacy
         elif len(api_version) != 3:
-            raise TypeError("invalid api version")
+            raise TypeError("invalid api version", api_version)
+        elif api_version <= (1, 17, 0):
+            raise TypeError("invalid api version", api_version)
         else:
-            self.api_version = tuple(check_type(v, int)  for v in api_version)
+            self.api_version = tuple(check_type(v, int) for v in api_version)
 
 
     @property
@@ -1271,32 +1275,37 @@ def _decode_row(row):
 
 
 def from_json(data):
-    # Empty metadata
+
+    # Empty metadata (in both legacy and new API versions)
     if data == []:
         return data
 
-    # Document
-    # Todo: move it at the end as it happens at most once
+    # Metadata (Legacy)
+    if data[0][0] == 'unMeta':
+        assert len(data) == 1
+        c = data[0][1]
+        c = MetaMap(*c)
+        return c
+    
+    # Document (New API)
+    if data[0][0] == 'pandoc-api-version':
+            assert len(data) == 3
+            assert data[1][0] == 'meta'
+            assert data[2][0] == 'blocks'
+            api, meta, items = (pair[1] for pair in data)
+            doc = Doc(*items, api_version=api, metadata=meta)
 
-
-
-    # Odd cases; old API
-    # [{"unMeta": META}, [BLOCKS]]
-    if data[0][0] != 't':
-        tag = data[0][0]
-
-        if tag == 'unMeta':
-            assert len(data) == 1
-            c = data[0][1]
-            c = MetaMap(*c)
-            return c
-        else:
-            return data
 
     # Standard cases
-    assert data[1][0] == 'c'
+
+    # Depending on the API we will have
+    # - New API: ('t', 'Space')
+    # - Old API: ('t', 'Space'), ('c', [])
+    assert data[0][0] == 't'
+    assert len(data)==1 or data[1][0] == 'c'
+
     tag = data[0][1]
-    c = data[1][1]
+    c = data[1][1] if len(data) == 2 else None
 
     # Maybe using globals() is too slow?
     # TODO: Try w/out globals, as json.load() is a bit slow
