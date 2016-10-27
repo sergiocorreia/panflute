@@ -29,6 +29,8 @@ class Doc(Element):
     :type metadata: ``dict``
     :param format: output format, such as 'markdown', 'latex' and 'html'
     :type format: ``str``
+    :param api_version: A tuple of three ints of the form (1, 18, 0)
+    :type api_version: ``tuple``
     :return: Document with base class :class:`Element`
     :Base: :class:`Element`
 
@@ -42,10 +44,20 @@ class Doc(Element):
 
     _children = ['metadata', 'content']
 
-    def __init__(self, *args, metadata={}, format='html'):
+    def __init__(self, *args, metadata={}, format='html', api_version=None):
         self._set_content(args, Block)
         self.metadata = metadata
         self.format = format  # Output format
+
+        # Handle Pandoc Legacy
+        if api_version is None:
+            self.api_version = None  # Pandoc Legacy
+        elif len(api_version) > 4:
+            raise TypeError("invalid api version", api_version)
+        elif tuple(api_version) <= (1, 17, 0):
+            raise TypeError("invalid api version", api_version)
+        else:
+            self.api_version = tuple(check_type(v, int) for v in api_version)
 
     @property
     def metadata(self):
@@ -64,7 +76,16 @@ class Doc(Element):
     def to_json(self):
         # Overrides default method
         meta = self.metadata.content.to_json()
-        return [{'unMeta': meta}, self.content.to_json()]
+        blocks = self.content.to_json()
+
+        if self.api_version is None:
+            return [{'unMeta': meta}, blocks]
+        else:
+            ans = OrderedDict()
+            ans['pandoc-api-version'] = self.api_version
+            ans['meta'] = meta
+            ans['blocks'] = blocks
+            return ans
 
     def get_metadata(self, key, default=None):
         """Retrieve metadata with nested keys separated by dots.
@@ -109,6 +130,9 @@ class Null(Block):
     """
     __slots__ = []
 
+    def to_json(self):
+        return {'t': 'Null'}
+
 
 class Space(Inline):
     """Inter-word space
@@ -116,6 +140,9 @@ class Space(Inline):
     :Base: :class:`Inline`
      """
     __slots__ = []
+
+    def to_json(self):
+        return {'t': 'Space'}
 
 
 class HorizontalRule(Block):
@@ -125,6 +152,9 @@ class HorizontalRule(Block):
      """
     __slots__ = []
 
+    def to_json(self):
+        return {'t': 'HorizontalRule'}
+
 
 class SoftBreak(Inline):
     """Soft line break
@@ -133,6 +163,9 @@ class SoftBreak(Inline):
      """
     __slots__ = []
 
+    def to_json(self):
+        return {'t': 'SoftBreak'}
+
 
 class LineBreak(Inline):
     """Hard line break
@@ -140,6 +173,9 @@ class LineBreak(Inline):
      :Base: :class:`Inline`
      """
     __slots__ = []
+
+    def to_json(self):
+        return {'t': 'LineBreak'}
 
 
 # ---------------------------
@@ -430,6 +466,10 @@ class Quoted(Inline):
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
+        quote_type = {'t': self.quote_type}
+        return [quote_type, self.content.to_json()]
+
+    def _slots_to_json_legacy(self):
         quote_type = encode_dict(self.quote_type, [])
         return [quote_type, self.content.to_json()]
 
@@ -520,6 +560,17 @@ class Citation(Element):
         self._suffix._container = '_suffix'
 
     def to_json(self):
+        # Replace default .to_json ; we don't need _slots_to_json()
+        ans = OrderedDict()
+        ans['citationSuffix'] = self.suffix.to_json()
+        ans['citationNoteNum'] = self.note_num
+        ans['citationMode'] = {'t': self.mode}
+        ans['citationPrefix'] = self.prefix.to_json()
+        ans['citationId'] = self.id
+        ans['citationHash'] = self.hash
+        return ans
+
+    def to_json_legacy(self):
         # Replace default .to_json ; we don't need _slots_to_json()
         ans = OrderedDict()
         ans['citationSuffix'] = self.suffix.to_json()
@@ -715,6 +766,10 @@ class Math(Inline):
         self.format = check_group(format, MATH_FORMATS)
 
     def _slots_to_json(self):
+        format = {'t': self.format}
+        return [format, self.text]
+
+    def _slots_to_json_legacy(self):
         format = encode_dict(self.format, [])
         return [format, self.text]
 
@@ -805,6 +860,12 @@ class OrderedList(Block):
         self.delimiter = check_group(delimiter, LIST_NUMBER_DELIMITERS)
 
     def _slots_to_json(self):
+        style = {'t': self.style}
+        delimiter = {'t': self.delimiter}
+        ssd = [self.start, style, delimiter]
+        return [ssd, self.content.to_json()]
+
+    def _slots_to_json_legacy(self):
         style = encode_dict(self.style, [])
         delimiter = encode_dict(self.delimiter, [])
         ssd = [self.start, style, delimiter]
@@ -1034,6 +1095,14 @@ class Table(Block):
 
     def _slots_to_json(self):
         caption = [chunk.to_json() for chunk in self.caption]
+        alignment = [{'t': x} for x in self.alignment]
+        header = self.header.to_json()
+        items = self.content.to_json()
+        content = [caption, alignment, self.width, header, items]
+        return content
+
+    def _slots_to_json_legacy(self):
+        caption = [chunk.to_json() for chunk in self.caption]
         alignment = [encode_dict(x, []) for x in self.alignment]
         header = self.header.to_json()
         items = self.content.to_json()
@@ -1221,6 +1290,8 @@ RAW_FORMATS = {'html', 'tex', 'latex'}
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
     MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
 
+EMPTY_ELEMENTS = {Null, Space, HorizontalRule, SoftBreak, LineBreak}
+
 
 # ---------------------------
 # Functions
@@ -1254,28 +1325,43 @@ def _decode_row(row):
 
 
 def from_json(data):
-    # Empty metadata
+
+    # Empty metadata (in both legacy and new API versions)
     if data == []:
         return data
 
-    # Odd cases
-    if data[0][0] != 't':
-        tag = data[0][0]
+    # Metadata key (Legacy)
+    if data[0][0] == 'unMeta':
+        assert len(data) == 1
+        c = data[0][1]
+        c = MetaMap(*c)
+        return c
 
-        if tag == 'unMeta':
-            assert len(data) == 1
-            c = data[0][1]
-            c = MetaMap(*c)
-            return c
-        else:
-            return data
+    # Document (New API)
+    if data[0][0] == 'pandoc-api-version':
+            assert len(data) == 3
+            assert data[1][0] == 'meta'
+            assert data[2][0] == 'blocks'
+            api, meta, items = (pair[1] for pair in data)
+            doc = Doc(*items, api_version=api, metadata=meta)
+            return doc
+
+    # Metadata contents
+    if data[0][0] != 't':
+        return data
 
     # Standard cases
-    assert data[1][0] == 'c'
+
+    # Depending on the API we will have
+    # - New API: ('t', 'Space')
+    # - Old API: ('t', 'Space'), ('c', [])
+    assert len(data) == 1 or data[1][0] == 'c'
+
     tag = data[0][1]
-    c = data[1][1]
+    c = data[1][1] if len(data) == 2 else None
 
     # Maybe using globals() is too slow?
+    # TODO: Try w/out globals, as json.load() is a bit slow
 
     if tag == 'Str':
         return Str(c)
@@ -1391,6 +1477,7 @@ def meta2builtin(meta):
     elif isinstance(meta, MetaList):
         return [meta2builtin(v) for v in meta.content.list]
     elif isinstance(meta, MetaMap):
-        return OrderedDict((k, meta2builtin(v)) for (k, v) in meta.content.dict)
+        return OrderedDict((k, meta2builtin(v)) for (k, v)
+                           in meta.content.dict)
     else:
         return meta
