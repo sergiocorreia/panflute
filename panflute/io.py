@@ -3,7 +3,6 @@
 # ---------------------------
 
 from .elements import Element, Doc, from_json, ListContainer
-from .elements import Space, LineBreak, SoftBreak, Para
 
 import io
 import sys
@@ -78,9 +77,9 @@ def load(input_stream=None):
         pass
     else:
         # Legacy Pandoc
+        metadata, items = doc
         assert type(items) == list
         assert len(doc) == 2, 'json.load returned list with unexpected size:'
-        metadata, items = doc
         doc = Doc(*items, api_version=api, metadata=metadata, format=format)
 
     return doc
@@ -122,10 +121,13 @@ def dump(doc, output_stream=None):
         sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
         output_stream = sys.stdout
 
-    if doc.api is None:
-        Element.to_json = Element.to_json_legacy
-    else:
-        Element.to_json = Element.to_json_new
+    # Legacy dumps: {'t': 'Space', 'c': []}
+    if doc.api_version is None:
+        for E in EMPTY_ELEMENTS:
+            E.to_json_new = E.to_json
+            E.to_json = Element.to_json
+        Citation.to_json_new = Citation.to_json
+        Citation.to_json = Citation.to_json_legacy
 
     json_serializer = lambda elem: elem.to_json()
 
@@ -136,6 +138,11 @@ def dump(doc, output_stream=None):
         separators=(',', ':'),  # Compact separators, like Pandoc
         ensure_ascii=False  # For Pandoc compat
     ))
+
+    if doc.api_version is None:
+        for E in EMPTY_ELEMENTS:
+            E.to_json = E.to_json_new
+        Citation.to_json = Citation.to_json_new
 
 
 def toJSONFilters(actions,

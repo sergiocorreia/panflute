@@ -51,9 +51,9 @@ class Doc(Element):
 
         if api_version is None:
             self.api_version = (1, 17, 0) # Pandoc Legacy
-        elif len(api_version) != 3:
+        elif len(api_version) > 4:
             raise TypeError("invalid api version", api_version)
-        elif api_version <= (1, 17, 0):
+        elif tuple(api_version) <= (1, 17, 0):
             raise TypeError("invalid api version", api_version)
         else:
             self.api_version = tuple(check_type(v, int) for v in api_version)
@@ -76,7 +76,7 @@ class Doc(Element):
     def to_json(self):
         # Overrides default method
         meta = self.metadata.content.to_json()
-        block = self.content.to_json()
+        blocks = self.content.to_json()
 
         if self.api_version is None:
             return [{'unMeta': meta}, blocks]
@@ -130,6 +130,9 @@ class Null(Block):
     """
     __slots__ = []
 
+    def to_json(self):
+        return {'t': 'Null'}
+
 
 class Space(Inline):
     """Inter-word space
@@ -137,6 +140,9 @@ class Space(Inline):
     :Base: :class:`Inline`
      """
     __slots__ = []
+
+    def to_json(self):
+        return {'t': 'Space'}
 
 
 class HorizontalRule(Block):
@@ -146,6 +152,9 @@ class HorizontalRule(Block):
      """
     __slots__ = []
 
+    def to_json(self):
+        return {'t': 'HorizontalRule'}
+
 
 class SoftBreak(Inline):
     """Soft line break
@@ -153,6 +162,9 @@ class SoftBreak(Inline):
      :Base: :class:`Inline`
      """
     __slots__ = []
+
+    def to_json(self):
+        return {'t': 'SoftBreak'}
 
 
 class LineBreak(Inline):
@@ -162,6 +174,9 @@ class LineBreak(Inline):
      """
     __slots__ = []
 
+
+    def to_json(self):
+        return {'t': 'LineBreak'}
 
 # ---------------------------
 # Classes - Simple Containers
@@ -541,6 +556,17 @@ class Citation(Element):
         self._suffix._container = '_suffix'
 
     def to_json(self):
+        # Replace default .to_json ; we don't need _slots_to_json()
+        ans = OrderedDict()
+        ans['citationSuffix'] = self.suffix.to_json()
+        ans['citationNoteNum'] = self.note_num
+        ans['citationMode'] = {'t': self.mode}
+        ans['citationPrefix'] = self.prefix.to_json()
+        ans['citationId'] = self.id
+        ans['citationHash'] = self.hash
+        return ans
+
+    def to_json_legacy(self):
         # Replace default .to_json ; we don't need _slots_to_json()
         ans = OrderedDict()
         ans['citationSuffix'] = self.suffix.to_json()
@@ -1242,6 +1268,7 @@ RAW_FORMATS = {'html', 'tex', 'latex'}
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
     MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
 
+EMPTY_ELEMENTS = {Null, Space, HorizontalRule, SoftBreak, LineBreak}
 
 # ---------------------------
 # Functions
@@ -1280,7 +1307,7 @@ def from_json(data):
     if data == []:
         return data
 
-    # Metadata (Legacy)
+    # Metadata key (Legacy)
     if data[0][0] == 'unMeta':
         assert len(data) == 1
         c = data[0][1]
@@ -1294,14 +1321,17 @@ def from_json(data):
             assert data[2][0] == 'blocks'
             api, meta, items = (pair[1] for pair in data)
             doc = Doc(*items, api_version=api, metadata=meta)
+            return doc
 
+    # Metadata contents
+    if data[0][0] != 't':
+        return data
 
     # Standard cases
 
     # Depending on the API we will have
     # - New API: ('t', 'Space')
     # - Old API: ('t', 'Space'), ('c', [])
-    assert data[0][0] == 't'
     assert len(data)==1 or data[1][0] == 'c'
 
     tag = data[0][1]
