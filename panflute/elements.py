@@ -49,15 +49,15 @@ class Doc(Element):
         self.metadata = metadata
         self.format = format  # Output format
 
+        # Handle Pandoc Legacy
         if api_version is None:
-            self.api_version = (1, 17, 0) # Pandoc Legacy
+            self.api_version = None  # Pandoc Legacy
         elif len(api_version) > 4:
             raise TypeError("invalid api version", api_version)
         elif tuple(api_version) <= (1, 17, 0):
             raise TypeError("invalid api version", api_version)
         else:
             self.api_version = tuple(check_type(v, int) for v in api_version)
-
 
     @property
     def metadata(self):
@@ -174,9 +174,9 @@ class LineBreak(Inline):
      """
     __slots__ = []
 
-
     def to_json(self):
         return {'t': 'LineBreak'}
+
 
 # ---------------------------
 # Classes - Simple Containers
@@ -466,6 +466,10 @@ class Quoted(Inline):
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
+        quote_type = {'t': self.quote_type}
+        return [quote_type, self.content.to_json()]
+
+    def _slots_to_json_legacy(self):
         quote_type = encode_dict(self.quote_type, [])
         return [quote_type, self.content.to_json()]
 
@@ -762,6 +766,10 @@ class Math(Inline):
         self.format = check_group(format, MATH_FORMATS)
 
     def _slots_to_json(self):
+        format = {'t': self.format}
+        return [format, self.text]
+
+    def _slots_to_json_legacy(self):
         format = encode_dict(self.format, [])
         return [format, self.text]
 
@@ -852,6 +860,12 @@ class OrderedList(Block):
         self.delimiter = check_group(delimiter, LIST_NUMBER_DELIMITERS)
 
     def _slots_to_json(self):
+        style = {'t': self.style}
+        delimiter = {'t': self.delimiter}
+        ssd = [self.start, style, delimiter]
+        return [ssd, self.content.to_json()]
+
+    def _slots_to_json_legacy(self):
         style = encode_dict(self.style, [])
         delimiter = encode_dict(self.delimiter, [])
         ssd = [self.start, style, delimiter]
@@ -1081,6 +1095,14 @@ class Table(Block):
 
     def _slots_to_json(self):
         caption = [chunk.to_json() for chunk in self.caption]
+        alignment = [{'t': x} for x in self.alignment]
+        header = self.header.to_json()
+        items = self.content.to_json()
+        content = [caption, alignment, self.width, header, items]
+        return content
+
+    def _slots_to_json_legacy(self):
+        caption = [chunk.to_json() for chunk in self.caption]
         alignment = [encode_dict(x, []) for x in self.alignment]
         header = self.header.to_json()
         items = self.content.to_json()
@@ -1270,6 +1292,7 @@ SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
 
 EMPTY_ELEMENTS = {Null, Space, HorizontalRule, SoftBreak, LineBreak}
 
+
 # ---------------------------
 # Functions
 # ---------------------------
@@ -1313,7 +1336,7 @@ def from_json(data):
         c = data[0][1]
         c = MetaMap(*c)
         return c
-    
+
     # Document (New API)
     if data[0][0] == 'pandoc-api-version':
             assert len(data) == 3
@@ -1332,7 +1355,7 @@ def from_json(data):
     # Depending on the API we will have
     # - New API: ('t', 'Space')
     # - Old API: ('t', 'Space'), ('c', [])
-    assert len(data)==1 or data[1][0] == 'c'
+    assert len(data) == 1 or data[1][0] == 'c'
 
     tag = data[0][1]
     c = data[1][1] if len(data) == 2 else None
@@ -1454,6 +1477,7 @@ def meta2builtin(meta):
     elif isinstance(meta, MetaList):
         return [meta2builtin(v) for v in meta.content.list]
     elif isinstance(meta, MetaMap):
-        return OrderedDict((k, meta2builtin(v)) for (k, v) in meta.content.dict)
+        return OrderedDict((k, meta2builtin(v)) for (k, v)
+                           in meta.content.dict)
     else:
         return meta
