@@ -63,13 +63,12 @@ def load(input_stream=None):
     #   the JSON is a list:
     #   [{"unMeta":{META}},[BLOCKS]]
     # - Afterwards, it's a dict:
-    #   {"pandoc-api-version" : [MAJ, MIN, REV], "meta" : META, "blocks": BLOCKS} 
+    #   {"pandoc-api-version" : [MAJ, MIN, REV], "meta" : META, "blocks": BLOCKS}
     # - This means that on legacy, the hook WILL NOT get called on the entire
     #   document and we need to create the Doc() element by hand
 
     # Corner cases:
     # - If META is missing, 'object_pairs_hook' will receive an empty list
-    # - 
 
     # Output format
     format = sys.argv[1] if len(sys.argv) > 1 else 'html'
@@ -161,10 +160,30 @@ def dump(doc, output_stream=None):
             E.to_json = E.backup
 
 
-def toJSONFilters(actions,
-                  prepare=None, finalize=None,
-                  input_stream=None, output_stream=None,
-                  **kwargs):
+def toJSONFilters(*args, **kwargs):
+    """
+    Wrapper for :func:`.run_filters`
+    """
+    return run_filters(*args, **kwargs)
+
+
+def toJSONFilter(*args, **kwargs):
+    """
+    Wapper for :func:`.run_filter`, which calls :func:`.run_filters`
+
+    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
+    Receive a Pandoc document from stdin, apply the *action* function to each element, and write it back to stdout.
+
+    See also :func:`.toJSONFilters`
+    """
+    return run_filter(*args, **kwargs)
+
+
+def run_filters(actions,
+                prepare=None, finalize=None,
+                input_stream=None, output_stream=None,
+                doc=None,
+                **kwargs):
     """
     Receive a Pandoc document from stdin, walk through it applying
     the functions in *actions* to each element, and write it back to stdout.
@@ -197,23 +216,34 @@ def toJSONFilters(actions,
      functions (so they can actually receive more than just two arguments
      (*element* and *doc*).
     """
-    doc = load(input_stream=input_stream)
+
+    load_and_dump = (doc is None)
+    
+    if load_and_dump:
+        doc = load(input_stream=input_stream)
+
     if prepare is not None:
         prepare(doc)
+    
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
         doc = doc.walk(action, doc)
+    
     if finalize is not None:
         finalize(doc)
-    dump(doc, output_stream=output_stream)
+    
+    if load_and_dump:
+        dump(doc, output_stream=output_stream)
+    else:
+        return(doc)
 
 
-def toJSONFilter(action, *args, **kwargs):
+def run_filter(action, *args, **kwargs):
     """
-    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
+    run_filters(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
     Receive a Pandoc document from stdin, apply the *action* function to each element, and write it back to stdout.
 
     See :func:`.toJSONFilters`
     """
-    return toJSONFilters([action], *args, **kwargs)
+    return run_filters([action], *args, **kwargs)

@@ -25,7 +25,8 @@ from .elements import (
 from .elements import (
     MetaList, MetaMap, MetaString, MetaBool, MetaInlines, MetaBlocks)
 
-from .io import load, dump, toJSONFilter, toJSONFilters
+from .io import load, dump, run_filter, run_filters
+from .io import toJSONFilter, toJSONFilters  # Wrappers
 
 from .tools import (
     stringify, yaml_filter, shell, convert_text, debug)
