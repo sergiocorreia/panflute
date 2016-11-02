@@ -1,4 +1,3 @@
-sudo: false
 language: python
 python:
   - "3.2"
@@ -13,4 +12,4 @@ python:
 #install: "pip install -r requirements.txt"
 install: "python setup.py install"
 # command to run tests
-script: pytest ./tests/run_tests.py
+script: pytest
