@@ -14,8 +14,8 @@ def test_all():
         print()
         print('TESTING:', input_fn)
         print(64 * '<')
-        test_idempotent(input_fn, output_fn)
-        test_stringify(input_fn, output_fn)
+        inner_test_idempotent(input_fn, output_fn)
+        inner_test_stringify(input_fn, output_fn)
         print(64 * '>')
         print()
 
@@ -24,14 +24,14 @@ def test_all():
 def empty_test(element, doc):
     return
 
-def test_filter(element, doc):
+def inner_test_filter(element, doc):
     if type(element)==pf.Header:
         return []
     if type(element)==pf.Str:
         element.text = element.text + '!!'
         return element
 
-def test_idempotent(input_fn, output_fn):
+def inner_test_idempotent(input_fn, output_fn):
 
     print('\nLoading JSON...')
 
@@ -79,7 +79,7 @@ def test_idempotent(input_fn, output_fn):
 
     assert input_data == output_data
 
-def test_stringify(input_fn, output_fn):
+def inner_test_stringify(input_fn, output_fn):
 
     output_txt_benchmark = '../tests/temp_benchmark.txt'
     output_txt_panflute = '../tests/temp_panflute.txt'
