@@ -3,12 +3,13 @@ import pandocfilters, json
 
 
 def test_all():
-    fns = [('../tests/1/api117/benchmark.json', '../tests/1/api117/panflute.json'),
-        ('../tests/1/api118/benchmark.json', '../tests/1/api118/panflute.json'),
-        ('../tests/2/api117/benchmark.json', '../tests/2/api117/panflute.json'),
-        ('../tests/2/api118/benchmark.json', '../tests/2/api118/panflute.json'),
-        ('../tests/3/api117/benchmark.json', '../tests/3/api117/panflute.json'),
-        ('../tests/3/api118/benchmark.json', '../tests/3/api118/panflute.json')]
+    fns = [
+        ('./tests/1/api117/benchmark.json', './tests/1/api117/panflute.json'),
+        ('./tests/1/api118/benchmark.json', './tests/1/api118/panflute.json'),
+        ('./tests/2/api117/benchmark.json', './tests/2/api117/panflute.json'),
+        ('./tests/2/api118/benchmark.json', './tests/2/api118/panflute.json'),
+        ('./tests/3/api117/benchmark.json', './tests/3/api117/panflute.json'),
+        ('./tests/3/api118/benchmark.json', './tests/3/api118/panflute.json')]
 
     for input_fn, output_fn in fns:
         print()
@@ -81,8 +82,8 @@ def inner_test_idempotent(input_fn, output_fn):
 
 def inner_test_stringify(input_fn, output_fn):
 
-    output_txt_benchmark = '../tests/temp_benchmark.txt'
-    output_txt_panflute = '../tests/temp_panflute.txt'
+    output_txt_benchmark = './tests/temp_benchmark.txt'
+    output_txt_panflute = './tests/temp_panflute.txt'
 
     print('Testing stringify()')
     with open(input_fn, encoding='utf-8') as f:
