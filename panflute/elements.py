@@ -1338,13 +1338,16 @@ def from_json(data):
         return c
 
     # Document (New API)
-    if data[0][0] == 'pandoc-api-version':
-            assert len(data) == 3
-            assert data[1][0] == 'meta'
-            assert data[2][0] == 'blocks'
-            api, meta, items = (pair[1] for pair in data)
-            doc = Doc(*items, api_version=api, metadata=meta)
-            return doc
+    if len(data) == 3:
+        # It seems that (in some configs or systems),
+        # the first element might not always be "pandoc-api-version"
+        if data[0][0] in ('pandoc-api-version', 'meta', 'blocks'):
+            data = OrderedDict(data)
+            api = data['pandoc-api-version']
+            meta = data['meta']
+            items = data['blocks']
+
+            return Doc(*items, api_version=api, metadata=meta)
 
     # Metadata contents
     if data[0][0] != 't':
