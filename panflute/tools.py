@@ -98,11 +98,11 @@ def convert_text(text, input_format='markdown', output_format='json',
 
         >>> from panflute import *
         >>> md = 'Some *markdown* **text** ~xyz~'
-        >>> tex = 'Some $x^y$ or $x_n = \sqrt{a + b}$ \textit{a}'
+        >>> tex = r'Some $x^y$ or $x_n = \sqrt{a + b}$ \textit{a}'
         >>> convert_text(md)
         [Para(Str(Some) Space Emph(Str(markdown)) Space Strong(Str(text)) Space Subscript(Str(xyz)))]
         >>> convert_text(tex)
-        [Para(Str(Some) Space Math(x^y; format='InlineMath') Space Str(or) Space Math(x_n = \sqrt{a + b}; format='InlineMath') Space Str(extit{a}))]
+        [Para(Str(Some) Space Math(x^y; format='InlineMath') Space Str(or) Space Math(x_n = \sqrt{a + b}; format='InlineMath') Space RawInline(\textit{a}; format='tex'))]
 
 
     :param text: text that will be converted
@@ -142,7 +142,11 @@ def convert_text(text, input_format='markdown', output_format='json',
     out = out.decode('utf-8')
 
     if output_format == 'json':
-        out = json.loads(out, object_pairs_hook=from_json)[1]
+        out = json.loads(out, object_pairs_hook=from_json)
+        if isinstance(out, Doc):
+            return(out.content.list)
+        else:
+            return(out[1])
 
     elif output_format == 'doc':  # Entire document including metadata
         out = json.loads(out, object_pairs_hook=from_json)
