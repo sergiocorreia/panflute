@@ -24,3 +24,10 @@ install: "python setup.py install"
 script: py.test
 cache:
   - pip
+matrix:
+  allow_failures:
+    - python: "3.5-dev"
+    - python: "3.6-dev"
+    - python: "nightly"
+    - python: "pypy3"
+  fast_finish: true
