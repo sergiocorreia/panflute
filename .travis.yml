@@ -1,4 +1,6 @@
+# os: linux and sudo: false is assumed, which means it is using container-based Ubuntu 12.04
 language: python
+# build matrix: different python and pandoc versions
 python:
   - "3.3"
   - "3.4"
@@ -7,15 +9,18 @@ python:
   - "3.6-dev" # 3.6 development branch
   - "nightly" # currently points to 3.7-dev
   - "pypy3"
+env:
+  - pandocVersion=1.17.2
+  - pandocVersion=1.18
 # command to install dependencies
 #install: "pip install -r requirements.txt"
-addons:
-  apt:
-    packages:
-      pandoc
 before_install:
-  - pip install shutilwhich
-  - pip install pandocfilters
+  - pip install -U shutilwhich
+                   pandocfilters
+  - wget https://github.com/jgm/pandoc/releases/download/$pandocVersion/pandoc-$pandocVersion-1-amd64.deb &&
+    sudo dpkg -i pandoc-$pandocVersion-1-amd64.deb
 install: "python setup.py install"
 # command to run tests
 script: py.test
+cache:
+  - pip
