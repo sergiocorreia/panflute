@@ -9,7 +9,9 @@ def test_all():
         ('./tests/2/api117/benchmark.json', './tests/2/api117/panflute.json'),
         ('./tests/2/api118/benchmark.json', './tests/2/api118/panflute.json'),
         ('./tests/3/api117/benchmark.json', './tests/3/api117/panflute.json'),
-        ('./tests/3/api118/benchmark.json', './tests/3/api118/panflute.json')]
+        ('./tests/3/api118/benchmark.json', './tests/3/api118/panflute.json'),
+        ('./tests/4/api117/benchmark.json', './tests/4/api117/panflute.json'),
+        ('./tests/4/api118/benchmark.json', './tests/4/api118/panflute.json')]
 
     for input_fn, output_fn in fns:
         print()

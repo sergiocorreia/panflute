@@ -249,6 +249,8 @@ class Element(object):
             elif isinstance(obj, DictContainer):
                 ans = [(k, v.walk(action, doc)) for k, v in obj.items()]
                 ans = [(k, v) for k, v in ans if v != []]
+            elif obj is None:
+                pass # Empty table headers or captions
             else:
                 raise TypeError(type(obj))
             setattr(self, child, ans)

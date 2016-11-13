@@ -126,7 +126,7 @@ def convert_text(text, input_format='markdown', output_format='json',
         extra_args = []
 
     pandoc_path = which('pandoc')
-    if not os.path.exists(pandoc_path):
+    if pandoc_path is None or not os.path.exists(pandoc_path):
         raise OSError("Path to pandoc executable does not exists")
     out_fmt = 'json' if output_format == 'doc' else output_format
 

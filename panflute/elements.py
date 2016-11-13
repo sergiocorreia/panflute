@@ -1050,7 +1050,7 @@ class Table(Block):
         self._set_content(args, TableRow)
         self.rows = len(self.content)
         self.cols = len(self.content[0].content)
-        self.header = header if header else []
+        self.header = header
         self.caption = caption if caption else []
 
         if alignment is None:
@@ -1070,12 +1070,17 @@ class Table(Block):
 
     @property
     def header(self):
-        self._header.parent = self
-        self._header._container = '_header'
+        if self._header is not None:
+            self._header.parent = self
+            self._header._container = '_header'
         return self._header
 
     @header.setter
     def header(self, value):
+        if (not value or value is None):
+            self._header = None
+            return
+
         value = value.content if isinstance(value, TableRow) else list(value)
         self._header = TableRow(*value)
         if len(value) != self.cols:
@@ -1096,7 +1101,7 @@ class Table(Block):
     def _slots_to_json(self):
         caption = [chunk.to_json() for chunk in self.caption]
         alignment = [{'t': x} for x in self.alignment]
-        header = self.header.to_json()
+        header = self.header.to_json() if self.header is not None else []
         items = self.content.to_json()
         content = [caption, alignment, self.width, header, items]
         return content
@@ -1104,7 +1109,7 @@ class Table(Block):
     def _slots_to_json_legacy(self):
         caption = [chunk.to_json() for chunk in self.caption]
         alignment = [encode_dict(x, []) for x in self.alignment]
-        header = self.header.to_json()
+        header = self.header.to_json() if self.header is not None else []
         items = self.content.to_json()
         content = [caption, alignment, self.width, header, items]
         return content
