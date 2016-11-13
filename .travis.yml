@@ -9,8 +9,11 @@ python:
   - "pypy3"
 # command to install dependencies
 #install: "pip install -r requirements.txt"
+addons:
+  apt:
+    packages:
+      pandoc
 before_install:
-  - apt-get pandoc
   - pip install shutilwhich
   - pip install pandocfilters
 install: "python setup.py install"
