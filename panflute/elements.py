@@ -1331,31 +1331,25 @@ def _decode_row(row):
 
 def from_json(data):
 
-    # Empty metadata (in both legacy and new API versions)
-    if data == []:
-        return data
+    # OrderedDict should be fast in 3.6+, so don't worry about speed:
+    # https://twitter.com/raymondh/status/773978885092323328
+    data = OrderedDict(data)
 
-    # Metadata key (Legacy)
-    if data[0][0] == 'unMeta':
+    # Metadata key (legacy)
+    if 'unMeta' in data:
         assert len(data) == 1
-        c = data[0][1]
-        c = MetaMap(*c)
-        return c
+        return MetaMap(*data['unMeta'].items())
 
-    # Document (New API)
-    if len(data) == 3:
-        # It seems that (in some configs or systems),
-        # the first element might not always be "pandoc-api-version"
-        if data[0][0] in ('pandoc-api-version', 'meta', 'blocks'):
-            data = OrderedDict(data)
-            api = data['pandoc-api-version']
-            meta = data['meta']
-            items = data['blocks']
+    # Document (new API)
+    if 'pandoc-api-version' in data:
+        assert len(data) == 3
+        api = data['pandoc-api-version']
+        meta = data['meta']
+        items = data['blocks']
+        return Doc(*items, api_version=api, metadata=meta)
 
-            return Doc(*items, api_version=api, metadata=meta)
-
-    # Metadata contents
-    if data[0][0] != 't':
+    # Metadata contents (including empty metadata)
+    if 't' not in data:
         return data
 
     # Standard cases
@@ -1363,10 +1357,9 @@ def from_json(data):
     # Depending on the API we will have
     # - New API: ('t', 'Space')
     # - Old API: ('t', 'Space'), ('c', [])
-    assert len(data) == 1 or data[1][0] == 'c'
-
-    tag = data[0][1]
-    c = data[1][1] if len(data) == 2 else None
+    assert (len(data) == 1) or (len(data) == 2 and 'c' in data)
+    tag = data['t']
+    c = data.get('c')
 
     # Maybe using globals() is too slow?
     # TODO: Try w/out globals, as json.load() is a bit slow
@@ -1436,14 +1429,19 @@ def from_json(data):
 
     elif tag == 'MetaList':
         return MetaList(*c)
+
     elif tag == 'MetaMap':
-        return MetaMap(*c)
+        return MetaMap(*c.items())
+
     elif tag == 'MetaInlines':
         return MetaInlines(*c)
+
     elif tag == 'MetaBlocks':
         return MetaBlocks(*c)
+
     elif tag == 'MetaString':
         return MetaString(c)
+
     elif tag == 'MetaBool':
         assert c in {True, False}, c
         return MetaBool(c)
@@ -1452,12 +1450,7 @@ def from_json(data):
         return tag
 
     else:
-        print('-- UNKNOWN TAG')
-        print(type(tag))
-        print(tag)
-        print(c)
-        print('--')
-        raise Exception('unknown tag ' + tag)
+        raise Exception('unknown tag: ' + tag)
 
 
 def builtin2meta(val):
