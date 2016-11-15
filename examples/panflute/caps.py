@@ -5,7 +5,7 @@ Pandoc filter to convert all regular text to uppercase.
 Code, link URLs, etc. are not affected.
 """
 
-from panflute import toJSONFilter, Str
+from panflute import run_filter, Str
 
 
 def caps(elem, doc):
@@ -14,5 +14,9 @@ def caps(elem, doc):
         return elem
 
 
+def main(doc=None):
+    return run_filter(caps, doc=doc)
+
+	
 if __name__ == "__main__":
-    toJSONFilter(caps)
+    main()

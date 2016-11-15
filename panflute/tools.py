@@ -86,6 +86,27 @@ def debug(*args, **kwargs):
     print(file=sys.stderr, *args, **kwargs)
 
 
+def run_pandoc(text='', args=None):
+    """
+    Low level function that calls Pandoc with (optionally)
+    some input text and/or arguments
+    """
+
+    if args is None:
+        args = []
+
+    pandoc_path = which('pandoc')
+    if pandoc_path is None or not os.path.exists(pandoc_path):
+        raise OSError("Path to pandoc executable does not exists")
+    
+    proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    out, err = proc.communicate(input=text.encode('utf-8'))
+    exitcode = proc.returncode
+    if exitcode != 0:
+        raise IOError(err)
+    return out.decode('utf-8')
+
+
 def convert_text(text, input_format='markdown', output_format='json',
                  extra_args=None):
     """
@@ -122,24 +143,15 @@ def convert_text(text, input_format='markdown', output_format='json',
     by Kenneth Reitz.
     """
 
-    if extra_args is None:
-        extra_args = []
-
-    pandoc_path = which('pandoc')
-    if pandoc_path is None or not os.path.exists(pandoc_path):
-        raise OSError("Path to pandoc executable does not exists")
     out_fmt = 'json' if output_format == 'doc' else output_format
 
     from_arg = '--from={}'.format(input_format)
     to_arg = '--to={}'.format(out_fmt)
-    args = [pandoc_path, from_arg, to_arg] + extra_args
-    proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    out, err = proc.communicate(input=text.encode('utf-8'))
-    exitcode = proc.returncode
-    if exitcode != 0:
-        raise IOError(err)
-
-    out = out.decode('utf-8')
+    if extra_args is None:
+        extra_args = []
+    args = [from_arg, to_arg] + extra_args
+    
+    out = run_pandoc(text, args)
 
     if output_format == 'json':
         out = json.loads(out, object_pairs_hook=from_json)

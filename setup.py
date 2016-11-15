@@ -114,12 +114,9 @@ setup(
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
-    #entry_points={
-    #    'console_scripts': [
-    #        'pandoc-figure=filter_figure:main',
-    #        'pandoc-table=filter_table:main'
-    #        #'media=media:main',
-    #        #'stata=stata:main'
-    #    ],
-    #},
+    entry_points={
+        'console_scripts': [
+            'panflute=panflute:main',
+        ],
+    },
 )

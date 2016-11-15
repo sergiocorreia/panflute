@@ -1,4 +1,5 @@
-from panflute import *
+from panflute import run_filter, Header
+
 
 def increase_header_level(elem, doc):
 	if type(elem)==Header:
@@ -7,5 +8,10 @@ def increase_header_level(elem, doc):
 		else:
 			return []
 
+
+def main(doc=None):
+    return run_filter(increase_header_level, doc=doc)
+
+
 if __name__ == "__main__":
-    toJSONFilter(increase_header_level)
+	main()

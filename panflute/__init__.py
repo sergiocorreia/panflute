@@ -6,8 +6,6 @@ Panflute is a Python package that makes `Pandoc <http://pandoc.org/>`_
 filters easier to write. (`Installation <install.html>`_)
 """
 
-# from .utils import check_type, check_group, encode_dict
-
 from .containers import ListContainer, DictContainer
 
 from .base import Element, Block, Inline, MetaValue
@@ -29,6 +27,8 @@ from .io import load, dump, run_filter, run_filters
 from .io import toJSONFilter, toJSONFilters  # Wrappers
 
 from .tools import (
-    stringify, yaml_filter, shell, convert_text, debug)
+    stringify, yaml_filter, shell, run_pandoc, convert_text, debug)
+
+from .autofilter import main
 
 from .version import __version__
