@@ -30,3 +30,5 @@ from .io import toJSONFilter, toJSONFilters  # Wrappers
 
 from .tools import (
     stringify, yaml_filter, shell, convert_text, debug)
+
+from .version import __version__
