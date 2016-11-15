@@ -22,12 +22,17 @@ def main():
 
 	
 	# Display message (tests that everything is working ok)
-	msg = doc.get_metadata('panflute-echo')
+	msg = doc.get_metadata('panflute-echo', False)
 	if msg:
 		debug(stringify(msg))
 
 	# Run filters sequentially
 	filters = doc.get_metadata('panflute-filters')
+	
+	# Allow for a single filter instead of a list
+	if type(filters) != list:
+		filters = [filters]
+
 	if filters:
 		filters = [stringify(chunk) for chunk in filters]
 		if verbose:
@@ -46,13 +51,20 @@ def autorun_filters(filters, doc, searchpath, verbose):
 	info = [row for row in info if row.startswith(prefix)]
 	assert len(info) == 1
 	datadir = info[0][len(prefix):]
+	filterdir = os.path.join(datadir, 'filters')
 
-	searchpath = searchpath + ['.', datadir] + sys.path
+	searchpath = searchpath + ['.', filterdir] + sys.path
 	filenames = OrderedDict()
 
 	for ff in filters:
 		for p in searchpath:
-			fn = os.path.join(p, ff + '.py')
+			
+			# Allow with and without .py ending
+			if ff.endswith('.py'):
+				fn = os.path.join(p, ff)
+			else:
+				fn = os.path.join(p, ff + '.py')
+
 			if os.path.isfile(fn):
 				if verbose:
 					debug("panflute: filter <{}> found in {}".format(ff, fn))
@@ -67,10 +79,14 @@ def autorun_filters(filters, doc, searchpath, verbose):
 		_ = dict()
 		if verbose:
 			debug("panflute: running filter <{}>".format(ff))
-		if verbose:
-			debug("panflute: filter <{}> completed".format(ff))
 		with open(fn) as fp:
 		    exec(fp.read(), _)
-		    doc = _['main'](doc)
+		    try:
+		    	doc = _['main'](doc)
+		    except:
+		    	debug("Failed to run filter: " + ff)
+		    	raise
+		if verbose:
+			debug("panflute: filter <{}> completed".format(ff))
 	
 	return doc
