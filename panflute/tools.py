@@ -162,7 +162,7 @@ def convert_text(text, input_format='markdown', output_format='json',
     return out
 
 
-def yaml_filter(element, doc, tag=None, function=None, tags=None):
+def yaml_filter(element, doc, tag=None, function=None, tags=None, strict_yaml=False):
     '''
     Convenience function for parsing code blocks with YAML options
 
@@ -196,6 +196,12 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None):
     you can use the ``tags`` argument, which receives a dict of
     ``tag: function`` pairs.
 
+    Use the ``strict_yaml=True`` option in order to allow for more verbose
+    but flexible YAML metadata: more than one YAML blocks are allowed, but
+    they all must start with ``---`` (even at the beginning) and end with
+    ``---`` or ``...``. Also, YAML is not the default content
+    when no delimiters are set.
+
     Example::
 
         """
@@ -223,13 +229,43 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None):
         for tag in tags:
             if tag in element.classes:
                 function = tags[tag]
-                # Split yaml and data parts (separated by ... or ---)
-                raw = re.split("^([.]{3,}|[-]{3,})$",
-                               element.text, 1, re.MULTILINE)
-                data = raw[2] if len(raw) > 2 else ''
-                data = data.lstrip('\n')
-                raw = raw[0]
-                options = yaml.load(raw)
+
+                if not strict_yaml:
+                    # Split YAML and data parts (separated by ... or ---)
+                    raw = re.split("^([.]{3,}|[-]{3,})$",
+                                   element.text, 1, re.MULTILINE)
+                    data = raw[2] if len(raw) > 2 else ''
+                    data = data.lstrip('\n')
+                    raw = raw[0]
+                    options = yaml.load(raw)
+                    if options is None:
+                        options = {}
+
+                else:
+                    options = {}
+                    data = []
+                    raw = re.split("^([.]{3,}|[-]{3,})$",
+                                   element.text, 0, re.MULTILINE)
+                    rawmode = True
+                    for chunk in raw:
+
+                        chunk = chunk.strip('\n')
+                        if not chunk:
+                            continue
+
+                        if rawmode:
+                            if chunk.startswith('---'):
+                                rawmode = False
+                            else:
+                                data.append(chunk)
+                        else:
+                            if chunk.startswith('---') or chunk.startswith('...'):
+                                rawmode = True
+                            else:
+                                options.update(yaml.load(chunk))
+
+                    data = '\n'.join(data)
+
                 return function(options=options, data=data,
                                 element=element, doc=doc)
 
