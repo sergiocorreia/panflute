@@ -72,4 +72,4 @@ The API docs are written as comments in the [source code itself](https://github.
 - [REST Primer](http://www.sphinx-doc.org/en/stable/rest.html)
 - [REST and Sphinx Cheatsheet](http://openalea.gforge.inria.fr/doc/openalea/doc/_build/html/source/sphinx/rest_syntax.html#restructured-text-rest-and-sphinx-cheatsheet)
 - [Sphinx commands](https://pythonhosted.org/an_example_pypi_project/sphinx.html)
-- [Sphinx domains](http://www.sphinx-doc.org/en/stable/domains.html). This is used to create links to other python packages and to the stdlib (e.g. ``:py:data:`sys.stdin```).
+- [Sphinx domains](http://www.sphinx-doc.org/en/stable/domains.html). This is used to create links to other python packages and to the stdlib (e.g. ``:py:data:`sys.stdin`` `).
