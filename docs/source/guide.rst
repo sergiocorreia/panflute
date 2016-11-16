@@ -97,6 +97,9 @@ useful `yaml_filter <code.html#panflute.tools.yaml_filter>`_ function:
 
 .. note:: a more complete template is `here <https://github.com/sergiocorreia/panflute/tree/master/docs/source/fenced-template.py>`_
 
+.. note:: `yaml_filter` now allows a `strict_yaml=True` option, which allows multiple YAML blocks, but with the caveat that all YAML blocks must start with `---` and end with `---` or `...`.
+
+
 Calling external programs
 ******************************
 
@@ -112,3 +115,33 @@ With this "Pandoc is a free and open-source software document converter...".
 Alternatively, we might want to run other programs through the shell.
 For this, explore the `shell <code.html#panflute.tools.shell>`_
 function.
+
+Navigating through the document tree
+******************************
+
+You might wish to apply a filter that depends on the parent or sibling objects of an element. For instance, Modify the first row (`TableRow`) of a table, or all the `Str` items nested within a header.
+
+For this, every element has a `.parent` attribute (and the related `.next`, `.prev`, `.ancestor(#), `.index`, `.offset(#)` attributes).
+
+For example, the code below will emphasize all text in the last row of every table:
+
+.. literalinclude:: emph-last-row.py
+
+
+Running filters automatically
+******************************
+
+If you run panflute as a filter (``pandoc ... -F panflute``), then panflute will run all filters specified in the metadata field ``panflute-filters``. This is faster and more convenient than typing the precise list and order of filters used every time the document is run.
+
+You can also specify the location of the filters with the ``panflute-path`` field, which will take precedence over ``.``, ``$datadir``, and ``$path``
+
+Example:
+
+.. literalinclude:: autofilters.md
+
+In order for this to work, the filters need to have a very specific
+structure, with a `main()` function of the following form:
+
+.. literalinclude:: template.py
+
+.. note:: To be able to run filters automatically, the main function needs to be exactly as shown, with an optional argument ``doc``, that gets passed to ``run_filter``, and which is ``return`` ed back.

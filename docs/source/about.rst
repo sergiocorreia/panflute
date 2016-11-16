@@ -1,7 +1,7 @@
 Contributing
 =================
 
-Feel free to submit push requests. For consistency, code should comply with `pep8 <https://pypi.python.org/pypi/pep8>`_ (as long as its reasonable), and with the Python style guides by `@kennethreitz <http://docs.python-guide.org/en/latest/writing/style/>`_ and `Coogle <http://google.github.io/styleguide/pyguide.html>`_.
+Feel free to submit push requests. `This guide <https://github.com/sergiocorreia/panflute/blob/master/CONTRIBUTING.md>`_ has some helpful contributing guidelines!
 
 License
 ~~~~~~~~~~~~~~~~~

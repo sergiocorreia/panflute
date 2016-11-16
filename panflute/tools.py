@@ -181,7 +181,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None, strict_yaml=Fa
     This function is useful to create a filter that applies to
     code blocks that have specific classes.
 
-    It is used as an argument of ``toJSONFilter``, with two additional options:
+    It is used as an argument of ``run_filter``, with two additional options:
     ``tag`` and ``function``.
 
     Using this is equivalent to having filter functions that:
@@ -196,7 +196,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None, strict_yaml=Fa
 
     Instead, you just need to:
 
-    1. Call toJSONFilter with ``yaml_filter`` as the action function, and
+    1. Call ``run_filter`` with ``yaml_filter`` as the action function, and
        with the additional arguments ``tag`` and ``function``
     2. Construct a ``fenced_action`` function that takes four arguments:
        (options, data, element, doc). Note that options is a dict and data
@@ -208,7 +208,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None, strict_yaml=Fa
     you can use the ``tags`` argument, which receives a dict of
     ``tag: function`` pairs.
 
-    Use the ``strict_yaml=True`` option in order to allow for more verbose
+    Note: use the ``strict_yaml=True`` option in order to allow for more verbose
     but flexible YAML metadata: more than one YAML blocks are allowed, but
     they all must start with ``---`` (even at the beginning) and end with
     ``---`` or ``...``. Also, YAML is not the default content
@@ -229,7 +229,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None, strict_yaml=Fa
             return div
 
         if __name__ == '__main__':
-            pf.toJSONFilter(pf.yaml_filter, tag='foo', function=fenced_action)
+            pf.run_filter(pf.yaml_filter, tag='foo', function=fenced_action)
     '''
 
     # Allow for either tag+function or a dict {tag: function}

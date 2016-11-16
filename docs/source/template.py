@@ -20,5 +20,12 @@ def finalize(doc):
     pass
 
 
+def main(doc=None):
+	return pf.run_filter(action,
+	                     prepare=prepare,
+	                     finalize=finalize,
+	                     doc=doc) 
+
+
 if __name__ == '__main__':
-    pf.toJSONFilter(action, prepare=prepare, finalize=finalize)
+    main()

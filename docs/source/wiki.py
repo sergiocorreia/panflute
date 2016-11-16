@@ -22,4 +22,4 @@ def action(elem, doc):
 
 
 if __name__ == '__main__':
-    pf.toJSONFilter(action)
+    pf.run_filter(action)

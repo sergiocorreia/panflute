@@ -20,6 +20,15 @@ Base elements
 
       :rtype: :class:`Element` | ``None``
 
+   .. attribute:: location
+
+     ``None`` unless the element is in a non--standard location of its
+     parent, such as the ``.caption`` or ``.header`` attributes of a table.
+
+     In those cases, ``.location`` will be equal to a string.
+
+      :rtype: ``str`` | ``None``
+
    .. automethod:: panflute.base.Element.walk
    .. autoattribute:: panflute.base.Element.content
    .. autoattribute:: panflute.base.Element.index
@@ -28,6 +37,7 @@ Base elements
    .. autoattribute:: panflute.base.Element.prev
    .. autoattribute:: panflute.base.Element.next
    .. automethod:: panflute.base.Element.replace_keyword
+   .. autoattribute:: panflute.base.Element.container
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -107,6 +117,8 @@ Standard functions
 
 .. autosummary::
 
+   run_filters
+   run_filter
    toJSONFilter
    toJSONFilters
    load

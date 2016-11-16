@@ -135,12 +135,11 @@ class Element(object):
     @property
     def container(self):
         """
-        (internal) Return the LisContainer or DictContainer that contains the
-        element, or returns None of the element has no parent or if it has
-        a parent but is not within a ListContainer or DictContainer
-        (like table headers).
+        Rarely used attribute that returns the ``ListContainer`` or
+        ``DictContainer`` that contains the element
+        (or returns None if no such container exist)
 
-        :rtype: ``int`` | ``None``
+        :rtype: ``ListContainer`` | ``DictContainer`` | ``None``
         """
         if self.parent is None:
             return None

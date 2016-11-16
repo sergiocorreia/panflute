@@ -46,8 +46,12 @@ def action(elem, doc):
             raw = f.read()
 
         new_elems = pf.convert_text(raw)
-        div = pf.Div(*new_elems, attributes={'source': fn})
-        return div
+        
+        # Alternative A:
+        return new_elems
+        # Alternative B:
+        # div = pf.Div(*new_elems, attributes={'source': fn})
+        # return div
 
 
 if __name__ == '__main__':

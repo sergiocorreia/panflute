@@ -20,7 +20,13 @@ def finalize(doc):
     pass
 
 
-if __name__ == '__main__':
-    pf.toJSONFilter(pf.yaml_filter, prepare=prepare, finalize=finalize, tag='sometag', function=fenced_action)
+def main(doc=None):
+	return pf.run_filter(pf.yaml_filter, prepare=prepare, finalize=finalize,
+	                     tag='sometag', function=fenced_action, doc=doc) 
+    # Alternatively:
     # tags = {'sometag': fenced_action, 'another_tag': another_action}
-    # pf.toJSONFilter(pf.yaml_filter, prepare, finalize, tags=tags)
+    # return pf.run_filter(... , tags=tags, doc=doc)
+
+
+if __name__ == '__main__':
+    main()

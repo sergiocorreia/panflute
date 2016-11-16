@@ -19,4 +19,4 @@ def finalize(doc):
     del doc.toc, doc.depth
 
 if __name__ == '__main__':
-    toJSONFilter(action, prepare, finalize)
+    run_filter(action, prepare, finalize)

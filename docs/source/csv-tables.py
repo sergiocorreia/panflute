@@ -25,5 +25,10 @@ def fenced_action(options, data, element, doc):
     return table
 
 
+def main(doc=None):
+    return run_filter(pf.yaml_filter, tag='csv', function=fenced_action,
+                      doc=doc)
+
+
 if __name__ == '__main__':
-    pf.toJSONFilter(pf.yaml_filter, tag='csv', function=fenced_action)
+    main()

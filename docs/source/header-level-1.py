@@ -9,4 +9,4 @@ def action(elem, doc):
     	elem.level = 1
 
 if __name__ == '__main__':
-    toJSONFilter(action)
+    run_filter(action)

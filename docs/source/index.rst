@@ -10,7 +10,7 @@ It is a pythonic alternative to John MacFarlane's
 from which it is heavily inspired.
 
 To use it, write a function that works on Pandoc elements
-and call it through `toJSONFilter <code.html#panflute.io.toJSONFilter>`_::
+and call it through `run_filter <code.html#panflute.io.run_filter>`_::
 
     from panflute import *
 
@@ -21,8 +21,11 @@ and call it through `toJSONFilter <code.html#panflute.io.toJSONFilter>`_::
             else:
                 return [] #  Delete headers already in level 6
 
+    def main(doc=None):
+        return run_filter(increase_header_level, doc=doc)
+
     if __name__ == "__main__":
-        toJSONFilter(increase_header_level)
+        main()
 
 
 Motivation
@@ -61,15 +64,22 @@ Our goal is to make writing pandoc filters *as simple and clear as possible*. St
   `yaml_filter(element, doc, tag, function)`.
 - Called external programs to fetch results with `shell()`.
 - Modifying the entire document (e.g. moving all the figures and tables to the
-  back of a PDF) are easy to use, thanks to the `prepare` and `finalize`
-  options of `toJSONFilter`, and to the `replace_keyword` function
+  back of a PDF) is easy, thanks to the `prepare` and `finalize`
+  options of `run_filter`, and to the `replace_keyword` function
+- Convenience elements such as `TableRow` and `TableCell` allow for easier
+  filters.
+- Panflute can be run as a filter itself, in which case it will run all
+  filters listed in the metadata field `pandoc-filters`.
 
 Examples of panflute filters
 ====================================
 
 Ports of existing pandocfilter modules are in the `github repo <https://github.com/sergiocorreia/panflute/tree/master/examples/panflute>`_; additional and more advanced examples are in a `separate repository <https://github.com/sergiocorreia/panflute-filters>`_.
 
-Filters that use pandocfilters instead
+Also, a comprehensive list of filters and other Pandoc extras should be
+available `here <https://github.com/pandoc-extras/>`_ in the future.
+
+Alternative: filters based on pandocfilters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - For a guide to pandocfilters, see the

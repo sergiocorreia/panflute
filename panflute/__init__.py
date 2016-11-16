@@ -3,7 +3,7 @@ Panflute: pandoc filters made simple
 ====================================
 
 Panflute is a Python package that makes `Pandoc <http://pandoc.org/>`_
-filters easier to write. (`Installation <install.html>`_)
+filters fun to write. (`Installation <install.html>`_)
 """
 
 from .containers import ListContainer, DictContainer

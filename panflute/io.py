@@ -185,8 +185,9 @@ def run_filters(actions,
                 doc=None,
                 **kwargs):
     """
-    Receive a Pandoc document from stdin, walk through it applying
-    the functions in *actions* to each element, and write it back to stdout.
+    Receive a Pandoc document from the input stream (default is stdin),
+    walk through it applying the functions in *actions* to each element,
+    and write it back to the output stream (default is stdout).
 
     Notes:
 
@@ -196,14 +197,16 @@ def run_filters(actions,
       so the actions are applied sequentially.
     - By default, it will read from stdin and write to stdout,
       but these can be modified.
-    - It can also apply functios to the entire document at the beginning and
+    - It can also apply functions to the entire document at the beginning and
       end; this allows for global operations on the document.
+    - If ``doc`` is a :class:`.Doc` instead of ``None``, ``run_filters``
+      will return the document instead of writing it to the output stream.
 
     :param actions: sequence of functions; each function takes (element, doc)
-     as argument, so a valid header would be ``def action(elem, doc):``.
+     as argument, so a valid header would be ``def action(elem, doc):``
     :type actions: [:class:`function`]
     :param prepare: function executed at the beginning;
-     right after the document is received and parsed.
+     right after the document is received and parsed
     :type prepare: :class:`function`
     :param finalize: function executed at the end;
      right before the document is converted back to JSON and written to stdout.
@@ -212,9 +215,11 @@ def run_filters(actions,
         (default is :data:`sys.stdin`)
     :param output_stream: text stream used as output
         (default is :data:`sys.stdout`)
+    :param doc: ``None`` unless running panflute as a filter, in which case this will be a :class:`.Doc` element
+    :type doc: ``None`` | :class:`.Doc`
     :param \*kwargs: keyword arguments will be passed through to the *action*
      functions (so they can actually receive more than just two arguments
-     (*element* and *doc*).
+     (*element* and *doc*)
     """
 
     load_and_dump = (doc is None)
@@ -241,9 +246,10 @@ def run_filters(actions,
 
 def run_filter(action, *args, **kwargs):
     """
-    run_filters(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
+     Wapper for :func:`.run_filters`
+
     Receive a Pandoc document from stdin, apply the *action* function to each element, and write it back to stdout.
 
-    See :func:`.toJSONFilters`
+    See :func:`.run_filters`
     """
     return run_filters([action], *args, **kwargs)
