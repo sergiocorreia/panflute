@@ -17,6 +17,7 @@ from .utils import check_type, encode_dict  # check_group
 # Meta Classes
 # ---------------------------
 
+
 class Element(object):
     """
     Base class of all Pandoc elements
@@ -150,7 +151,7 @@ class Element(object):
             if isinstance(container, (ListContainer, DictContainer)):
                 return container
             else:
-                assert self is container # id(self) == id(container)
+                assert self is container  # id(self) == id(container)
 
     def offset(self, n):
         """
@@ -158,7 +159,7 @@ class Element(object):
 
         :rtype: :class:`Element` | ``None``
         """
-        
+
         idx = self.index
         if idx is not None:
             sibling = idx + n
@@ -264,7 +265,7 @@ class Element(object):
                 ans = [(k, v.walk(action, doc)) for k, v in obj.items()]
                 ans = [(k, v) for k, v in ans if v != []]
             elif obj is None:
-                pass # Empty table headers or captions
+                pass  # Empty table headers or captions
             else:
                 raise TypeError(type(obj))
             setattr(self, child, ans)

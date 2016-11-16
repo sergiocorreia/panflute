@@ -5,7 +5,8 @@
 from .elements import Element, Doc, from_json, ListContainer
 
 # These will get modified if using Pandoc legacy (<1.8)
-from .elements import Citation, Table, OrderedList, Quoted, Math, EMPTY_ELEMENTS
+from .elements import (Citation, Table, OrderedList, Quoted,
+                       Math, EMPTY_ELEMENTS)
 
 import io
 import sys
@@ -63,7 +64,8 @@ def load(input_stream=None):
     #   the JSON is a list:
     #   [{"unMeta":{META}},[BLOCKS]]
     # - Afterwards, it's a dict:
-    #   {"pandoc-api-version" : [MAJ, MIN, REV], "meta" : META, "blocks": BLOCKS}
+    #   {"pandoc-api-version" : [MAJ, MIN, REV],
+    #    "meta" : META, "blocks": BLOCKS}
     # - This means that on legacy, the hook WILL NOT get called on the entire
     #   document and we need to create the Doc() element by hand
 
@@ -223,13 +225,13 @@ def run_filters(actions,
     """
 
     load_and_dump = (doc is None)
-    
+
     if load_and_dump:
         doc = load(input_stream=input_stream)
 
     if prepare is not None:
         prepare(doc)
-    
+
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
@@ -237,7 +239,7 @@ def run_filters(actions,
     
     if finalize is not None:
         finalize(doc)
-    
+
     if load_and_dump:
         dump(doc, output_stream=output_stream)
     else:

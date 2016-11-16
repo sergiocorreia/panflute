@@ -98,7 +98,7 @@ def run_pandoc(text='', args=None):
     pandoc_path = which('pandoc')
     if pandoc_path is None or not os.path.exists(pandoc_path):
         raise OSError("Path to pandoc executable does not exists")
-    
+
     proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = proc.communicate(input=text.encode('utf-8'))
     exitcode = proc.returncode
@@ -150,7 +150,7 @@ def convert_text(text, input_format='markdown', output_format='json',
     if extra_args is None:
         extra_args = []
     args = [from_arg, to_arg] + extra_args
-    
+
     out = run_pandoc(text, args)
 
     if output_format == 'json':
@@ -174,7 +174,8 @@ def convert_text(text, input_format='markdown', output_format='json',
     return out
 
 
-def yaml_filter(element, doc, tag=None, function=None, tags=None, strict_yaml=False):
+def yaml_filter(element, doc, tag=None, function=None, tags=None,
+                strict_yaml=False):
     '''
     Convenience function for parsing code blocks with YAML options
 
