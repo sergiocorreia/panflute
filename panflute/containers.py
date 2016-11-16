@@ -30,16 +30,18 @@ class ListContainer(MutableSequence):
     :type oktypes: ``type`` | ``tuple``
     :param parent: the parent element
     :type parent: ``Element``
+    :param container: None, unless the element is not part of its .parent.content (this is the case for table headers for instance, which are not retrieved with table.content but with table.header)
+    :type container: ``str`` | None
     """
     # Based on http://stackoverflow.com/a/3488283
     # See also https://docs.python.org/3/library/collections.abc.html
 
-    __slots__ = ['list', 'oktypes', 'parent', '_container']
+    __slots__ = ['list', 'oktypes', 'parent', 'location']
 
     def __init__(self, *args, oktypes=object, parent=None):
         self.oktypes = oktypes
         self.parent = parent
-        self._container = None  # Cannot be set through __init__
+        self.location = None  # Cannot be set through __init__
 
         self.list = list()
         self.extend(args)  # self.oktypes must be set first
@@ -52,12 +54,12 @@ class ListContainer(MutableSequence):
 
     def __getitem__(self, i):
         if isinstance(i, int):
-            return attach(self.list[i], self.parent, self._container)
+            return attach(self.list[i], self.parent, self.location)
         else:
             newlist = self.list.__getitem__(i)
             obj = ListContainer(*newlist,
                                 oktypes=self.oktypes, parent=self.parent)
-            obj._container = self._container
+            obj.location = self.location
             return obj
 
     def __delitem__(self, i):
@@ -94,12 +96,12 @@ class DictContainer(MutableMapping):
     :type parent: ``Element``
     """
 
-    __slots__ = ['dict', 'oktypes', 'parent', '_container']
+    __slots__ = ['dict', 'oktypes', 'parent', 'location']
 
     def __init__(self, *args, oktypes=object, parent=None, **kwargs):
         self.oktypes = oktypes
         self.parent = parent
-        self._container = None
+        self.location = None
 
         self.dict = OrderedDict()
         self.update(args)  # Must be a sequence of tuples
@@ -112,7 +114,7 @@ class DictContainer(MutableMapping):
         return len(self.dict)
 
     def __getitem__(self, k):
-        return attach(self.dict[k], self.parent, self._container)
+        return attach(self.dict[k], self.parent, self.location)
 
     def __delitem__(self, k):
         del self.dict[k]
@@ -140,10 +142,10 @@ class DictContainer(MutableMapping):
 # Functions
 # ---------------------------
 
-def attach(element, parent, container):
+def attach(element, parent, location):
     if not isinstance(element, (int, str, bool)):
         element.parent = parent
-        element._container = container
+        element.location = location
     else:
         print(element, 'has no parent')
     return element

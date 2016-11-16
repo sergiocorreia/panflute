@@ -13,7 +13,6 @@ from itertools import chain
 from .containers import ListContainer, DictContainer
 from .utils import check_type, encode_dict  # check_group
 
-
 # ---------------------------
 # Meta Classes
 # ---------------------------
@@ -22,14 +21,14 @@ class Element(object):
     """
     Base class of all Pandoc elements
     """
-    __slots__ = ['parent', '_container']
+    __slots__ = ['parent', 'location']
     _children = []
 
     def __new__(cls, *args, **kwargs):
         # This is just to initialize self.parent to None
         element = object.__new__(cls)
         element.parent = None
-        element._container = None
+        element.location = None
         return element
 
     @property
@@ -127,18 +126,32 @@ class Element(object):
         """
         Return position of element inside the parent.
 
-        :rtype: ``int``
+        :rtype: ``int`` | ``None``
         """
-        if self.parent:
-            return self._parent_container.index(self)
+        container = self.container
+        if container is not None:
+            return container.index(self)
 
     @property
-    def _parent_container(self):
-        # This assumes self.parent is not None
-        if self._container is None:
+    def container(self):
+        """
+        (internal) Return the LisContainer or DictContainer that contains the
+        element, or returns None of the element has no parent or if it has
+        a parent but is not within a ListContainer or DictContainer
+        (like table headers).
+
+        :rtype: ``int`` | ``None``
+        """
+        if self.parent is None:
+            return None
+        elif self.location is None:
             return self.parent.content
         else:
-            return getattr(self.parent, self._container)
+            container = getattr(self.parent, self.location)
+            if isinstance(container, (ListContainer, DictContainer)):
+                return container
+            else:
+                assert self is container # id(self) == id(container)
 
     def offset(self, n):
         """
@@ -146,9 +159,11 @@ class Element(object):
 
         :rtype: :class:`Element` | ``None``
         """
-        if self.parent:
-            sibling = self.index + n
-            container = self._parent_container
+        
+        idx = self.index
+        if idx is not None:
+            sibling = idx + n
+            container = self.container
             if 0 <= sibling < len(container):
                 return container[sibling]
 

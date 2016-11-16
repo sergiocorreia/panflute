@@ -62,7 +62,7 @@ class Doc(Element):
     @property
     def metadata(self):
         self._metadata.parent = self
-        self._metadata._container = '_metadata'
+        self._metadata.location = 'metadata'
         return self._metadata
 
     @metadata.setter
@@ -500,7 +500,7 @@ class Cite(Inline):
     def citations(self, value):
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._citations = ListContainer(*value, oktypes=Citation, parent=self)
-        self._citations._container = '_citations'
+        self._citations.location = 'citations'
 
     def _slots_to_json(self):
         return [self.citations.to_json(), self.content.to_json()]
@@ -547,7 +547,7 @@ class Citation(Element):
     def prefix(self, value):
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._prefix = ListContainer(*value, oktypes=Inline, parent=self)
-        self._prefix._container = '_prefix'
+        self._prefix.location = 'prefix'
 
     @property
     def suffix(self):
@@ -557,7 +557,7 @@ class Citation(Element):
     def suffix(self, value):
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._suffix = ListContainer(*value, oktypes=Inline, parent=self)
-        self._suffix._container = '_suffix'
+        self._suffix.location = 'suffix'
 
     def to_json(self):
         # Replace default .to_json ; we don't need _slots_to_json()
@@ -925,7 +925,7 @@ class DefinitionItem(Element):
     def term(self, value):
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._term = ListContainer(*value, oktypes=Inline, parent=self)
-        self._term._container = '_term'
+        self._term.location = 'term'
 
     @property
     def definitions(self):
@@ -936,7 +936,7 @@ class DefinitionItem(Element):
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._definitions = ListContainer(*value,
                                           oktypes=Definition, parent=self)
-        self._definitions._container = '_definitions'
+        self._definitions.location = 'definitions'
 
     def to_json(self):
         return [self.term.to_json(), self.definitions.to_json()]
@@ -1072,7 +1072,7 @@ class Table(Block):
     def header(self):
         if self._header is not None:
             self._header.parent = self
-            self._header._container = '_header'
+            self._header.location = 'header'
         return self._header
 
     @header.setter
@@ -1096,7 +1096,7 @@ class Table(Block):
     def caption(self, value):
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._caption = ListContainer(*value, oktypes=Inline, parent=self)
-        self._caption._container = '_caption'
+        self._caption.location = 'caption'
 
     def _slots_to_json(self):
         caption = [chunk.to_json() for chunk in self.caption]
