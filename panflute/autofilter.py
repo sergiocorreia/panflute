@@ -26,7 +26,7 @@ def main():
         debug(stringify(msg))
 
     # Run filters sequentially
-    filters = doc.get_metadata('panflute-filters')
+    filters = doc.get_metadata('panflute-filters', [])
 
     # Allow for a single filter instead of a list
     if type(filters) != list:
