@@ -10,7 +10,7 @@ Also see:
 3. Run it live:
 
 ```
-pandoc README.md --to=README.rst && python setup.py sdist upload -r pypi
+pandoc README.md --output=README.rst && python setup.py sdist upload -r pypi
 ```
 
 Note: to run *and* update docs and website, also run:
