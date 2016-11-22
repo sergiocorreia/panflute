@@ -1,3 +1,7 @@
+# panflute-specific
+README.rst
+# note: generated when pushing to PyPI
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

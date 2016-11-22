@@ -173,7 +173,7 @@ def toJSONFilter(*args, **kwargs):
     """
     Wapper for :func:`.run_filter`, which calls :func:`.run_filters`
 
-    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
+    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, \*\*kwargs)
     Receive a Pandoc document from stdin, apply the *action* function to each element, and write it back to stdout.
 
     See also :func:`.toJSONFilters`
