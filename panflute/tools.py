@@ -250,7 +250,11 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                     data = raw[2] if len(raw) > 2 else ''
                     data = data.lstrip('\n')
                     raw = raw[0]
-                    options = yaml.load(raw)
+                    try:
+                        options = yaml.load(raw)
+                    except yaml.scanner.ScannerError:
+                        debug("panflute: malformed YAML block")
+                        return
                     if options is None:
                         options = {}
 
@@ -275,7 +279,11 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                             if chunk.startswith('---') or chunk.startswith('...'):
                                 rawmode = True
                             else:
-                                options.update(yaml.load(chunk))
+                                try:
+                                    options.update(yaml.load(chunk))
+                                except yaml.scanner.ScannerError:
+                                    debug("panflute: malformed YAML block")
+                                    return
 
                     data = '\n'.join(data)
 
