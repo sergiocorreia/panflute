@@ -5,7 +5,6 @@
 [![Development Status](https://img.shields.io/pypi/status/panflute.svg)](https://pypi.python.org/pypi/panflute/)
 [![Python version](https://img.shields.io/pypi/pyversions/panflute.svg)](https://pypi.python.org/pypi/panflute/)
 ![License](https://img.shields.io/pypi/l/panflute.svg)
-[![Downloads](https://img.shields.io/pypi/dm/panflute.svg)](https://pypi.python.org/pypi/panflute/)
 
 [panflute](http://scorreia.com/software/panflute/) is a Python package that makes creating Pandoc filters fun.
 
