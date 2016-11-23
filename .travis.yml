@@ -1,5 +1,6 @@
 # os: linux and sudo: false is assumed, which means it is using container-based Ubuntu 12.04
 language: python
+cache: pip
 # build matrix: different python and pandoc versions
 python:
   - "3.3"
@@ -12,18 +13,6 @@ python:
 env:
   - pandocVersion=1.17.2
   - pandocVersion=1.18
-# command to install dependencies
-#install: "pip install -r requirements.txt"
-before_install:
-  - pip install -U shutilwhich
-                   pandocfilters
-  - wget https://github.com/jgm/pandoc/releases/download/$pandocVersion/pandoc-$pandocVersion-1-amd64.deb &&
-    sudo dpkg -i pandoc-$pandocVersion-1-amd64.deb
-install: "python setup.py install"
-# command to run tests
-script: py.test
-cache:
-  - pip
 matrix:
   allow_failures:
     - python: "3.5-dev"
@@ -31,3 +20,19 @@ matrix:
     - python: "nightly"
     - python: "pypy3"
   fast_finish: true
+# command to install dependencies
+before_install:
+  - wget https://github.com/jgm/pandoc/releases/download/$pandocVersion/pandoc-$pandocVersion-1-amd64.deb &&
+    sudo dpkg -i pandoc-$pandocVersion-1-amd64.deb
+  - pip install -e .[test]
+install: "python setup.py install"
+# command to run tests
+script: py.test
+deploy:
+  provider: pypi
+  user: sergiocorreia
+  password: $pypi_password
+  skip_cleanup: true
+  on:
+    python: "3.5"
+    condition: $pandocVersion = 1.18-1
