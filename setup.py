@@ -12,8 +12,12 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except (IOError, ImportError):
+    with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+        long_description = f.read()
 
 # Import version number
 version = {}
@@ -95,7 +99,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
     #    'dev': ['check-manifest'],
-        'test': ['shutilwhich', 'pandocfilters'],
+        'test': ['shutilwhich', 'pandocfilters', 'pypandoc'],
     },
 
     # If there are data files included in your packages that need to be
