@@ -8,12 +8,12 @@
 [panflute](http://scorreia.com/software/panflute/) is a Python package that makes creating Pandoc filters fun.
 
 For a detailed user guide, documentation, and installation instructions, see
-<http://scorreia.com/software/panflute/> (or the [PDF version](http://scorreia.com/software/panflute/Panflute.pdf)). If you want to contribute, head [here](/CONTRIBUTING.md)
+<http://scorreia.com/software/panflute/> (or the [PDF version](http://scorreia.com/software/panflute/Panflute.pdf)). If you want to contribute, head [here](/CONTRIBUTING.md).
 
 
 ## Install
 
-To install panflute, open the command line and type::
+To install panflute, open the command line and type:
 
 ### Python 3
 
@@ -26,13 +26,13 @@ pip install git+git://github.com/sergiocorreia/panflute.git
 
 ### Python 2
 
-*(Note: see [relevant issue](https://github.com/sergiocorreia/panflute/issues/5)*
-
 ```
 pip install git+git://github.com/sergiocorreia/panflute.git@python2
 ```
 
-## To Uninstall
+Note: see the related [issue](https://github.com/sergiocorreia/panflute/issues/5).
+
+## Uninstall
 
 ```
 pip uninstall panflute
@@ -50,9 +50,9 @@ After cloning the repo and opening the panflute folder:
 
 ## Contributing
 
-Feel free to submit push requests. For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8) (as long as its reasonable), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [google](http://google.github.io/styleguide/pyguide.html).
+Feel free to submit push requests. For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8) (as long as its reasonable), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [google](http://google.github.io/styleguide/pyguide.html). Read more [here](/CONTRIBUTING.md).
 
 ## License
 
-BSD3 license (following  `pandocfilter` by @jgm)
+BSD3 license (following  `pandocfilters` by @jgm).
 
