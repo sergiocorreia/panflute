@@ -12,8 +12,12 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except (IOError, ImportError):
+    with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+        long_description = f.read()
 
 # Import version number
 version = {}
@@ -91,16 +95,16 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['pyyaml'],
+    install_requires=['shutilwhich', 'pyyaml'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
-    #extras_require={
+    extras_require={
     #    'dev': ['check-manifest'],
-    #    'test': ['coverage'],
-    #},
+        'test': ['shutilwhich', 'pandocfilters', 'pypandoc'],
+    },
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
