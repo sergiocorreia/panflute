@@ -11,14 +11,9 @@ import sys
 import json
 import yaml
 import shlex
+import shutil
 
-# shutil.which: new in version 3.3
-try:
-    from shutil import which
-except ImportError:
-    from shutilwhich import which
-
-from subprocess import Popen, PIPE, call
+from subprocess import Popen, PIPE
 from functools import partial
 
 
@@ -95,7 +90,7 @@ def run_pandoc(text='', args=None):
     if args is None:
         args = []
 
-    pandoc_path = which('pandoc')
+    pandoc_path = shutil.which('pandoc')
     if pandoc_path is None or not os.path.exists(pandoc_path):
         raise OSError("Path to pandoc executable does not exists")
 

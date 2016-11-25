@@ -22,10 +22,12 @@ To install panflute, open the command line and type::
 pip install git+git://github.com/sergiocorreia/panflute.git
 ```
 
-- Requires Python 3.2 or later.
+- Requires Python 3.3 or later.
 - On windows, the command line (``cmd``) must be run as administrator.
 
 ### Python 2
+
+*(Note: see [relevant issue](https://github.com/sergiocorreia/panflute/issues/5)*
 
 ```
 pip install git+git://github.com/sergiocorreia/panflute.git@python2

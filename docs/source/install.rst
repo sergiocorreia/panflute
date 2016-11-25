@@ -9,7 +9,7 @@ To install the latest Github version of panflute, type::
 
     pip install git+git://github.com/sergiocorreia/panflute.git
 
-- Works with Python 3.2+ and PyPy3
+- Works with Python 3.3+ and PyPy3
 - On Windows, you might need to open the command line (``cmd``)  as administrator (`ctrl+shift+enter`).
 
 Dev Install
