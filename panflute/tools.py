@@ -246,7 +246,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                     data = data.lstrip('\n')
                     raw = raw[0]
                     try:
-                        options = yaml.load(raw)
+                        options = yaml.safe_load(raw)
                     except yaml.scanner.ScannerError:
                         debug("panflute: malformed YAML block")
                         return
@@ -275,7 +275,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                                 rawmode = True
                             else:
                                 try:
-                                    options.update(yaml.load(chunk))
+                                    options.update(yaml.safe_load(chunk))
                                 except yaml.scanner.ScannerError:
                                     debug("panflute: malformed YAML block")
                                     return
