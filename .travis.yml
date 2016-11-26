@@ -10,11 +10,10 @@ python:
   - "3.6-dev" # 3.6 development branch
   - "nightly" # currently points to 3.7-dev
   - "pypy3"
-env:
-  - pandocVersion=1.17.2 packaging=1
-  - pandocVersion=1.18   packaging=1
-# Packaging is usually 1 but might be higher; see:
 # https://groups.google.com/forum/?fromgroups#!topic/pandoc-discuss/uGASAhRydfI
+env:
+  - pandocVersion=1.17.2-1
+  - pandocVersion=1.18-1
 matrix:
   allow_failures:
     - python: "3.5-dev"
@@ -24,8 +23,8 @@ matrix:
   fast_finish: true
 # command to install dependencies
 before_install:
-  - wget https://github.com/jgm/pandoc/releases/download/$pandocVersion/pandoc-$pandocVersion-$packaging-amd64.deb &&
-    sudo dpkg -i pandoc-$pandocVersion-$packaging-amd64.deb
+  - wget https://github.com/jgm/pandoc/releases/download/${pandocVersion%-*}/pandoc-$pandocVersion-amd64.deb &&
+    sudo dpkg -i pandoc-$pandocVersion-amd64.deb
   - pip install -e .[test]
 install: "python setup.py install"
 # command to run tests
@@ -37,4 +36,4 @@ deploy:
   skip_cleanup: true
   on:
     python: "3.5"
-    condition: $pandocVersion-$packaging = 1.18-1
+    condition: $pandocVersion = 1.18-1
