@@ -141,7 +141,7 @@ def convert_text(text,
     :type standalone: :class:`bool`
     :param extra_args: extra arguments passed to Pandoc
     :type extra_args: :class:`list`
-    :rtype: :class:`list`
+    :rtype: :class:`list` | :class:`.Doc` | :class:`str`
 
     Note: for a more general solution,
     see `pyandoc <https://github.com/kennethreitz/pyandoc/>`_
