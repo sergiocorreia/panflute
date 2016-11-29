@@ -85,6 +85,28 @@ def test_all():
     print("[MD]", md2panflute2md)
     assert md == md2panflute2md
 
+    print("\nBack and forth conversions... md table -> json(standalone) -> md table")
+    md = """  --- ---
+  x   y
+  --- ---
+
+"""
+    print("[MD]", repr(md))
+    md2json = pf.convert_text(md, input_format='markdown', output_format='json', standalone=True)
+    print("[json]", md2json)
+    md2json2md = pf.convert_text(md2json, input_format='json', output_format='markdown')
+    print("[MD]", repr(md2json2md))
+    assert md == md2json2md
+
+
+    print("\nBack and forth conversions... md table -> panflute(standalone) -> md table")
+    print("[MD]", repr(md))
+    md2panflute = pf.convert_text(md, input_format='markdown', output_format='panflute', standalone=True)
+    print("[PANFLUTE]", md2panflute)
+    md2panflute2md = pf.convert_text(md2panflute, input_format='panflute', output_format='markdown')
+    print("[MD]", repr(md2panflute2md))
+    assert md == md2panflute2md
+
 
 if __name__ == "__main__":
     test_all()

@@ -128,7 +128,7 @@ def convert_text(text,
 
 
     :param text: text that will be converted
-    :type text: :class:`str`
+    :type text: :class:`str` | :class:`.Element` | :class:`list` of :class:`.Element`
     :param input_format: format of the text (default 'markdown').
      Any Pandoc input format is valid, plus 'panflute' (a tree of Pandoc
      elements)
@@ -158,6 +158,8 @@ def convert_text(text,
         if not isinstance(text, Doc):
             tmp_doc = convert_text('', standalone=True)
             api_version = tmp_doc.api_version
+            if isinstance(text, Element):
+                text = [text]
             text = Doc(*text, api_version=api_version)
 
         # Dump the Doc into json

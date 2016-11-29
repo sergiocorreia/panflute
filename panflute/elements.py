@@ -1101,7 +1101,10 @@ class Table(Block):
     def _slots_to_json(self):
         caption = [chunk.to_json() for chunk in self.caption]
         alignment = [{'t': x} for x in self.alignment]
-        header = self.header.to_json() if self.header is not None else []
+        if self.header is None:
+            header = [[]] * self.cols
+        else:
+            header = self.header.to_json()
         items = self.content.to_json()
         content = [caption, alignment, self.width, header, items]
         return content
@@ -1109,7 +1112,10 @@ class Table(Block):
     def _slots_to_json_legacy(self):
         caption = [chunk.to_json() for chunk in self.caption]
         alignment = [encode_dict(x, []) for x in self.alignment]
-        header = self.header.to_json() if self.header is not None else []
+        if self.header is None:
+            header = [[]] * self.cols
+        else:
+            header = self.header.to_json()
         items = self.content.to_json()
         content = [caption, alignment, self.width, header, items]
         return content
