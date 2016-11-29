@@ -4,7 +4,9 @@
 
 from .base import Element
 from .elements import *
+from .io import dump
 
+import io
 import os
 import re
 import sys
@@ -102,13 +104,17 @@ def run_pandoc(text='', args=None):
     return out.decode('utf-8')
 
 
-def convert_text(text, input_format='markdown', output_format='json',
+def convert_text(text,
+                 input_format='markdown',
+                 output_format='panflute',
+                 standalone=False,
                  extra_args=None):
     """
     Convert formatted text (usually markdown) by calling Pandoc internally
 
-    The default output format ('json') actually returns a tree
-    of Pandoc elements.
+    The default output format ('panflute') will return a tree
+    of Pandoc elements. When combined with 'standalone=True', the tree root
+    will be a 'Doc' element.
 
     Example:
 
@@ -124,11 +130,15 @@ def convert_text(text, input_format='markdown', output_format='json',
     :param text: text that will be converted
     :type text: :class:`str`
     :param input_format: format of the text (default 'markdown').
-     Any Pandoc input format is valid
+     Any Pandoc input format is valid, plus 'panflute' (a tree of Pandoc
+     elements)
     :param output_format: format of the output
-     (default is 'json' which creates the tree of Pandoc elements).
+     (default is 'panflute' which creates the tree of Pandoc elements).
      Non-binary Pandoc formats are allowed (e.g. markdown, latex is allowed,
      but docx and pdf are not).
+    :param standalone: whether the results will be a standalone document
+     or not.
+    :type standalone: :class:`bool`
     :param extra_args: extra arguments passed to Pandoc
     :type extra_args: :class:`list`
     :rtype: :class:`list`
@@ -138,34 +148,57 @@ def convert_text(text, input_format='markdown', output_format='json',
     by Kenneth Reitz.
     """
 
-    out_fmt = 'json' if output_format == 'doc' else output_format
+    if input_format == 'panflute':
 
-    from_arg = '--from={}'.format(input_format)
-    to_arg = '--to={}'.format(out_fmt)
+        # Problem:
+        #  We need a Doc element, but received a list of elements.
+        #  So we wrap-up the list in a Doc, but with what pandoc-api version?
+        #  (remember that Pandoc requires a matching api-version!)
+        # Workaround: call Pandoc with empty text to get its api-version
+        if not isinstance(text, Doc):
+            tmp_doc = convert_text('', standalone=True)
+            api_version = tmp_doc.api_version
+            text = Doc(*text, api_version=api_version)
+
+        # Dump the Doc into json
+        with io.StringIO() as f:
+            dump(text, f)
+            text = f.getvalue()
+
+    in_fmt = 'json' if input_format == 'panflute' else input_format
+    out_fmt = 'json' if output_format == 'panflute' else output_format
+
     if extra_args is None:
         extra_args = []
+    
+    if standalone:
+        extra_args.append('--standalone')
+
+    out = inner_convert_text(text, in_fmt, out_fmt, extra_args)
+
+    if output_format == 'panflute':
+        out = json.loads(out, object_pairs_hook=from_json)
+
+        if standalone:
+            if not isinstance(out, Doc): # Pandoc 1.7.2 and earlier
+                metadata, items = out
+                out = Doc(*items, metadata=metadata)
+        else:
+            if isinstance(out, Doc): # Pandoc 1.8
+                out = out.content.list
+            else:
+                out = out[1] # Pandoc 1.7.2 and earlier
+
+    return out
+
+
+def inner_convert_text(text, input_format, output_format, extra_args):
+    # like convert_text(), but does not support 'panflute' input/output
+    from_arg = '--from={}'.format(input_format)
+    to_arg = '--to={}'.format(output_format)
     args = [from_arg, to_arg] + extra_args
-
     out = run_pandoc(text, args)
-
-    if output_format == 'json':
-        out = json.loads(out, object_pairs_hook=from_json)
-        if isinstance(out, Doc):
-            return(out.content.list)
-        else:
-            return(out[1])
-
-    elif output_format == 'doc':  # Entire document including metadata
-        out = json.loads(out, object_pairs_hook=from_json)
-        if isinstance(out, Doc):
-            return out
-        else:
-            metadata, items = out
-            out = Doc(*items, metadata=metadata)
-
-    else:
-        out = "\n".join(out.splitlines())  # Replace \r\n with \n
-
+    out = "\n".join(out.splitlines())  # Replace \r\n with \n
     return out
 
 

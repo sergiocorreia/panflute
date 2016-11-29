@@ -57,8 +57,33 @@ def test_all():
     assert c_tex_dump == b_tex_dump
 
 
+    print("\nBack and forth conversions... md->json->md")
+    md = 'Some *markdown* **text** ~xyz~'
+    print("[MD]", md)
+    md2json = pf.convert_text(md, input_format='markdown', output_format='json')
+    print("[JSON]", md2json)
+    md2json2md = pf.convert_text(md2json, input_format='json', output_format='markdown')
+    print("[MD]", md2json2md)
+    assert md == md2json2md
 
 
+    print("\nBack and forth conversions... md->panflute->md")
+    md = 'Some *markdown* **text** ~xyz~'
+    print("[MD]", md)
+    md2panflute = pf.convert_text(md, input_format='markdown', output_format='panflute')
+    print("[PANFLUTE]", md2panflute)
+    md2panflute2md = pf.convert_text(md2panflute, input_format='panflute', output_format='markdown')
+    print("[MD]", md2panflute2md)
+    assert md == md2panflute2md
+
+    print("\nBack and forth conversions... md->panflute(standalone)->md")
+    md = 'Some *markdown* **text** ~xyz~'
+    print("[MD]", md)
+    md2panflute = pf.convert_text(md, input_format='markdown', output_format='panflute', standalone=True)
+    print("[PANFLUTE]", md2panflute)
+    md2panflute2md = pf.convert_text(md2panflute, input_format='panflute', output_format='markdown')
+    print("[MD]", md2panflute2md)
+    assert md == md2panflute2md
 
 
 if __name__ == "__main__":
