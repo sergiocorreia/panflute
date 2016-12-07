@@ -23,7 +23,7 @@ from functools import partial
 # Constants
 # ---------------------------
 
-Spaces = (Space, LineBreak, SoftBreak)
+HorizontalSpaces = (Space, LineBreak, SoftBreak)
 
 VerticalSpaces = (Para, )
 
@@ -41,9 +41,9 @@ def stringify(element, newlines=True):
         >>> from panflute import *
         >>> e1 = Emph(Str('Hello'), Space, Str('world!'))
         >>> e2 = Strong(Str('Bye!'))
-        >>> para = Para(e1, e2)
+        >>> para = Para(e1, Space, e2)
         >>> stringify(para)
-        'Hello world! Bye! \n\n'
+        'Hello world! Bye!\n\n'
 
     :param newlines: add a new line after a paragraph (default True)
     :type newlines: :class:`bool`
@@ -51,20 +51,14 @@ def stringify(element, newlines=True):
     """
 
     def attach_str(e, doc, answer):
-        if type(e) == Citation:
-            ans = ''
-        elif hasattr(e, 'text'):
+        if hasattr(e, 'text'):
             ans = e.text
-        elif isinstance(e, Spaces):
+        elif isinstance(e, HorizontalSpaces):
             ans = ' '
-        # Add newlines at the end of a paragraph
         elif isinstance(e, VerticalSpaces) and newlines:
             ans = '\n\n'
-        elif isinstance(e, VerticalSpaces) and not newlines:
+        elif type(e) == Citation:
             ans = ''
-        # Add a space at the end of an Emph
-        elif isinstance(e, Inline):
-            ans = ' '
         else:
             ans = ''
         answer.append(ans)
