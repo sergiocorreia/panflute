@@ -799,7 +799,7 @@ class RawInline(Inline):
 # ---------------------------
 
 class ListItem(Element):
-    """Bullet list (unordered list)
+    """List item (contained in bullet lists and ordered lists)
 
     :param args: List item
     :type args: :class:`Block`
@@ -971,6 +971,41 @@ class DefinitionList(Block):
 
     def __init__(self, *args):
         self._set_content(args, DefinitionItem)
+
+    def _slots_to_json(self):
+        return self.content.to_json()
+
+
+class LineItem(Element):
+    """Line item (contained in line blocks)
+
+    :param args: Line item
+    :type args: :class:`Inline`
+    :Base: :class:`Element`
+     """
+    __slots__ = ['_content']
+    _children = ['content']
+
+    def __init__(self, *args):
+        self._set_content(args, Inline)
+
+    def to_json(self):
+        return self.content.to_json()
+
+
+class LineBlock(Block):
+    """Line block (sequence of lines)
+
+    :param args: Line item
+    :type args: :class:`LineItem` | ``list``
+    :Base: :class:`Block`
+     """
+
+    __slots__ = ['_content']
+    _children = ['content']
+
+    def __init__(self, *args):
+        self._set_content(args, LineItem)
 
     def _slots_to_json(self):
         return self.content.to_json()

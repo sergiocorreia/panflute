@@ -8,10 +8,11 @@
 
 ## Instructions
 
-First you may want to test a local install:
+First you may want to test a local install and test it:
 
 ```
 python setup.py install
+py.test
 ```
 
 Then,
