@@ -15,6 +15,7 @@ import codecs  # Used in sys.stdout writer
 from collections import OrderedDict
 from functools import partial
 
+py2 = sys.version_info[0] == 2
 
 # ---------------------------
 # Functions
@@ -47,7 +48,7 @@ def load(input_stream=None):
     """
 
     if input_stream is None:
-        if sys.version_info[0] != 2:
+        if not py2:
             input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
         else:
             input_stream = io.TextIOWrapper(io.open(sys.stdin.fileno()), encoding='utf-8')
