@@ -14,6 +14,9 @@ import json
 import yaml
 import shlex
 import shutil
+import sys
+if sys.version_info[0] == 2:
+    import shutilwhich
 
 from subprocess import Popen, PIPE
 from functools import partial
