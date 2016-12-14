@@ -14,9 +14,12 @@ import json
 import yaml
 import shlex
 import shutil
-import sys
-if sys.version_info[0] == 2:
-    import shutilwhich
+
+# shutil.which: new in version 3.3
+try:
+    from shutil import which
+except ImportError:
+    from shutilwhich import which
 
 from subprocess import Popen, PIPE
 from functools import partial
