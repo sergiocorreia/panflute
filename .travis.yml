@@ -38,7 +38,7 @@ before_install:
   - pip install -r tests/requirements.txt
 install: "python setup.py install"
 # command to run tests
-script: py.test
+script: py.test -vv --cov=panflute tests
 deploy:
   provider: pypi
   user: sergiocorreia
