@@ -51,7 +51,7 @@ def load(input_stream=None):
         if not py2:
             input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
         else:
-            input_stream = io.TextIOWrapper(io.open(sys.stdin.fileno()), encoding='utf-8')
+            input_stream = io.open(sys.stdin.fileno())
 
     # Load JSON and validate it
     doc = json.load(input_stream, object_pairs_hook=from_json)
