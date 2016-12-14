@@ -34,7 +34,8 @@ matrix:
 before_install:
   - wget https://github.com/jgm/pandoc/releases/download/${pandocVersion%-*}/pandoc-$pandocVersion-amd64.deb &&
     sudo dpkg -i pandoc-$pandocVersion-amd64.deb
-  - pip install -e .[test]
+  - pip install -r requirements.txt
+  - pip install -r tests/requirements.txt
 install: "python setup.py install"
 # command to run tests
 script: py.test
