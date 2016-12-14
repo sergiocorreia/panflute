@@ -127,7 +127,10 @@ def dump(doc, output_stream=None):
 
     assert type(doc) == Doc, "panflute.dump needs input of type panflute.Doc"
     if output_stream is None:
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+        if not py2:
+            sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+        else:
+            sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
         output_stream = sys.stdout
 
     # Switch to legacy JSON output; eg: {'t': 'Space', 'c': []}
