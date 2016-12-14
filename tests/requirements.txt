@@ -1,4 +1,4 @@
 pandocfilters
 pypandoc
-pasteurize
+configparser
 pytest-cov
