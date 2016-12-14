@@ -36,13 +36,13 @@ before_install:
     sudo dpkg -i pandoc-$pandocVersion-amd64.deb
   - pip install -r requirements.txt
   - pip install -r tests/requirements.txt
-install: "python setup.py install"
-# pasteurize
-before_script: pasteurize -wnj 8 .
+  - pasteurize -wnj 8 .
+install:
+  - python setup.py install
+before_script: 
 # command to run tests
 script: py.test -vv --cov=panflute tests
 after_script:
-  - pip install .
   - find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute $0' {}
 deploy:
   provider: pypi
