@@ -3,21 +3,21 @@ language: python
 cache: pip
 # build matrix: different python and pandoc versions
 python:
-  - "2.6"
+  # - "2.6"
   - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
+  # - "3.2"
+  # - "3.3"
+  # - "3.4"
   - "3.5"
-  - "3.5-dev" # 3.5 development branch
-  - "3.6-dev" # 3.6 development branch
-  - "nightly" # currently points to 3.7-dev
-  # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
-  - "pypy"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
-  - "pypy3" # PyPy3 2.4.0 (CPython 3.2 compatible)
+  # - "3.5-dev" # 3.5 development branch
+  # - "3.6-dev" # 3.6 development branch
+  # - "nightly" # currently points to 3.7-dev
+  # # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
+  # - "pypy"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
+  # - "pypy3" # PyPy3 2.4.0 (CPython 3.2 compatible)
 # https://groups.google.com/forum/?fromgroups#!topic/pandoc-discuss/uGASAhRydfI
 env:
-  - pandocVersion=1.17.2-1
+  # - pandocVersion=1.17.2-1
   - pandocVersion=1.18-1
 matrix:
   allow_failures:
