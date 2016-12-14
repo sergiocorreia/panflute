@@ -47,7 +47,10 @@ def load(input_stream=None):
     """
 
     if input_stream is None:
-        input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+        if sys.version_info[0] != 2:
+            input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+        else:
+            input_stream = io.TextIOWrapper(io.open(sys.stdin.fileno()), encoding='utf-8')
 
     # Load JSON and validate it
     doc = json.load(input_stream, object_pairs_hook=from_json)
