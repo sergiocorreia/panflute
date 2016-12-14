@@ -21,5 +21,9 @@ def action(elem, doc):
         return pf.RawInline(extract)
 
 
+def main(doc=None):
+    return pf.run_filter(action, doc=doc) 
+
+
 if __name__ == '__main__':
-    pf.run_filter(action)
+    main()
