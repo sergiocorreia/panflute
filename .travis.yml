@@ -44,9 +44,9 @@ before_script:
 script:
   - py.test -vv --cov=panflute tests
   # prepare filters for panflute
-  - mkdir -p .pandoc/filters
-  - cp docs/source/remove-tables.py .pandoc/filters/
-  - cp examples/panflute/caps.py .pandoc/filters/
+  - mkdir -p $DATADIR/filters
+  - cp docs/source/remove-tables.py $DATADIR/filters/
+  - cp examples/panflute/caps.py $DATADIR/filters/
   # running all available .md files through panflute
   - find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute $0' {}
 deploy:
