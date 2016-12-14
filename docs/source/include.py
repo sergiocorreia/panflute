@@ -54,5 +54,9 @@ def action(elem, doc):
         # return div
 
 
+def main(doc=None):
+    return pf.run_filter(action, doc=doc) 
+
+
 if __name__ == '__main__':
-    pf.toJSONFilter(action)
+    main()
