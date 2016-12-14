@@ -37,6 +37,8 @@ before_install:
   - pip install -r requirements.txt
   - pip install -r tests/requirements.txt
 install: "python setup.py install"
+# pasteurize
+before_script: pasteurize -wnj 8 .
 # command to run tests
 script: py.test -vv --cov=panflute tests
 deploy:
