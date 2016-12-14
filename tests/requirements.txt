@@ -1,3 +1,4 @@
 pandocfilters
 pypandoc
 pasteurize
+pytest-cov
