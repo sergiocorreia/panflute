@@ -1462,6 +1462,10 @@ def from_json(data):
         items = [_decode_definition_item(item) for item in c]
         return DefinitionList(*items)
 
+    elif tag == 'LineBlock':
+        items = [LineItem(*item) for item in c]
+        return LineBlock(*items)
+
     elif tag == 'Table':
         header = _decode_row(c[3])
         data = [_decode_row(x) for x in c[4]]
