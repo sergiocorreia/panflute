@@ -36,7 +36,7 @@ before_install:
     sudo dpkg -i pandoc-$pandocVersion-amd64.deb
   - pip install -r requirements.txt
   - pip install -r tests/requirements.txt
-  - pasteurize -wnj 8 .
+  # - pasteurize -wnj 8 .
 install:
   - python setup.py install
 before_script: 
