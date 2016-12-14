@@ -1,2 +1,3 @@
 pandocfilters
 pypandoc
+pasteurize
