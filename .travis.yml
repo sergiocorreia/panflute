@@ -3,9 +3,7 @@ language: python
 cache: pip
 # build matrix: different python and pandoc versions
 python:
-  - "2.6"
   - "2.7"
-  - "3.2"
   - "3.3"
   - "3.4"
   - "3.5"
@@ -21,13 +19,9 @@ env:
   - pandocVersion=1.18-1
 matrix:
   allow_failures:
-    - python: "2.6"
-    - python: "2.7"
-    - python: "3.2"
     - python: "3.5-dev"
     - python: "3.6-dev"
     - python: "nightly"
-    - python: "pypy"
     - python: "pypy3"
   fast_finish: true
 # command to install dependencies
