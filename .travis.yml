@@ -16,7 +16,7 @@ python:
 # https://groups.google.com/forum/?fromgroups#!topic/pandoc-discuss/uGASAhRydfI
 env:
   - pandocVersion=1.17.2
-  - pandocVersion=1.18
+  # - pandocVersion=1.18
   - pandocVersion=latest
 matrix:
   allow_failures:
