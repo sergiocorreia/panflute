@@ -41,7 +41,7 @@ before_install:
   - mv setup.py setup.py.temp && pasteurize -wnj 4 . && mv setup.py.temp setup.py # pastuerize except setup.py
   - pip install -e .[test]
 install:
-  - python setup.py install
+  - pip install .
 before_script: 
 # command to run tests
 script:
