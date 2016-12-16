@@ -38,8 +38,7 @@ before_install:
     file=${path##*/}
   - wget $downloadUrl &&
     sudo dpkg -i $file
-  - pip install -r requirements.txt
-  - pip install -r tests/requirements.txt
+  - pip install -e .[test]
   - pasteurize -wnj 4 .
 install:
   - python setup.py install
