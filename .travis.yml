@@ -15,8 +15,9 @@ python:
   - "pypy3" # PyPy3 2.4.0 (CPython 3.2 compatible)
 # https://groups.google.com/forum/?fromgroups#!topic/pandoc-discuss/uGASAhRydfI
 env:
-  - pandocVersion=1.17.2-1
-  - pandocVersion=1.18-1
+  - pandocVersion=1.17.2
+  - pandocVersion=1.18
+  - pandocVersion=latest
 matrix:
   allow_failures:
     - python: "3.5-dev"
@@ -26,8 +27,17 @@ matrix:
   fast_finish: true
 # command to install dependencies
 before_install:
-  - wget https://github.com/jgm/pandoc/releases/download/${pandocVersion%-*}/pandoc-$pandocVersion-amd64.deb &&
-    sudo dpkg -i pandoc-$pandocVersion-amd64.deb
+  - |
+    if [[ $pandocVersion == "latest" ]]; then
+      url="https://github.com/jgm/pandoc/releases/latest"
+    else
+      url="https://github.com/jgm/pandoc/releases/tag/$pandocVersion"
+    fi
+    path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64.deb')
+    downloadUrl="https://github.com$path"
+    file=${path##*/}
+  - wget $downloadUrl &&
+    sudo dpkg -i $file
   - pip install -r requirements.txt
   - pip install -r tests/requirements.txt
   - pasteurize -wnj 8 .
@@ -49,4 +59,4 @@ deploy:
   skip_cleanup: true
   on:
     python: "3.5"
-    condition: $pandocVersion = 1.18-1
+    condition: $pandocVersion = latest
