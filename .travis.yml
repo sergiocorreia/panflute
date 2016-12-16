@@ -40,7 +40,7 @@ before_install:
     sudo dpkg -i $file
   - pip install -r requirements.txt
   - pip install -r tests/requirements.txt
-  - pasteurize -wnj 8 .
+  - pasteurize -wnj 4 .
 install:
   - python setup.py install
 before_script: 
