@@ -27,6 +27,7 @@ matrix:
   fast_finish: true
 # command to install dependencies
 before_install:
+  # install pandoc
   - |
     if [[ $pandocVersion == "latest" ]]; then
       url="https://github.com/jgm/pandoc/releases/latest"
@@ -36,21 +37,21 @@ before_install:
     path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64.deb')
     downloadUrl="https://github.com$path"
     file=${path##*/}
-  - wget $downloadUrl &&
-    sudo dpkg -i $file
+    wget $downloadUrl && sudo dpkg -i $file
   - pip install -e .[test]
-  - mv setup.py setup.py.temp && pasteurize -wnj 4 . && mv setup.py.temp setup.py # pastuerize except setup.py
+  # pastuerize except setup.py
+  - mv setup.py setup.py.temp && pasteurize -wnj 4 . && mv setup.py.temp setup.py
 install:
   - pip install .
 before_script: 
-# command to run tests
+# commands to run tests
 script:
   - py.test -vv --cov=panflute tests
   # put filters in $DATADIR for panflute's autofilter
   - mkdir -p $HOME/.pandoc/filters
-  - find . -iname '*.py' -print0 | xargs -0 -i -n1 -P4 cp {} $HOME/.pandoc/filters/
+  - cp *.py $HOME/.pandoc/filters/
   # running all available .md files through panflute
-  - find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute $0 -o $0.native' {}
+  - find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
 deploy:
   provider: pypi
   user: sergiocorreia
