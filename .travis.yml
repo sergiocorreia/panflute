@@ -38,8 +38,8 @@ before_install:
     file=${path##*/}
   - wget $downloadUrl &&
     sudo dpkg -i $file
+  - mv setup.py setup.py.temp && pasteurize -wnj 4 . && mv setup.py.temp setup.py # pastuerize except setup.py
   - pip install -e .[test]
-  - pasteurize -wnj 4 .
 install:
   - python setup.py install
 before_script: 
