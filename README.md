@@ -15,22 +15,12 @@ For a detailed user guide, documentation, and installation instructions, see
 
 To install panflute, open the command line and type:
 
-### Python 3
-
-```
-pip install git+git://github.com/sergiocorreia/panflute.git
+```bash
+pip install panflute
 ```
 
-- Requires Python 3.3 or later.
+- Support Python 2.7, 3.3 or later, pypy, and pypy3.
 - On windows, the command line (``cmd``) must be run as administrator.
-
-### Python 2
-
-```
-pip install git+git://github.com/sergiocorreia/panflute.git@python2
-```
-
-Note: see the related [issue](https://github.com/sergiocorreia/panflute/issues/5).
 
 ## Uninstall
 

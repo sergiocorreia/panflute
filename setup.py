@@ -70,6 +70,8 @@ setup(
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         # https://pypi.python.org/pypi?%3Aaction=list_classifiers
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
@@ -94,7 +96,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['pyyaml'],
+    install_requires=['pyyaml', 'future', 'shutilwhich'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
@@ -102,7 +104,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
     #    'dev': ['check-manifest'],
-        'test': ['pandocfilters', 'pypandoc'],
+        'test': ['pandocfilters', 'pypandoc', 'configparser', 'pytest-cov'],
     },
 
     # If there are data files included in your packages that need to be

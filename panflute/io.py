@@ -15,6 +15,7 @@ import codecs  # Used in sys.stdout writer
 from collections import OrderedDict
 from functools import partial
 
+py2 = sys.version_info[0] == 2
 
 # ---------------------------
 # Functions
@@ -47,7 +48,10 @@ def load(input_stream=None):
     """
 
     if input_stream is None:
-        input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+        if not py2:
+            input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+        else:
+            input_stream = io.open(sys.stdin.fileno())
 
     # Load JSON and validate it
     doc = json.load(input_stream, object_pairs_hook=from_json)
@@ -123,7 +127,10 @@ def dump(doc, output_stream=None):
 
     assert type(doc) == Doc, "panflute.dump needs input of type panflute.Doc"
     if output_stream is None:
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+        if not py2:
+            sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+        else:
+            sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
         output_stream = sys.stdout
 
     # Switch to legacy JSON output; eg: {'t': 'Space', 'c': []}
