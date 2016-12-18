@@ -22,6 +22,16 @@ pip install panflute
 - Support Python 2.7, 3.3 or later, pypy, and pypy3.
 - On windows, the command line (``cmd``) must be run as administrator.
 
+Alternatively, if you uses Python3 only, you can install it using
+
+```bash
+pip install git+git://github.com/sergiocorreia/panflute.git
+```
+
+An advantage of this later installation method is it has better hints when using autocomplete:
+
+![autocomplete](https://cloud.githubusercontent.com/assets/214056/21284243/76c922f8-c3e4-11e6-8d2d-03c2d30b3737.png)
+
 ## Uninstall
 
 ```
