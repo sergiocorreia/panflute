@@ -10,7 +10,7 @@ keywords: [Tag1, Tag2, Tag3]
 jel: [G1, G2, G3]
 
 abstract: |
-    Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.
+    Bring to *the* **table** win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.
 published: Draft
 comments:
 - Foo
@@ -57,6 +57,7 @@ amsthm:
   - Case
   parentcounter:
   - chapter
+cmd: pandoc --smart --parse-raw --to=json index.md > benchmark.json
 ...
 
 # Title

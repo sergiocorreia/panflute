@@ -87,37 +87,6 @@ class Doc(Element):
             ans['blocks'] = blocks
             return ans
 
-    def get_metadata(self, key, default=None):
-        """Retrieve metadata with nested keys separated by dots.
-
-        This is useful to avoid repeatedly checking if a dict exists, as
-        the frontmatter might not have the keys that we expect.
-
-        It also returns values of built-in types instead of
-        :class:`.MetaValue` elements. EG: instead of returning a MetaBool
-        it will return True|False.
-
-        :param key: string with the keys separated by a dot ('key1.key2')
-        :type key: ``str``
-        :param default: default return value in case the key is not found
-
-        :Example:
-
-            >>> doc.metadata['format']['show-frame'] = True
-            >>> # ...
-            >>> # afterwards:
-            >>> show_frame = doc.get_metadata('format.show-frame', False)
-            >>> stata_path = doc.get_metadata('media.path.figures', '.')
-        """
-
-        meta = self.metadata
-        for k in key.split('.'):
-            if isinstance(meta, MetaMap) and k in meta.content:
-                meta = meta[k]
-            else:
-                return default
-        return meta2builtin(meta)
-
 
 # ---------------------------
 # Classes - Empty
@@ -1513,17 +1482,3 @@ def builtin2meta(val):
         return MetaInlines(val)
     else:
         return val
-
-
-def meta2builtin(meta):
-    if isinstance(meta, MetaBool):
-        return meta.boolean
-    elif isinstance(meta, MetaString):
-        return meta.text
-    elif isinstance(meta, MetaList):
-        return [meta2builtin(v) for v in meta.content.list]
-    elif isinstance(meta, MetaMap):
-        return OrderedDict((k, meta2builtin(v)) for (k, v)
-                           in meta.content.dict)
-    else:
-        return meta

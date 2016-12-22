@@ -34,7 +34,136 @@ VerticalSpaces = (Para, )
 
 
 # ---------------------------
-# Functions
+# Convenience functions
+# ---------------------------
+
+def yaml_filter(element, doc, tag=None, function=None, tags=None,
+                strict_yaml=False):
+    '''
+    Convenience function for parsing code blocks with YAML options
+
+    This function is useful to create a filter that applies to
+    code blocks that have specific classes.
+
+    It is used as an argument of ``run_filter``, with two additional options:
+    ``tag`` and ``function``.
+
+    Using this is equivalent to having filter functions that:
+
+    1. Check if the element is a code block
+    2. Check if the element belongs to a specific class
+    3. Split the YAML options (at the beginning of the block, by looking
+       for ``...`` or ``---`` strings in a separate line
+    4. Parse the YAML
+    5. Use the YAML options and (optionally) the data that follows the YAML
+       to return a new or modified element
+
+    Instead, you just need to:
+
+    1. Call ``run_filter`` with ``yaml_filter`` as the action function, and
+       with the additional arguments ``tag`` and ``function``
+    2. Construct a ``fenced_action`` function that takes four arguments:
+       (options, data, element, doc). Note that options is a dict and data
+       is a raw string. Notice that this is similar to the ``action``
+       functions of standard filters, but with *options* and *data* as the
+       new ones.
+
+    Note: if you want to apply multiple functions to separate classes,
+    you can use the ``tags`` argument, which receives a dict of
+    ``tag: function`` pairs.
+
+    Note: use the ``strict_yaml=True`` option in order to allow for more verbose
+    but flexible YAML metadata: more than one YAML blocks are allowed, but
+    they all must start with ``---`` (even at the beginning) and end with
+    ``---`` or ``...``. Also, YAML is not the default content
+    when no delimiters are set.
+
+    Example::
+
+        """
+        Replace code blocks of class 'foo' with # horizontal rules
+        """
+
+        import panflute as pf
+
+        def fenced_action(options, data, element, doc):
+            count = options.get('count', 1)
+            div = pf.Div(attributes={'count': str(count)})
+            div.content.extend([pf.HorizontalRule] * count)
+            return div
+
+        if __name__ == '__main__':
+            pf.run_filter(pf.yaml_filter, tag='foo', function=fenced_action)
+    '''
+
+    # Allow for either tag+function or a dict {tag: function}
+    assert (tag is None) + (tags is None) == 1  # XOR
+    if tags is None:
+        tags = {tag: function}
+
+    if type(element) == CodeBlock:
+        for tag in tags:
+            if tag in element.classes:
+                function = tags[tag]
+
+                if not strict_yaml:
+                    # Split YAML and data parts (separated by ... or ---)
+                    raw = re.split("^([.]{3,}|[-]{3,})$",
+                                   element.text, 1, re.MULTILINE)
+                    data = raw[2] if len(raw) > 2 else ''
+                    data = data.lstrip('\n')
+                    raw = raw[0]
+                    try:
+                        options = yaml.safe_load(raw)
+                    except yaml.scanner.ScannerError:
+                        debug("panflute: malformed YAML block")
+                        return
+                    if options is None:
+                        options = {}
+
+                else:
+                    options = {}
+                    data = []
+                    raw = re.split("^([.]{3,}|[-]{3,})$",
+                                   element.text, 0, re.MULTILINE)
+                    rawmode = True
+                    for chunk in raw:
+
+                        chunk = chunk.strip('\n')
+                        if not chunk:
+                            continue
+
+                        if rawmode:
+                            if chunk.startswith('---'):
+                                rawmode = False
+                            else:
+                                data.append(chunk)
+                        else:
+                            if chunk.startswith('---') or chunk.startswith('...'):
+                                rawmode = True
+                            else:
+                                try:
+                                    options.update(yaml.safe_load(chunk))
+                                except yaml.scanner.ScannerError:
+                                    debug("panflute: malformed YAML block")
+                                    return
+
+                    data = '\n'.join(data)
+
+                return function(options=options, data=data,
+                                element=element, doc=doc)
+
+
+def debug(*args, **kwargs):
+    """
+    Same as print, but prints to ``stderr``
+    (which is not intercepted by Pandoc).
+    """
+    print(file=sys.stderr, *args, **kwargs)
+
+
+# ---------------------------
+# Functions that extract content
 # ---------------------------
 
 def stringify(element, newlines=True):
@@ -74,12 +203,113 @@ def stringify(element, newlines=True):
     return ''.join(answer)
 
 
-def debug(*args, **kwargs):
+def _get_metadata(self, key='', default=None, builtin=True):
     """
-    Same as print, but prints to ``stderr``
-    (which is not intercepted by Pandoc).
+    get_metadata(key[, default, simple])
+
+    Retrieve metadata with nested keys separated by dots.
+
+    This is useful to avoid repeatedly checking if a dict exists, as
+    the frontmatter might not have the keys that we expect.
+
+    With ``builtin=False`` (the default), it will convert the results to
+    built-in Python types, instead of :class:`.MetaValue` elements. EG: instead of returning a MetaBool it will return True|False.
+
+    :param key: string with the keys separated by a dot ('key1.key2')
+    :type key: ``str``
+    :param default: default return value in case the key is not found
+    :param builtin: If True, return builtin Python types
+
+    :Example:
+
+        >>> doc.metadata['format']['show-frame'] = True
+        >>> # ...
+        >>> # afterwards:
+        >>> show_frame = doc.get_metadata('format.show-frame', False)
+        >>> stata_path = doc.get_metadata('media.path.figures', '.')
     """
-    print(file=sys.stderr, *args, **kwargs)
+
+    # Retrieve metadata
+    assert isinstance(key, str)
+    meta = self.metadata
+
+    # Retrieve specific key
+    if key:
+        for k in key.split('.'):
+            if isinstance(meta, MetaMap) and k in meta.content:
+                meta = meta[k]
+            else:
+                return default
+
+    # Stringify contents
+    return meta2builtin(meta) if builtin else meta
+
+
+
+def meta2builtin(meta):
+    if isinstance(meta, MetaBool):
+        return meta.boolean
+    elif isinstance(meta, MetaString):
+        return meta.text
+    elif isinstance(meta, MetaList):
+        return [meta2builtin(v) for v in meta.content.list]
+    elif isinstance(meta, MetaMap):
+        return OrderedDict((k, meta2builtin(v)) for (k, v)
+                           in meta.content.dict.items())
+    elif isinstance(meta, (MetaInlines, MetaBlocks)):
+        return stringify(meta)
+    else:
+        debug("MISSING", type(meta))
+        return meta
+
+
+# Bind the method
+Doc.get_metadata = _get_metadata
+
+
+# ---------------------------
+# Functions that rely on external calls
+# ---------------------------
+
+def shell(args, wait=True, msg=None):
+    """
+    Execute the external command and get its exitcode, stdout and stderr.
+    """
+
+    # Fix Windows error if passed a string
+    if isinstance(args, str):
+        args = shlex.split(args, posix=(os.name != "nt"))
+        args = [arg.replace('/', '\\') for arg in args]
+
+    if wait:
+        proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        out, err = proc.communicate(input=msg)
+        exitcode = proc.returncode
+        if exitcode != 0:
+            raise IOError(err)
+        return out
+    else:
+        DETACHED_PROCESS = 0x00000008
+        proc = Popen(args, creationflags=DETACHED_PROCESS)
+
+#def get_exe_path():
+#    reg = winreg.ConnectRegistry(None,winreg.HKEY_CLASSES_ROOT)
+#
+#    # Fetch verb linked to the dta extension
+#    path = '.dta'
+#    key = winreg.OpenKey(reg, path)
+#    verb = winreg.QueryValue(key, None) # Alternatives: .dta .do
+#    
+#    # Fetch command linked to that verb
+#    path = '{}\shell\open\command'.format(verb)
+#    key = winreg.OpenKey(reg, path)
+#    cmd = winreg.QueryValue(key, None)
+#    fn = cmd.strip('"').split('"')[0]
+#    #raise(Exception(fn))
+#    return fn
+#
+#def check_correct_executable(fn):
+#    return os.path.isfile(fn) and 'stata' in fn.lower()
 
 
 def run_pandoc(text='', args=None):
@@ -203,166 +433,8 @@ def inner_convert_text(text, input_format, output_format, extra_args):
     return out
 
 
-def yaml_filter(element, doc, tag=None, function=None, tags=None,
-                strict_yaml=False):
-    '''
-    Convenience function for parsing code blocks with YAML options
-
-    This function is useful to create a filter that applies to
-    code blocks that have specific classes.
-
-    It is used as an argument of ``run_filter``, with two additional options:
-    ``tag`` and ``function``.
-
-    Using this is equivalent to having filter functions that:
-
-    1. Check if the element is a code block
-    2. Check if the element belongs to a specific class
-    3. Split the YAML options (at the beginning of the block, by looking
-       for ``...`` or ``---`` strings in a separate line
-    4. Parse the YAML
-    5. Use the YAML options and (optionally) the data that follows the YAML
-       to return a new or modified element
-
-    Instead, you just need to:
-
-    1. Call ``run_filter`` with ``yaml_filter`` as the action function, and
-       with the additional arguments ``tag`` and ``function``
-    2. Construct a ``fenced_action`` function that takes four arguments:
-       (options, data, element, doc). Note that options is a dict and data
-       is a raw string. Notice that this is similar to the ``action``
-       functions of standard filters, but with *options* and *data* as the
-       new ones.
-
-    Note: if you want to apply multiple functions to separate classes,
-    you can use the ``tags`` argument, which receives a dict of
-    ``tag: function`` pairs.
-
-    Note: use the ``strict_yaml=True`` option in order to allow for more verbose
-    but flexible YAML metadata: more than one YAML blocks are allowed, but
-    they all must start with ``---`` (even at the beginning) and end with
-    ``---`` or ``...``. Also, YAML is not the default content
-    when no delimiters are set.
-
-    Example::
-
-        """
-        Replace code blocks of class 'foo' with # horizontal rules
-        """
-
-        import panflute as pf
-
-        def fenced_action(options, data, element, doc):
-            count = options.get('count', 1)
-            div = pf.Div(attributes={'count': str(count)})
-            div.content.extend([pf.HorizontalRule] * count)
-            return div
-
-        if __name__ == '__main__':
-            pf.run_filter(pf.yaml_filter, tag='foo', function=fenced_action)
-    '''
-
-    # Allow for either tag+function or a dict {tag: function}
-    assert (tag is None) + (tags is None) == 1  # XOR
-    if tags is None:
-        tags = {tag: function}
-
-    if type(element) == CodeBlock:
-        for tag in tags:
-            if tag in element.classes:
-                function = tags[tag]
-
-                if not strict_yaml:
-                    # Split YAML and data parts (separated by ... or ---)
-                    raw = re.split("^([.]{3,}|[-]{3,})$",
-                                   element.text, 1, re.MULTILINE)
-                    data = raw[2] if len(raw) > 2 else ''
-                    data = data.lstrip('\n')
-                    raw = raw[0]
-                    try:
-                        options = yaml.safe_load(raw)
-                    except yaml.scanner.ScannerError:
-                        debug("panflute: malformed YAML block")
-                        return
-                    if options is None:
-                        options = {}
-
-                else:
-                    options = {}
-                    data = []
-                    raw = re.split("^([.]{3,}|[-]{3,})$",
-                                   element.text, 0, re.MULTILINE)
-                    rawmode = True
-                    for chunk in raw:
-
-                        chunk = chunk.strip('\n')
-                        if not chunk:
-                            continue
-
-                        if rawmode:
-                            if chunk.startswith('---'):
-                                rawmode = False
-                            else:
-                                data.append(chunk)
-                        else:
-                            if chunk.startswith('---') or chunk.startswith('...'):
-                                rawmode = True
-                            else:
-                                try:
-                                    options.update(yaml.safe_load(chunk))
-                                except yaml.scanner.ScannerError:
-                                    debug("panflute: malformed YAML block")
-                                    return
-
-                    data = '\n'.join(data)
-
-                return function(options=options, data=data,
-                                element=element, doc=doc)
-
-
-def shell(args, wait=True, msg=None):
-    """
-    Execute the external command and get its exitcode, stdout and stderr.
-    """
-
-    # Fix Windows error if passed a string
-    if isinstance(args, str):
-        args = shlex.split(args, posix=(os.name != "nt"))
-        args = [arg.replace('/', '\\') for arg in args]
-
-    if wait:
-        proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        out, err = proc.communicate(input=msg)
-        exitcode = proc.returncode
-        if exitcode != 0:
-            raise IOError(err)
-        return out
-    else:
-        DETACHED_PROCESS = 0x00000008
-        proc = Popen(args, creationflags=DETACHED_PROCESS)
-
-#def get_exe_path():
-#    reg = winreg.ConnectRegistry(None,winreg.HKEY_CLASSES_ROOT)
-#
-#    # Fetch verb linked to the dta extension
-#    path = '.dta'
-#    key = winreg.OpenKey(reg, path)
-#    verb = winreg.QueryValue(key, None) # Alternatives: .dta .do
-#    
-#    # Fetch command linked to that verb
-#    path = '{}\shell\open\command'.format(verb)
-#    key = winreg.OpenKey(reg, path)
-#    cmd = winreg.QueryValue(key, None)
-#    fn = cmd.strip('"').split('"')[0]
-#    #raise(Exception(fn))
-#    return fn
-#
-#def check_correct_executable(fn):
-#    return os.path.isfile(fn) and 'stata' in fn.lower()
-
-
 # ---------------------------
-# Replacing content
+# Functions that modify content
 # ---------------------------
 
 def _replace_keyword(self, keyword, replacement, count=0):
