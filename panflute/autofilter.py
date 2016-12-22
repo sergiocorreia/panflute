@@ -8,7 +8,7 @@ import sys
 from collections import OrderedDict
 
 from .io import load, dump
-from .tools import debug, stringify, run_pandoc
+from .tools import debug, run_pandoc
 
 
 def main():
@@ -18,14 +18,14 @@ def main():
     verbose = doc.get_metadata('panflute-verbose', False)
 
     # extra_path can be a list, a string, or missing
-    extra_path = doc.get_metadata('panflute-path', '')
-    if isinstance(extra_path, str):
-        extra_path = []
+    extra_path = doc.get_metadata('panflute-path', [])
+    if type(extra_path) != list:
+        extra_path = [extra_path]
 
     # Display message (tests that everything is working ok)
     msg = doc.get_metadata('panflute-echo', False)
     if msg:
-        debug(stringify(msg))
+        debug(msg)
 
     # Run filters sequentially
     filters = doc.get_metadata('panflute-filters', [])
@@ -35,7 +35,6 @@ def main():
         filters = [filters]
 
     if filters:
-        filters = [stringify(chunk) for chunk in filters]
         if verbose:
             msg = "panflute: will run the following filters:"
             debug(msg, ' '.join(filters))
