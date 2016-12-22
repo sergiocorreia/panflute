@@ -205,7 +205,7 @@ def stringify(element, newlines=True):
 
 def _get_metadata(self, key='', default=None, builtin=True):
     """
-    get_metadata(key[, default, simple])
+    get_metadata([key, default, simple])
 
     Retrieve metadata with nested keys separated by dots.
 
@@ -215,10 +215,10 @@ def _get_metadata(self, key='', default=None, builtin=True):
     With ``builtin=False`` (the default), it will convert the results to
     built-in Python types, instead of :class:`.MetaValue` elements. EG: instead of returning a MetaBool it will return True|False.
 
-    :param key: string with the keys separated by a dot ('key1.key2')
+    :param key: string with the keys separated by a dot (``key1.key2``). Default is an empty string (which returns the entire metadata dict)
     :type key: ``str``
-    :param default: default return value in case the key is not found
-    :param builtin: If True, return builtin Python types
+    :param default: return value in case the key is not found (default is ``None``)
+    :param builtin: If True, return built-in Python types (default is ``True``)
 
     :Example:
 

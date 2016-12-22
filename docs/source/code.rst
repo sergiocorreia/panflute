@@ -167,5 +167,7 @@ These are functions commonly used when writing more complex filters
    shell
 
 
+See also ``Doc.get_metadata`` and ``Element.replace_keyword``
+
 .. automodule:: panflute.tools
    :members:

@@ -70,6 +70,8 @@ Our goal is to make writing pandoc filters *as simple and clear as possible*. St
   filters.
 - Panflute can be run as a filter itself, in which case it will run all
   filters listed in the metadata field `pandoc-filters`.
+- Can use metadata as a dict of builtin-values instead of Panflute objects,
+  with `doc.get_metadata()`.
 
 Examples of panflute filters
 ====================================
