@@ -435,5 +435,5 @@ def _replace_keyword(self, keyword, replacement, count=0):
     else:
         raise NotImplementedError(type(replacement))
 
-# Bound the method
+# Bind the method
 Element.replace_keyword = _replace_keyword

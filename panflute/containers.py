@@ -152,9 +152,9 @@ def attach(element, parent, location):
 
 
 def to_json_wrapper(e):
-    if type(e) == str:
+    if isinstance(e, str):
         return e
-    elif type(e) == bool:
+    elif isinstance(e, bool):
         return encode_dict('MetaBool', e)
     else:
         return e.to_json()
