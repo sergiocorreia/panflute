@@ -17,8 +17,10 @@ def main():
 
     verbose = doc.get_metadata('panflute-verbose', False)
 
+    # extra_path can be a list, a string, or missing
     extra_path = doc.get_metadata('panflute-path', '')
-    extra_path = [stringify(extra_path)] if extra_path else []
+    if isinstance(extra_path, str):
+        extra_path = []
 
     # Display message (tests that everything is working ok)
     msg = doc.get_metadata('panflute-echo', False)
