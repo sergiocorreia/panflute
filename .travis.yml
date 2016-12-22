@@ -47,7 +47,7 @@ before_install:
     mv setup.py.temp setup.py
     mv panflute/version.py.temp panflute/version.py
 install:
-  - pip install .
+  - python setup.py install
 before_script: 
 # commands to run tests
 script:
