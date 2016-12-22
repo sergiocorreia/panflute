@@ -39,8 +39,13 @@ before_install:
     file=${path##*/}
     wget $downloadUrl && sudo dpkg -i $file
   - pip install -e .[test]
-  # pastuerize except setup.py
-  - mv setup.py setup.py.temp && pasteurize -wnj 4 . && mv setup.py.temp setup.py
+  # pasteurize except setup.py & panflute/version.py
+  - |
+    mv setup.py setup.py.temp
+    mv panflute/version.py panflute/version.py.temp
+    pasteurize -wnj 4 .
+    mv setup.py.temp setup.py
+    mv panflute/version.py.temp panflute/version.py
 install:
   - pip install .
 before_script: 
