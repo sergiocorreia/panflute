@@ -504,7 +504,7 @@ class Citation(Element):
 
     def __init__(self, id, mode='NormalCitation', prefix='', suffix='',
                  hash=0, note_num=0):
-        self.id = check_type(id, unicode if py2 else str)
+        self.id = check_type(id, basestring if py2 else str)
         self.mode = check_group(mode, CITATION_MODE)
         self.hash = check_type(hash, int)
         self.note_num = check_type(note_num, int)
@@ -581,8 +581,8 @@ class Link(Inline):
                  identifier='', classes=[], attributes={}):
         self._set_content(args, Inline)
         self._set_ica(identifier, classes, attributes)
-        self.url = check_type(url, unicode if py2 else str)
-        self.title = check_type(title, unicode if py2 else str)
+        self.url = check_type(url, basestring if py2 else str)
+        self.title = check_type(title, basestring if py2 else str)
 
     def _slots_to_json(self):
         ut = [self.url, self.title]
@@ -616,8 +616,8 @@ class Image(Inline):
                  identifier='', classes=[], attributes={}):
         self._set_content(args, Inline)
         self._set_ica(identifier, classes, attributes)
-        self.url = check_type(url, unicode if py2 else str)
-        self.title = check_type(title, unicode if py2 else str)
+        self.url = check_type(url, basestring if py2 else str)
+        self.title = check_type(title, basestring if py2 else str)
 
     def _slots_to_json(self):
         ut = [self.url, self.title]
@@ -640,7 +640,7 @@ class Str(Inline):
     __slots__ = ['text']
 
     def __init__(self, text):
-        self.text = check_type(text, unicode if py2 else str)
+        self.text = check_type(text, basestring if py2 else str)
 
     def __repr__(self):
         return 'Str({})'.format(self.text)
@@ -667,7 +667,7 @@ class CodeBlock(Block):
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=[], attributes={}):
-        self.text = check_type(text, unicode if py2 else str)
+        self.text = check_type(text, basestring if py2 else str)
         self._set_ica(identifier, classes, attributes)
 
     def _slots_to_json(self):
@@ -688,7 +688,7 @@ class RawBlock(Block):
     __slots__ = ['text', 'format']
 
     def __init__(self, text, format='html'):
-        self.text = check_type(text, unicode if py2 else str)
+        self.text = check_type(text, basestring if py2 else str)
         self.format = check_group(format, RAW_FORMATS)
 
     def _slots_to_json(self):
@@ -713,7 +713,7 @@ class Code(Inline):
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=[], attributes={}):
-        self.text = check_type(text, unicode if py2 else str)
+        self.text = check_type(text, basestring if py2 else str)
         self._set_ica(identifier, classes, attributes)
 
     def _slots_to_json(self):
@@ -734,7 +734,7 @@ class Math(Inline):
     __slots__ = ['text', 'format']
 
     def __init__(self, text, format='DisplayMath'):
-        self.text = check_type(text, unicode if py2 else str)
+        self.text = check_type(text, basestring if py2 else str)
         self.format = check_group(format, MATH_FORMATS)
 
     def _slots_to_json(self):
@@ -759,7 +759,7 @@ class RawInline(Inline):
     __slots__ = ['text', 'format']
 
     def __init__(self, text, format='html'):
-        self.text = check_type(text, unicode if py2 else str)
+        self.text = check_type(text, basestring if py2 else str)
         self.format = check_group(format, RAW_FORMATS)
 
     def _slots_to_json(self):
@@ -1252,7 +1252,7 @@ class MetaString(MetaValue):
     __slots__ = ['text']
 
     def __init__(self, text):
-        self.text = check_type(text, unicode if py2 else str)
+        self.text = check_type(text, basestring if py2 else str)
 
     def __repr__(self):
         return 'MetaString({})'.format(self.text)
