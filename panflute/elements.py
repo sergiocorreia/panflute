@@ -1199,6 +1199,9 @@ class MetaMap(MetaValue):
     def __setitem__(self, i, v):
         self.content[i] = builtin2meta(v)
 
+    def __contains__(self, i):
+        return i in self.content
+
 
 class MetaInlines(MetaValue):
     """
