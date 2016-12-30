@@ -1151,6 +1151,9 @@ class MetaList(MetaValue):
     def __setitem__(self, i, v):
         self.content[i] = builtin2meta(v)
 
+    def append(self, i):
+        self.content.append(i)
+
 
 class MetaMap(MetaValue):
     """Metadata container for ordered dicts
