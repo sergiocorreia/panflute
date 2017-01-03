@@ -9,7 +9,7 @@ Suppose we want to create a filter that sets all headers to level 1. For this, w
 
 .. literalinclude:: _static/header-level-1.py
 
-.. note:: a more complete template is `located here <https://github.com/sergiocorreia/panflute/tree/master/docs/source/template.py>`_
+.. note:: a more complete template is `located here <https://github.com/sergiocorreia/panflute/tree/master/docs/source/_static/template.py>`_
 
 More complex filters
 ********************
@@ -96,7 +96,7 @@ useful `yaml_filter <code.html#panflute.tools.yaml_filter>`_ function:
 
 .. literalinclude:: _static/csv-tables.py
 
-.. note:: a more complete template is `here <https://github.com/sergiocorreia/panflute/tree/master/docs/source/fenced-template.py>`_ , a fully developed filter for CSVs is `also available <https://github.com/ickc/pantable>`_.
+.. note:: a more complete template is `here <https://github.com/sergiocorreia/panflute/tree/master/docs/source/_static/fenced-template.py>`_ , a fully developed filter for CSVs is `also available <https://github.com/ickc/pantable>`_.
 
 .. note:: `yaml_filter` now allows a `strict_yaml=True` option, which allows multiple YAML blocks, but with the caveat that all YAML blocks must start with `---` and end with `---` or `...`.
 
