@@ -212,7 +212,7 @@ def _get_metadata(self, key='', default=None, builtin=True):
     This is useful to avoid repeatedly checking if a dict exists, as
     the frontmatter might not have the keys that we expect.
 
-    With ``builtin=False`` (the default), it will convert the results to
+    With ``builtin=True`` (the default), it will convert the results to
     built-in Python types, instead of :class:`.MetaValue` elements. EG: instead of returning a MetaBool it will return True|False.
 
     :param key: string with the keys separated by a dot (``key1.key2``). Default is an empty string (which returns the entire metadata dict)
