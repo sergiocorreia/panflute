@@ -17,6 +17,6 @@ def caps(elem, doc):
 def main(doc=None):
     return run_filter(caps, doc=doc)
 
-	
+    
 if __name__ == "__main__":
     main()
