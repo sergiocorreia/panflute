@@ -21,10 +21,10 @@ def finalize(doc):
 
 
 def main(doc=None):
-	return pf.run_filter(action,
-	                     prepare=prepare,
-	                     finalize=finalize,
-	                     doc=doc) 
+    return pf.run_filter(action,
+                         prepare=prepare,
+                         finalize=finalize,
+                         doc=doc) 
 
 
 if __name__ == '__main__':

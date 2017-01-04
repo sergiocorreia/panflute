@@ -21,8 +21,8 @@ def finalize(doc):
 
 
 def main(doc=None):
-	return pf.run_filter(pf.yaml_filter, prepare=prepare, finalize=finalize,
-	                     tag='sometag', function=fenced_action, doc=doc) 
+    return pf.run_filter(pf.yaml_filter, prepare=prepare, finalize=finalize,
+                         tag='sometag', function=fenced_action, doc=doc) 
     # Alternatively:
     # tags = {'sometag': fenced_action, 'another_tag': another_action}
     # return pf.run_filter(... , tags=tags, doc=doc)
