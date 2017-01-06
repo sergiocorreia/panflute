@@ -10,6 +10,10 @@ object, and the attribute of the parent object that they correspond to.
 from collections import OrderedDict, MutableSequence, MutableMapping
 from .utils import check_type, encode_dict  # check_group
 
+import sys
+py2 = sys.version_info[0] == 2
+if not py2: basestring = str
+
 
 # ---------------------------
 # Container Classes
@@ -143,7 +147,7 @@ class DictContainer(MutableMapping):
 # ---------------------------
 
 def attach(element, parent, location):
-    if not isinstance(element, (int, str, bool)):
+    if not isinstance(element, (int, basestring, bool)):
         element.parent = parent
         element.location = location
     else:
@@ -152,7 +156,7 @@ def attach(element, parent, location):
 
 
 def to_json_wrapper(e):
-    if isinstance(e, str):
+    if isinstance(e, basestring):
         return e
     elif isinstance(e, bool):
         return encode_dict('MetaBool', e)

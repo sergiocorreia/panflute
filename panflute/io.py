@@ -15,7 +15,6 @@ import codecs  # Used in sys.stdout writer
 from collections import OrderedDict
 from functools import partial
 
-py2 = sys.version_info[0] == 2
 
 # ---------------------------
 # Functions
