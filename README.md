@@ -48,6 +48,8 @@ After cloning the repo and opening the panflute folder:
 `python setup.py develop`
 : installs locally with a symlink so changes are automatically updated
 
+In addition, if you use python2, you need to pasteurize the code before running tests. Run `pasteurize -wnj 4 .` in this directory.
+
 ## Contributing
 
 Feel free to submit push requests. For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8) (as long as its reasonable), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [google](http://google.github.io/styleguide/pyguide.html). Read more [here](/CONTRIBUTING.md).
