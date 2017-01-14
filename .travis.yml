@@ -41,7 +41,8 @@ install:
   # pandoc
   - wget $downloadUrl &&
     sudo dpkg -i $file
-  - pip install -U pip
+  # latest pip dropped support for py3.2, which is the version of python in pypy3
+  - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy3" ]]; then pip install -U pip; fi
   - pip install -e .[test]
 before_script:
   # pasteurize for py2 only, except setup.py & panflute/version.py
