@@ -25,7 +25,7 @@ pip install panflute
 Alternatively, if you use Python3 only, you can install it with
 
 ```bash
-pip install git+git://github.com/sergiocorreia/panflute.git
+pip3 install git+git://github.com/sergiocorreia/panflute.git
 ```
 
 An advantage of this later installation method is that it has better autocomplete hints:
