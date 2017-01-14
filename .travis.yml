@@ -63,5 +63,6 @@ deploy:
   password: $pypi_password
   skip_cleanup: true
   on:
+    branch: master
     python: "3.5"
     condition: $pandocVersion = latest

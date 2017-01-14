@@ -25,7 +25,7 @@ pip install panflute
 Alternatively, if you use Python3 only, you can install it with
 
 ```bash
-pip install git+git://github.com/sergiocorreia/panflute.git
+pip3 install git+git://github.com/sergiocorreia/panflute.git
 ```
 
 An advantage of this later installation method is that it has better autocomplete hints:
@@ -47,6 +47,8 @@ After cloning the repo and opening the panflute folder:
 
 `python setup.py develop`
 : installs locally with a symlink so changes are automatically updated
+
+In addition, if you use python2, you need to pasteurize the code before running tests. Run `pasteurize -wnj 4 .` in this directory.
 
 ## Contributing
 
