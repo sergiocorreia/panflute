@@ -244,7 +244,7 @@ def run_filters(actions,
         if kwargs:
             action = partial(action, **kwargs)
         doc = doc.walk(action, doc)
-    
+
     if finalize is not None:
         finalize(doc)
 

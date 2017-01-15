@@ -22,7 +22,7 @@ def make_emph(elem, doc):
 
 
 def main(doc=None):
-    return pf.run_filter(action, doc=doc) 
+    return pf.run_filter(action, doc=doc)
 
 
 if __name__ == '__main__':

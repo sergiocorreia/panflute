@@ -9,7 +9,7 @@ def shell(args, msg=None):
     proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = proc.communicate(input=msg)
     exitcode = proc.returncode
-    if exitcode!=0:
+    if exitcode != 0:
         print('\n------', file=sys.stderr)
         print(err.decode('utf-8'), file=sys.stderr, end='')
         print('------\n', file=sys.stderr)
@@ -39,7 +39,7 @@ def main():
         if fn in panflute_filters and not fn.startswith('__') and fn not in excluded:
             print(' - Testing', fn)
             benchmark_cmd, panflute_cmd = build_cmds(fn)
-            
+
             print('   [CMD]', ' '.join(benchmark_cmd))
             benchmark = shell(benchmark_cmd).decode('utf-8')
             print('   [CMD]', ' '.join(panflute_cmd))

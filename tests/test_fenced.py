@@ -2,7 +2,8 @@
 # pandoc --smart --parse-raw --to=json fenced/input.md > fenced/input.json
 
 import panflute as pf
-import pandocfilters, json
+import pandocfilters
+import json
 
 
 def fenced_action(options, data, element, doc):
@@ -40,7 +41,8 @@ def test_all():
         output_data = f.read()
 
     print('Are both files the same?')
-    print(' - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
+    print(' - Length:', len(input_data) == len(output_data),
+          len(input_data), len(output_data))
     print(' - Content:', input_data == output_data)
 
     print('\nApplying trivial filter...')
@@ -54,7 +56,8 @@ def test_all():
     dump_and_compare(doc, input_fn, output_fn)
 
     print('\nApplying Strict YAML filter...')
-    pf.run_filter(pf.yaml_filter, tag='eggs', function=fenced_action, doc=doc, strict_yaml=True)
+    pf.run_filter(pf.yaml_filter, tag='eggs',
+                  function=fenced_action, doc=doc, strict_yaml=True)
     print(' - Done!')
     dump_and_compare(doc, input_fn, output_fn)
 
@@ -71,7 +74,8 @@ def dump_and_compare(doc, input_fn, output_fn):
     with open(output_fn, encoding='utf-8') as f:
         output_data = f.read()
     print(' - Are both files the same?')
-    print('   - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
+    print('   - Length:', len(input_data) ==
+          len(output_data), len(input_data), len(output_data))
     print('   - Content:', input_data == output_data)
     assert input_data == output_data
 

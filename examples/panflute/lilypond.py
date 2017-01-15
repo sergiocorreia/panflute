@@ -49,14 +49,14 @@ def ly2png(lily, outfile, staffsize):
         "-"
     ], stdin=PIPE, stdout=-3)
     p.stdin.write(("\\paper{\n"
-        "indent=0\\mm\n"
-        "oddFooterMarkup=##f\n"
-        "oddHeaderMarkup=##f\n"
-        "bookTitleMarkup = ##f\n"
-        "scoreTitleMarkup = ##f\n"
-        "}\n"
-        "#(set-global-staff-size %s)\n" % staffsize +
-        lily).encode("utf-8"))
+                   "indent=0\\mm\n"
+                   "oddFooterMarkup=##f\n"
+                   "oddHeaderMarkup=##f\n"
+                   "bookTitleMarkup = ##f\n"
+                   "scoreTitleMarkup = ##f\n"
+                   "}\n"
+                   "#(set-global-staff-size %s)\n" % staffsize +
+                   lily).encode("utf-8"))
     p.communicate()
     p.stdin.close()
     call([

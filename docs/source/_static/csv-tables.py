@@ -27,7 +27,7 @@ def fenced_action(options, data, element, doc):
 
 def main(doc=None):
     return pf.run_filter(pf.yaml_filter, tag='csv', function=fenced_action,
-                      doc=doc)
+                         doc=doc)
 
 
 if __name__ == '__main__':
