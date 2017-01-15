@@ -13,9 +13,9 @@ here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
 try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except (IOError, ImportError):
+    with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+        long_description = f.read()
+except (IOError):
     with open(path.join(here, 'README.md'), encoding='utf-8') as f:
         long_description = f.read()
 
@@ -104,7 +104,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
     #    'dev': ['check-manifest'],
-        'test': ['pandocfilters', 'pypandoc', 'configparser', 'pytest-cov', 'future'],
+        'test': ['pandocfilters', 'configparser', 'pytest-cov', 'future'],
     },
 
     # If there are data files included in your packages that need to be
