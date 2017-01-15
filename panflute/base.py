@@ -15,7 +15,7 @@ from .utils import check_type, encode_dict  # check_group
 
 import sys
 py2 = sys.version_info[0] == 2
-if not py2: basestring = str
+if py2: str = basestring
 
 
 # ---------------------------
@@ -84,8 +84,8 @@ class Element(object):
     # ---------------------------
 
     def _set_ica(self, identifier, classes, attributes):
-        self.identifier = check_type(identifier, basestring)
-        self.classes = [check_type(cl, basestring) for cl in classes]
+        self.identifier = check_type(identifier, str)
+        self.classes = [check_type(cl, str) for cl in classes]
         self.attributes = OrderedDict(attributes)
 
     def _ica_to_json(self):

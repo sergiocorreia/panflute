@@ -25,7 +25,7 @@ from functools import partial
 
 
 py2 = sys.version_info[0] == 2
-if not py2: basestring = str
+if py2: str = basestring
 
 
 # ---------------------------
@@ -234,7 +234,7 @@ def _get_metadata(self, key='', default=None, builtin=True):
     """
 
     # Retrieve metadata
-    assert isinstance(key, basestring)
+    assert isinstance(key, str)
     meta = self.metadata
 
     # Retrieve specific key
@@ -281,7 +281,7 @@ def shell(args, wait=True, msg=None):
     """
 
     # Fix Windows error if passed a string
-    if isinstance(args, basestring):
+    if isinstance(args, str):
         args = shlex.split(args, posix=(os.name != "nt"))
         args = [arg.replace('/', '\\') for arg in args]
 
