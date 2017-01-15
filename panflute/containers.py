@@ -12,7 +12,7 @@ from .utils import check_type, encode_dict  # check_group
 
 import sys
 py2 = sys.version_info[0] == 2
-if not py2: basestring = str
+if py2: str = basestring
 
 
 # ---------------------------
@@ -147,7 +147,7 @@ class DictContainer(MutableMapping):
 # ---------------------------
 
 def attach(element, parent, location):
-    if not isinstance(element, (int, basestring, bool)):
+    if not isinstance(element, (int, str, bool)):
         element.parent = parent
         element.location = location
     else:
@@ -156,7 +156,7 @@ def attach(element, parent, location):
 
 
 def to_json_wrapper(e):
-    if isinstance(e, basestring):
+    if isinstance(e, str):
         return e
     elif isinstance(e, bool):
         return encode_dict('MetaBool', e)
