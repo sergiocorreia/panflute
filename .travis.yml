@@ -63,6 +63,8 @@ script:
   # running all available .md files through panflute
   - find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
 before_deploy:
+  # build unpasteurized python3 wheel
+  - python3 setup.py bdist_wheel
   # pasteurize except setup.py & panflute/version.py
   - |
     mv setup.py setup.py.temp
@@ -73,13 +75,12 @@ before_deploy:
   # prepare wheel for py2
   - pip2 install wheel
   - python2 setup.py bdist_wheel
-  # revert to unpasteurized version, for python3 dist below
-  - git reset --hard
 deploy:
   provider: pypi
   user: sergiocorreia
   password: $pypi_password
-  distributions: "sdist bdist_wheel"
+  # do not add bdist_wheel here, since it is done above
+  distributions: "sdist"
   skip_cleanup: true
   on:
     branch: master
