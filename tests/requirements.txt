@@ -2,3 +2,4 @@ pandocfilters
 pypandoc
 configparser
 pytest-cov
+future
