@@ -2,3 +2,4 @@ pandocfilters
 configparser
 pytest-cov
 future
+docutils
