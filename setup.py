@@ -104,7 +104,8 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
     #    'dev': ['check-manifest'],
-        'test': ['pandocfilters', 'configparser', 'pytest-cov', 'future', 'docutils'],
+        'test': ['pandocfilters', 'configparser', 'pytest-cov', 'future'],
+        'pypi': ['docutils', 'Pygments']
     },
 
     # If there are data files included in your packages that need to be

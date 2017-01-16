@@ -3,3 +3,4 @@ configparser
 pytest-cov
 future
 docutils
+Pygments
