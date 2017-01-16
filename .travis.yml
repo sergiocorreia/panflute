@@ -65,7 +65,10 @@ script:
 after_success:
   # create README.rst for PyPI README
   - pandoc -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references -M date="`date "+%B %e, %Y"`" --toc --normalize -S -s -o README.rst README.md
-  # test if the rst output is valid
+  # debugging rst output
+  ## install dependencies for rst to html
+  - pip install -e .[pypi]
+  ## test if the rst output is valid
   - rst2html.py README.rst > README.html
 before_deploy:
   # build unpasteurized python3 wheel
