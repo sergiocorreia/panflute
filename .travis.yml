@@ -33,7 +33,7 @@ before_install:
     else
       url="https://github.com/jgm/pandoc/releases/tag/$pandocVersion"
     fi
-    path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64.deb')
+    path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')
     downloadUrl="https://github.com$path"
     file=${path##*/}
 # install dependencies
