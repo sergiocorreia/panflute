@@ -65,18 +65,23 @@ script:
 before_deploy:
   # create README.rst for PyPI README
   - pandoc -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references -M date="`date "+%B %e, %Y"`" --toc --normalize -S -s -o README.rst README.md
-  # test if the rst output is valid
+  # debugging rst output
+  ## install dependencies for rst to html
+  - pip install -e .[pypi]
+  ## test if the rst output is valid
   - rst2html.py README.rst > README.html
-  # build unpasteurized python3 wheel
+  # building wheels
+  ## unpasteurized python3 wheel
   - python3 setup.py bdist_wheel
-  # pasteurize except setup.py & panflute/version.py
+  ## pasteurized python2 wheel
+  ### pasteurize except setup.py & panflute/version.py
   - |
     mv setup.py setup.py.temp
     mv panflute/version.py panflute/version.py.temp
     pasteurize -wnj 4 .
     mv setup.py.temp setup.py
     mv panflute/version.py.temp panflute/version.py
-  # prepare wheel for py2
+  ### prepare wheel
   - pip2 install wheel
   - python2 setup.py bdist_wheel
 deploy:
