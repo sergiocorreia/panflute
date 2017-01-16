@@ -24,7 +24,7 @@ pip install panflute
 
 ## Uninstall
 
-```
+```bash
 pip uninstall panflute
 ```
 
