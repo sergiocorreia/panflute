@@ -1,5 +1,6 @@
 import panflute as pf
-import pandocfilters, json
+import pandocfilters
+import json
 
 
 def test_all():
@@ -24,15 +25,18 @@ def test_all():
 
     print('DONE!')
 
+
 def empty_test(element, doc):
     return
 
+
 def inner_test_filter(element, doc):
-    if type(element)==pf.Header:
+    if type(element) == pf.Header:
         return []
-    if type(element)==pf.Str:
+    if type(element) == pf.Str:
         element.text = element.text + '!!'
         return element
+
 
 def inner_test_idempotent(input_fn, output_fn):
 
@@ -48,7 +52,6 @@ def inner_test_idempotent(input_fn, output_fn):
 
     print(' - Done!')
 
-
     print('\nComparing...')
 
     with open(input_fn, encoding='utf-8') as f:
@@ -58,7 +61,8 @@ def inner_test_idempotent(input_fn, output_fn):
         output_data = f.read()
 
     print('Are both files the same?')
-    print(' - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
+    print(' - Length:', len(input_data) == len(output_data),
+          len(input_data), len(output_data))
     print(' - Content:', input_data == output_data)
 
     print('\nApplying trivial filter...')
@@ -76,11 +80,12 @@ def inner_test_idempotent(input_fn, output_fn):
     with open(output_fn, encoding='utf-8') as f:
         output_data = f.read()
     print(' - Are both files the same?')
-    print('   - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
+    print('   - Length:', len(input_data) ==
+          len(output_data), len(input_data), len(output_data))
     print('   - Content:', input_data == output_data)
 
-
     assert input_data == output_data
+
 
 def inner_test_stringify(input_fn, output_fn):
 
@@ -91,7 +96,7 @@ def inner_test_stringify(input_fn, output_fn):
     with open(input_fn, encoding='utf-8') as f:
         doc = pf.load(f)
     ans = pf.stringify(doc)
-    #print(repr(ans).encode('utf-8'))
+    # print(repr(ans).encode('utf-8'))
     with open(output_txt_panflute, encoding='utf-8', mode='w') as f:
         f.write(ans)
 

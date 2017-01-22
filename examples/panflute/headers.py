@@ -2,7 +2,7 @@ from panflute import run_filter, Header
 
 
 def increase_header_level(elem, doc):
-    if type(elem)==Header:
+    if type(elem) == Header:
         if elem.level < 6:
             elem.level += 1
         else:

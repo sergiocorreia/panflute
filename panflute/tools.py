@@ -185,7 +185,7 @@ def stringify(element, newlines=True):
 
     :param newlines: add a new line after a paragraph (default True)
     :type newlines: :class:`bool`
-    :rtype: :class:`str` 
+    :rtype: :class:`str`
     """
 
     def attach_str(e, doc, answer):
@@ -249,7 +249,6 @@ def _get_metadata(self, key='', default=None, builtin=True):
     return meta2builtin(meta) if builtin else meta
 
 
-
 def meta2builtin(meta):
     if isinstance(meta, MetaBool):
         return meta.boolean
@@ -296,14 +295,14 @@ def shell(args, wait=True, msg=None):
         DETACHED_PROCESS = 0x00000008
         proc = Popen(args, creationflags=DETACHED_PROCESS)
 
-#def get_exe_path():
+# def get_exe_path():
 #    reg = winreg.ConnectRegistry(None,winreg.HKEY_CLASSES_ROOT)
 #
 #    # Fetch verb linked to the dta extension
 #    path = '.dta'
 #    key = winreg.OpenKey(reg, path)
 #    verb = winreg.QueryValue(key, None) # Alternatives: .dta .do
-#    
+#
 #    # Fetch command linked to that verb
 #    path = '{}\shell\open\command'.format(verb)
 #    key = winreg.OpenKey(reg, path)
@@ -312,7 +311,7 @@ def shell(args, wait=True, msg=None):
 #    #raise(Exception(fn))
 #    return fn
 #
-#def check_correct_executable(fn):
+# def check_correct_executable(fn):
 #    return os.path.isfile(fn) and 'stata' in fn.lower()
 
 
@@ -405,7 +404,7 @@ def convert_text(text,
 
     if extra_args is None:
         extra_args = []
-    
+
     if standalone:
         extra_args.append('--standalone')
 
@@ -415,14 +414,14 @@ def convert_text(text,
         out = json.loads(out, object_pairs_hook=from_json)
 
         if standalone:
-            if not isinstance(out, Doc): # Pandoc 1.7.2 and earlier
+            if not isinstance(out, Doc):  # Pandoc 1.7.2 and earlier
                 metadata, items = out
                 out = Doc(*items, metadata=metadata)
         else:
-            if isinstance(out, Doc): # Pandoc 1.8
+            if isinstance(out, Doc):  # Pandoc 1.8
                 out = out.content.list
             else:
-                out = out[1] # Pandoc 1.7.2 and earlier
+                out = out[1]  # Pandoc 1.7.2 and earlier
 
     return out
 

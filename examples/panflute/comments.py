@@ -10,8 +10,10 @@ lines by themselves, with blank lines surrounding
 them.
 """
 
+
 def prepare(doc):
     doc.ignore = False
+
 
 def comment(el, doc):
     is_relevant = (type(el) == pf.RawBlock) and (doc.format == 'html')

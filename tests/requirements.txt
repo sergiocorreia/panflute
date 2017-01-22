@@ -4,3 +4,4 @@ pytest-cov
 future
 docutils
 Pygments
+pep8

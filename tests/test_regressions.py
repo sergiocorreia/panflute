@@ -1,12 +1,13 @@
 import io
 import panflute as pf
 
+
 def test_all():
-    x=pf.Para(pf.Str("a"))
-    y=pf.Para(pf.Str("b"))
-    c1=pf.TableCell(x)
-    c2=pf.TableCell(y)
-    row=pf.TableRow(c1,c2)
+    x = pf.Para(pf.Str("a"))
+    y = pf.Para(pf.Str("b"))
+    c1 = pf.TableCell(x)
+    c2 = pf.TableCell(y)
+    row = pf.TableRow(c1, c2)
     t1 = pf.Table(row)
     t2 = pf.Table(row, header=row)
 

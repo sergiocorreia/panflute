@@ -13,7 +13,7 @@ def action(elem, doc):
         title = pf.stringify(elem).strip()
         baseurl = 'https://en.wikipedia.org/w/api.php'
         query = {'format': 'json', 'action': 'query', 'prop': 'extracts',
-            'explaintext': '', 'titles': title}
+                 'explaintext': '', 'titles': title}
         r = requests.get(baseurl, params=query)
         data = r.json()
         extract = list(data['query']['pages'].values())[0]['extract']
@@ -22,7 +22,7 @@ def action(elem, doc):
 
 
 def main(doc=None):
-    return pf.run_filter(action, doc=doc) 
+    return pf.run_filter(action, doc=doc)
 
 
 if __name__ == '__main__':

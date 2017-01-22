@@ -1,5 +1,6 @@
 from panflute import *
 
+
 def add_one(e, doc):
     if type(e) == TableCell and stringify(e).isdigit():
         chunk = cell.content[0].content[0]
@@ -9,7 +10,7 @@ def add_one(e, doc):
 def idea(e, doc):
     selector = 'Table Items Rows Cells'
 
-    if any(type(a)==pf.Table for a in e.ancestors()):
+    if any(type(a) == pf.Table for a in e.ancestors()):
         pass
 
 

@@ -62,6 +62,8 @@ script:
   - find . -iname '*.py' -exec cp {} $HOME/.pandoc/filters/ \;
   # running all available .md files through panflute
   - find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
+  # test pep8, only in py35 and latest pandoc version build (i.e. check once only)
+  - if [[ $TRAVIS_PYTHON_VERSION == "3.5" ]] && [[ $pandocVersion == "latest" ]]; then pep8 . --ignore=E265,E501,E701,E731; fi
 before_deploy:
   # create README.rst for PyPI README
   - pandoc -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references -M date="`date "+%B %e, %Y"`" --toc --normalize -S -s -o README.rst README.md

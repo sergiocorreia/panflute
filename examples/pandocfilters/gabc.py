@@ -161,7 +161,7 @@ def gabc(key, value, fmt, meta):                   # pylint:disable=I0011,W0613
                     latexsnippet('\\gabcsnippet{' + contents + '}', kvs) +
                     "%\n}" +
                     label
-                    )]
+                )]
             else:
                 return Para([Image(['', [], []], [], [
                     png(

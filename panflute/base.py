@@ -206,7 +206,7 @@ class Element(object):
         if n == 1 or self.parent is None:
             return self.parent
         else:
-            return self.parent.ancestor(n-1)
+            return self.parent.ancestor(n - 1)
 
     # ---------------------------
     # Walking
