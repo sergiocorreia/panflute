@@ -104,7 +104,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
     #    'dev': ['check-manifest'],
-        'test': ['pandocfilters', 'configparser', 'pytest-cov', 'future'],
+        'test': ['pandocfilters', 'configparser', 'pytest-cov', 'future', 'pep8'],
         'pypi': ['docutils', 'Pygments']
     },
 
