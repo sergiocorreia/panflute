@@ -18,7 +18,7 @@ def test():
 
     # foobar key doesn't exist
     meta = doc.get_metadata('foobar', True)
-    assert meta == True
+    assert meta is True
 
     meta = doc.get_metadata('foobar', 123)
     assert meta == 123
