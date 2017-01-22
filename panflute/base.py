@@ -15,7 +15,8 @@ from .utils import check_type, encode_dict  # check_group
 
 import sys
 py2 = sys.version_info[0] == 2
-if py2: str = basestring
+if py2:
+    str = basestring
 
 
 # ---------------------------
@@ -206,7 +207,7 @@ class Element(object):
         if n == 1 or self.parent is None:
             return self.parent
         else:
-            return self.parent.ancestor(n-1)
+            return self.parent.ancestor(n - 1)
 
     # ---------------------------
     # Walking

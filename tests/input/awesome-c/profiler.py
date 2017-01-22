@@ -6,10 +6,11 @@ import panflute as pf
 def empty_test(element, doc):
     return
 
+
 def test_filter(element, doc):
-    if type(element)==pf.Header:
+    if type(element) == pf.Header:
         return []
-    if type(element)==pf.Str:
+    if type(element) == pf.Str:
         element.text = element.text + '!!'
         return element
 
@@ -34,7 +35,7 @@ def run():
 
 
 if __name__ == "__main__":
-    #cProfile.run('run()')
+    # cProfile.run('run()')
     t = timeit.repeat('run()', setup="from __main__ import run",
                       number=1, repeat=3)
 

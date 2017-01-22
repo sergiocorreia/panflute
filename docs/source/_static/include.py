@@ -18,7 +18,7 @@ import panflute as pf
 def is_include_line(elem):
     if len(elem.content) < 3:
         return False
-    elif not all (isinstance(x, (pf.Str, pf.Space)) for x in elem.content):
+    elif not all(isinstance(x, (pf.Str, pf.Space)) for x in elem.content):
         return False
     elif elem.content[0].text != '$include':
         return False
@@ -37,16 +37,16 @@ def get_filename(elem):
 
 def action(elem, doc):
     if isinstance(elem, pf.Para) and is_include_line(elem):
-        
+
         fn = get_filename(elem)
         if not os.path.isfile(fn):
             return
-        
+
         with open(fn) as f:
             raw = f.read()
 
         new_elems = pf.convert_text(raw)
-        
+
         # Alternative A:
         return new_elems
         # Alternative B:
@@ -55,7 +55,7 @@ def action(elem, doc):
 
 
 def main(doc=None):
-    return pf.run_filter(action, doc=doc) 
+    return pf.run_filter(action, doc=doc)
 
 
 if __name__ == '__main__':

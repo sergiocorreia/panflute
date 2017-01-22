@@ -13,7 +13,7 @@ def latex(s):
 
 
 def myemph(e, doc):
-    if type(e)==pf.Emph and doc.format=='latex':
+    if type(e) == pf.Emph and doc.format == 'latex':
         return pf.Span(latex('\\myemph{'), *e.items, latex('}'))
 
 

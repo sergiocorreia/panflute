@@ -8,7 +8,7 @@ doc.content.append(Para(Str('More')))
 doc.metadata['d'] = False
 doc.metadata['e'] = MetaBool(True)
 doc.metadata['f'] = {'A': 1233435353, 'B': 456}
-doc.metadata['f']['g'] = [1,2,3,4,5]
+doc.metadata['f']['g'] = [1, 2, 3, 4, 5]
 
 print(type(doc.get_metadata('d')))
 print(type(doc.get_metadata('e')))
@@ -25,7 +25,7 @@ print('>>>>>')
 p = doc.content[0]
 p.content.append(Str('3434'))
 print(p)
-#print(stringify(p))
+# print(stringify(p))
 s = p.content[0]
 
 assert s.offset(0) is s
@@ -38,7 +38,7 @@ print(s.parent.next)
 print(s.ancestor(2))
 print(s.ancestor(3))
 print(s.parent.parent)
-#print(s.parent.parent.parent.parent) # Fail
+# print(s.parent.parent.parent.parent) # Fail
 
 s.parent.content.append(Space())
 s.parent.content.append(Space)
@@ -58,7 +58,7 @@ header = Header(*title, level=2, identifier='toc')
 header.level += 1
 header.to_json()
 
-div = Div(p, p, classes=['a','b'])
+div = Div(p, p, classes=['a', 'b'])
 span = Span(Emph(Str('hello')))
 
 div.content.append(Plain(span))
@@ -66,7 +66,7 @@ div.content.append(Plain(span))
 
 c = Citation('foo', prefix=[Str('A')])
 c.hash = 100
-c.suffix= p.content
+c.suffix = p.content
 
 cite = Cite(Str('asdasd'), citations=[c])
 print(cite)
@@ -120,7 +120,7 @@ c1 = TableCell(*x)
 c2 = TableCell(Header(Str('Title')))
 
 rows = [TableRow(c1, c2)]
-table = Table(*rows, header=TableRow(c2,c1))
+table = Table(*rows, header=TableRow(c2, c1))
 
 print(table)
 
@@ -134,19 +134,16 @@ doc = Doc(p1, p2, p3)
 print(doc.content.list)
 print(stringify(doc))
 
-print('-'*20)
+print('-' * 20)
 
 doc.replace_keyword(keyword='eggs', replacement=Str('salad'))
 print('<', stringify(doc), '>')
 
-print('-'*20)
+print('-' * 20)
 
 doc.replace_keyword(keyword='salad', replacement=Para(Str('PIZZA')))
 print(doc.content.list)
 print('<', stringify(doc), '>')
-
-
-
 
 
 # CONVERT TEXT (MD, ETC)

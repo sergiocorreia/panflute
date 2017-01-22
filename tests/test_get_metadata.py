@@ -1,5 +1,6 @@
 import panflute as pf
 
+
 def test():
     # chcp 65001 --> might be required if running from cmd on Windows
 
@@ -11,7 +12,7 @@ def test():
 
     meta = doc.get_metadata('title')
     assert meta == "Lorem Ipsum: Title"
-    
+
     meta = doc.get_metadata('title', builtin=False)
     assert type(meta) == pf.MetaInlines
 

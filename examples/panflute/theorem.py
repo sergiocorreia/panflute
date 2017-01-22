@@ -8,8 +8,10 @@ in HTML output.
 
 from panflute import Div, RawBlock, toJSONFilter
 
+
 def prepare(doc):
     doc.theoremcount = 0
+
 
 def theorems(e, doc):
     if type(e) == Div and 'theorem' in e.classes:

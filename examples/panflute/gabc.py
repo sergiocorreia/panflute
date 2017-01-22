@@ -138,9 +138,9 @@ def gabc(elem, doc):
             with open(infile, 'r') as doc:
                 code = doc.read().split('%%\n')[1]
             return Image(png(
-                    elem.text,
-                    latexsnippet('\\gregorioscore', elem.attributes)
-                ))
+                elem.text,
+                latexsnippet('\\gregorioscore', elem.attributes)
+            ))
     elif type(elem) == CodeBlock and "gabc" in elem.classes:
         if doc.format == "latex":
             if elem.identifier == "":
@@ -152,7 +152,7 @@ def gabc(elem, doc):
                 latexsnippet('\\gabcsnippet{' + elem.text + '}', elem.attributes) +
                 "%\n}" +
                 label
-                )
+            )
         else:
             return Para(Image(url=png(elem.text, latexsnippet('\\gabcsnippet', elem.attributes))))
 

@@ -14,20 +14,21 @@ from subprocess import call
 
 imagedir = "plantuml-images"
 
+
 def sha1(x):
     return hashlib.sha1(x.encode(sys.getfilesystemencoding())).hexdigest()
 
 
 def filter_keyvalues(kv):
-  res = []
-  caption = []
-  for k,v in kv:
-    if k == u"caption":
-      caption = [ Str(v) ]
-    else:
-      res.append( [k,v] )
+    res = []
+    caption = []
+    for k, v in kv:
+        if k == u"caption":
+            caption = [Str(v)]
+        else:
+            res.append([k, v])
 
-  return caption, "fig:" if caption else "", res
+    return caption, "fig:" if caption else "", res
 
 
 def plantuml(key, value, format, meta):
@@ -54,13 +55,13 @@ def plantuml(key, value, format, meta):
                 except OSError:
                     pass
 
-                txt =  code.encode("utf-8")
+                txt = code.encode("utf-8")
                 if not txt.startswith("@start"):
                     txt = "@startuml\n" + txt + "\n@enduml\n"
                 with open(src, "w") as f:
                     f.write(txt)
 
-                call(["java", "-jar", "plantuml.jar", "-t"+filetype, src])
+                call(["java", "-jar", "plantuml.jar", "-t" + filetype, src])
 
                 sys.stderr.write('Created image ' + dest + '\n')
 
