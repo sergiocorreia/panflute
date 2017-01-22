@@ -185,7 +185,7 @@ def stringify(element, newlines=True):
 
     :param newlines: add a new line after a paragraph (default True)
     :type newlines: :class:`bool`
-    :rtype: :class:`str` 
+    :rtype: :class:`str`
     """
 
     def attach_str(e, doc, answer):
