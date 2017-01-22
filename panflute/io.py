@@ -49,8 +49,10 @@ def load(input_stream=None):
     """
 
     if input_stream is None:
-        input_stream = io.open(sys.stdin.fileno()) if py2 else io.TextIOWrapper(
-            sys.stdin.buffer, encoding='utf-8')
+        input_stream = (
+            io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+            if not py2 else io.open(sys.stdin.fileno())
+        )
 
     # Load JSON and validate it
     doc = json.load(input_stream, object_pairs_hook=from_json)
@@ -126,8 +128,10 @@ def dump(doc, output_stream=None):
 
     assert type(doc) == Doc, "panflute.dump needs input of type panflute.Doc"
     if output_stream is None:
-        sys.stdout = codecs.getwriter(
-            "utf-8")(sys.stdout) if py2 else codecs.getwriter("utf-8")(sys.stdout.detach())
+        sys.stdout = (
+            codecs.getwriter("utf-8")(sys.stdout.detach())
+            if not py2 else codecs.getwriter("utf-8")(sys.stdout)
+        )
         output_stream = sys.stdout
 
     # Switch to legacy JSON output; eg: {'t': 'Space', 'c': []}

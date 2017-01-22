@@ -12,8 +12,7 @@ from .utils import check_type, encode_dict  # check_group
 
 import sys
 py2 = sys.version_info[0] == 2
-if py2:
-    str = basestring
+if py2: str = basestring
 
 
 # ---------------------------

@@ -10,8 +10,7 @@ from .base import Element, Block, Inline, MetaValue
 
 import sys
 py2 = sys.version_info[0] == 2
-if py2:
-    str = basestring
+if py2: str = basestring
 
 
 # ---------------------------

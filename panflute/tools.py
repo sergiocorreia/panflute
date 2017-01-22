@@ -25,8 +25,7 @@ from functools import partial
 
 
 py2 = sys.version_info[0] == 2
-if py2:
-    str = basestring
+if py2: str = basestring
 
 
 # ---------------------------
