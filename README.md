@@ -8,7 +8,9 @@
 [panflute](http://scorreia.com/software/panflute/) is a Python package that makes creating Pandoc filters fun.
 
 For a detailed user guide, documentation, and installation instructions, see
-<http://scorreia.com/software/panflute/>. If you want to contribute, head [here](/CONTRIBUTING.md).
+<http://scorreia.com/software/panflute/>.
+For examples that you can use as starting points, [check this repo](https://github.com/sergiocorreia/panflute-filters/tree/master/filters) or [this github search](https://github.com/search?o=desc&q=%22import+panflute%22&ref=searchresults&s=indexed&type=Code&utf8=%E2%9C%93).
+If you want to contribute, head [here](/CONTRIBUTING.md).
 
 
 ## Install
