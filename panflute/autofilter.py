@@ -85,7 +85,6 @@ def autorun_filters(filters, doc, searchpath, verbose):
             exec(code, _)
             try:
                 doc = _['main'](doc)
-                assert 0
             except:
                 debug("Failed to run filter: " + ff)
                 if 'main' not in _:
