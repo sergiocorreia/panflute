@@ -81,11 +81,19 @@ def autorun_filters(filters, doc, searchpath, verbose):
         if verbose:
             debug("panflute: running filter <{}>".format(ff))
         with open(fn) as fp:
-            exec(fp.read(), _)
+            code = fp.read()
+            exec(code, _)
             try:
                 doc = _['main'](doc)
+                assert 0
             except:
                 debug("Failed to run filter: " + ff)
+                if 'main' not in _:
+                    debug(' - Possible cause: filter lacks a main() function')
+                debug('Filter code:')
+                debug('-' * 64)
+                debug(code)
+                debug('-' * 64)
                 raise
         if verbose:
             debug("panflute: filter <{}> completed".format(ff))
