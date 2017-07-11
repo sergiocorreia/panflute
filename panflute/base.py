@@ -270,7 +270,7 @@ class Element(object):
                 ans = [(k, v.walk(action, doc)) for k, v in obj.items()]
                 ans = [(k, v) for k, v in ans if v != []]
             elif obj is None:
-                ans = None # Empty table headers or captions
+                ans = None  # Empty table headers or captions
             else:
                 raise TypeError(type(obj))
             setattr(self, child, ans)

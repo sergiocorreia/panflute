@@ -185,7 +185,7 @@ def stringify(element, newlines=True):
 
     :param newlines: add a new line after a paragraph (default True)
     :type newlines: :class:`bool`
-    :rtype: :class:`str` 
+    :rtype: :class:`str`
     """
 
     def attach_str(e, doc, answer):
@@ -247,7 +247,6 @@ def _get_metadata(self, key='', default=None, builtin=True):
 
     # Stringify contents
     return meta2builtin(meta) if builtin else meta
-
 
 
 def meta2builtin(meta):
@@ -405,7 +404,7 @@ def convert_text(text,
 
     if extra_args is None:
         extra_args = []
-    
+
     if standalone:
         extra_args.append('--standalone')
 
@@ -415,14 +414,14 @@ def convert_text(text,
         out = json.loads(out, object_pairs_hook=from_json)
 
         if standalone:
-            if not isinstance(out, Doc): # Pandoc 1.7.2 and earlier
+            if not isinstance(out, Doc):  # Pandoc 1.7.2 and earlier
                 metadata, items = out
                 out = Doc(*items, metadata=metadata)
         else:
-            if isinstance(out, Doc): # Pandoc 1.8
+            if isinstance(out, Doc):  # Pandoc 1.8 and later
                 out = out.content.list
             else:
-                out = out[1] # Pandoc 1.7.2 and earlier
+                out = out[1]  # Pandoc 1.7.2 and earlier
 
     return out
 

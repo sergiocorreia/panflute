@@ -1085,7 +1085,7 @@ class Table(Block):
 
     @header.setter
     def header(self, value):
-        if (not value or value is None or (isinstance(value, TableRow) and not value.content)):
+        if not value or (isinstance(value, TableRow) and not value.content):
             self._header = None
             return
 
