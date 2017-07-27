@@ -47,7 +47,7 @@ class ListContainer(MutableSequence):
         self.parent = parent
         self.location = None  # Cannot be set through __init__
 
-        self.list = list()
+        self.list = []
         self.extend(args)  # self.oktypes must be set first
 
     def __contains__(self, item):
