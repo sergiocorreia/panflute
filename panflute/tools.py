@@ -282,7 +282,8 @@ def shell(args, wait=True, msg=None):
     # Fix Windows error if passed a string
     if isinstance(args, str):
         args = shlex.split(args, posix=(os.name != "nt"))
-        args = [arg.replace('/', '\\') for arg in args]
+        if os.name == "nt":
+            args = [arg.replace('/', '\\') for arg in args]
 
     if wait:
         proc = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
