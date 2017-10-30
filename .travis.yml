@@ -23,7 +23,7 @@ matrix:
     - python: "3.6-dev"
     # - python: "3.7-dev"
     - python: "nightly"
-    - python: "pypy3"
+    # - python: "pypy3"
   fast_finish: true
 # download pandoc
 before_install:
