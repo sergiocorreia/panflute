@@ -9,6 +9,7 @@ from .elements import (Citation, Table, OrderedList, Quoted,
                        Math, EMPTY_ELEMENTS)
 
 import io
+import os
 import sys
 import json
 import codecs  # Used in sys.stdout writer
@@ -257,3 +258,12 @@ def run_filter(action, *args, **kwargs):
     See :func:`.run_filters`
     """
     return run_filters([action], *args, **kwargs)
+
+
+def load_reader_options():
+    """
+    Retrieve Pandoc Reader options from the environment
+    """
+    options = os.environ['PANDOC_READER_OPTIONS']
+    options = json.loads(options, object_pairs_hook=OrderedDict)
+    return options

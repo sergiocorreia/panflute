@@ -27,6 +27,7 @@ from .elements import (
 
 from .io import load, dump, run_filter, run_filters
 from .io import toJSONFilter, toJSONFilters  # Wrappers
+from .io import load_reader_options
 
 from .tools import (
     stringify, yaml_filter, shell, run_pandoc, convert_text, debug)
