@@ -64,7 +64,7 @@ script:
   - find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
 before_deploy:
   # create README.rst for PyPI README
-  - pandoc -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references -M date="`date "+%B %e, %Y"`" --toc --normalize -S -s -o README.rst README.md
+  - pandoc -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references -M date="`date "+%B %e, %Y"`" --toc -s -o README.rst README.md
   # debugging rst output
   ## install dependencies for rst to html
   - pip install -e .[pypi]
