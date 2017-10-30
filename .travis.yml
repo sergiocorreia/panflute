@@ -9,7 +9,7 @@ python:
   - "3.5"
   - "3.6"
   - "3.6-dev" # 3.6 development branch
-  - "3.7-dev" # 3.6 development branch
+  # - "3.7-dev" # 3.7 development branch
   - "nightly" # currently points to 3.7-dev
   # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
   - "pypy"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
@@ -21,9 +21,9 @@ env:
 matrix:
   allow_failures:
     - python: "3.6-dev"
-    - python: "3.7-dev"
+    # - python: "3.7-dev"
     - python: "nightly"
-    - python: "pypy3"
+    # - python: "pypy3"
   fast_finish: true
 # download pandoc
 before_install:
@@ -47,7 +47,7 @@ install:
 before_script:
   # pasteurize for py2 only, except setup.py & panflute/version.py
   - |
-    if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]] || [[ "$TRAVIS_PYTHON_VERSION" == "pypy" ]]; then
+    if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" || "$TRAVIS_PYTHON_VERSION" == "pypy" ]]; then
       mv setup.py setup.py.temp
       mv panflute/version.py panflute/version.py.temp
       pasteurize -wnj 4 .
@@ -64,7 +64,7 @@ script:
   - find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
 before_deploy:
   # create README.rst for PyPI README
-  - pandoc -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references -M date="`date "+%B %e, %Y"`" --toc --normalize -S -s -o README.rst README.md
+  - pandoc -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references -M date="`date "+%B %e, %Y"`" --toc -s -o README.rst README.md
   # debugging rst output
   ## install dependencies for rst to html
   - pip install -e .[pypi]
@@ -93,5 +93,5 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-    python: "3.5"
+    python: "3.6"
     condition: $pandocVersion = latest
