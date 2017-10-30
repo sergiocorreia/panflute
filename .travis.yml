@@ -9,7 +9,7 @@ python:
   - "3.5"
   - "3.6"
   - "3.6-dev" # 3.6 development branch
-  - "3.7-dev" # 3.6 development branch
+  # - "3.7-dev" # 3.7 development branch
   - "nightly" # currently points to 3.7-dev
   # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
   - "pypy"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
@@ -21,7 +21,7 @@ env:
 matrix:
   allow_failures:
     - python: "3.6-dev"
-    - python: "3.7-dev"
+    # - python: "3.7-dev"
     - python: "nightly"
     - python: "pypy3"
   fast_finish: true
@@ -93,5 +93,5 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-    python: "3.5"
+    python: "3.6"
     condition: $pandocVersion = latest
