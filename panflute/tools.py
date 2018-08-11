@@ -513,3 +513,75 @@ def _replace_keyword(self, keyword, replacement, count=0):
 
 # Bind the method
 Element.replace_keyword = _replace_keyword
+
+
+def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=None, error_on_none=True):
+    """ fetch an option variable, 
+    from either a local (element) level option/attribute tag, 
+    document level metadata tag,
+    or a default
+
+     :type options: ``dict``
+     :type local_tag: ``str``
+     :type doc: :class:`Doc`
+     :type doc_tag: ``str``
+     :type default: ``any``
+     :type error_on_none: ``bool``
+
+    The order of preference is local > document > default,
+    although if a local or document tag returns None, then the next level down is used. 
+    Also, if error_on_none=True and the final variable is None, then a ValueError will be raised  
+
+    In this manner you can set global variables, which can be optionally overriden at a local level.
+    For example, to apply different styles to docx text
+
+    main.md:
+        ------------------
+        style-div:
+            name: MyStyle
+        ------------------
+
+        :::style
+        some text
+        :::
+
+        ::: {.style name=MyOtherStyle}
+        some more text
+        :::
+
+    style_filter.py:
+        import panflute as pf
+
+        def action(elem, doc):
+            if type(elem) == pf.Div:
+                style = pf.get_option(elem.attributes, "name", doc, "style-div.name")
+                elem.attributes["custom-style"] = style
+
+        def main(doc=None):
+            return run_filter(action, doc=doc)
+
+        if __name__ == "__main__":
+            main()
+
+    """
+    variable = None
+    
+    # element level
+    if options is not None and local_tag is not None:
+        if local_tag in options and options[local_tag] is not None:
+            variable = options[local_tag]
+    if variable is not None:
+        return variable
+
+    # doc level
+    if doc is not None and doc_tag is not None:
+        variable = doc.get_metadata(doc_tag, None)
+    if variable is not None:
+        return variable
+
+    # default level
+    variable = default
+    if variable is None and error_on_none:
+        raise ValueError("could not retrieve a value for tag; local={0}, doc={1}".format(local_tag, doc_tag))
+    
+    return variable
