@@ -515,7 +515,7 @@ def _replace_keyword(self, keyword, replacement, count=0):
 Element.replace_keyword = _replace_keyword
 
 
-def get_variable(options=None, local_tag=None, doc=None, doc_tag=None, default=None, error_on_none=True):
+def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=None, error_on_none=True):
     """ fetch an option variable, 
     from either a local (element) level option/attribute tag, 
     document level metadata tag,
@@ -555,7 +555,7 @@ def get_variable(options=None, local_tag=None, doc=None, doc_tag=None, default=N
 
         def action(elem, doc):
             if type(elem) == pf.Div:
-                style = pf.get_variable(elem.attributes, "name", doc, "style-div.name")
+                style = pf.get_option(elem.attributes, "name", doc, "style-div.name")
                 elem.attributes["custom-style"] = style
 
         def main(doc=None):
