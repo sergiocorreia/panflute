@@ -30,7 +30,7 @@ from .io import toJSONFilter, toJSONFilters  # Wrappers
 from .io import load_reader_options
 
 from .tools import (
-    stringify, yaml_filter, shell, run_pandoc, convert_text, debug)
+    stringify, yaml_filter, shell, run_pandoc, convert_text, debug, get_variable)
 
 from .autofilter import main
 
