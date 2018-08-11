@@ -2,7 +2,8 @@ import panflute as pf
 
 def test_get_variable():
     
-    doc = pf.Doc(metadata={"a": "x", "b": {"c": "y"}})
+    doc = pf.Doc(metadata={"a": pf.MetaString("x"),
+                           "b": pf.MetaMap(c=pf.MetaString("y"))})
     
     assert pf.get_option(default="a") == "a"
     assert pf.get_option({"a": 1}, "a") == 1
