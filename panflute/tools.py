@@ -516,7 +516,7 @@ Element.replace_keyword = _replace_keyword
 
 
 def get_variable(options=None, local_tag=None, doc=None, doc_tag=None, default=None, error_on_none=True):
-    """ get an option variable, 
+    """ fetch an option variable, 
     from either a local (element) level option/attribute tag, 
     document level metadata tag,
     or a default
@@ -529,7 +529,7 @@ def get_variable(options=None, local_tag=None, doc=None, doc_tag=None, default=N
      :type error_on_none: ``bool``
 
     The order of preference is local > document > default,
-    although if local or document tag returns None, then the next level down is used
+    although if a local or document tag returns None, then the next level down is used
 
     Also, if error_on_none=True and the final variable is None, then a ValueError will be raised  
 
