@@ -529,8 +529,7 @@ def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=Non
      :type error_on_none: ``bool``
 
     The order of preference is local > document > default,
-    although if a local or document tag returns None, then the next level down is used
-
+    although if a local or document tag returns None, then the next level down is used. 
     Also, if error_on_none=True and the final variable is None, then a ValueError will be raised  
 
     In this manner you can set global variables, which can be optionally overriden at a local level.
