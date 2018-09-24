@@ -14,23 +14,22 @@ import sys
 
 
 class context_import():
-    """add_path
-    Adds to the path temporarly the provided directory, in order todo 
-    imports from the files in that directory. 
+    """Import File Context Manager
+    Adds temporarly the director of zed file to the path, and puts in context
+    the file. 
+    :params file: Full path to file with extension
+    :type file: `str`
 
-    Example:
-        filename = 'foo.py'[:-3] # With out py extension
-        with add_path('/path/to/dir'):
-            modules = __import__(filename)
-            bar = module.bar
-            baz = module.baz
-        baz()
-        print(bar)
+    :Example:
+        >>> filename = 'foo.py'[:-3] # With out py extension
+        >>> with add_path('/path/to/dir'):
+                modules = __import__(filename)
+                bar = module.bar
+                baz = module.baz
+        >>> baz()
+        >>> print(bar)
     """
     def __init__(self, file):
-        """__init__
-        Provide it with file with full path
-        """
         # Get the directory of the file
         self.path = r"/".join(file.split(r"/")[:-1]) 
         # Get filename without extension
