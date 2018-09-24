@@ -8,7 +8,7 @@ import sys
 from collections import OrderedDict
 
 from .io import load, dump
-from .pathworker import ContextImport
+from .utils import ContextImport
 from .tools import debug, run_pandoc
 
 
