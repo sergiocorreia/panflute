@@ -9,14 +9,14 @@ Auxiliary classes that have no dependencies.
 import sys
 
 # ---------------------------
-# Classes 
+# Classes
 # ---------------------------
 
 
-class context_import():
+class ContextImport():
     """Import File Context Manager
     Adds temporarly the director of zed file to the path, and puts in context
-    the file. 
+    the file.
     :params file: Full path to file with extension
     :type file: `str`
 
@@ -31,15 +31,13 @@ class context_import():
     """
     def __init__(self, file):
         # Get the directory of the file
-        self.path = r"/".join(file.split(r"/")[:-1]) 
+        self.path = r"/".join(file.split(r"/")[:-1])
         # Get filename without extension
         self.file = file.split(r"/")[-1][:-3]
-
 
     def __enter__(self):
         sys.path.insert(0, self.path)
         return __import__(self.file)
-        
 
     def __exit__(self, exc_type, exc_value, traceback):
         sys.path.remove(self.path)
