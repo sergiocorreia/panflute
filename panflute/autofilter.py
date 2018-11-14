@@ -9,6 +9,7 @@ from collections import OrderedDict
 
 from .io import load, dump
 from .tools import debug, run_pandoc
+from .utils import ContextImport
 
 
 def main():
@@ -80,14 +81,12 @@ def autorun_filters(filters, doc, searchpath, verbose):
         _ = dict()
         if verbose:
             debug("panflute: running filter <{}>".format(ff))
-        with open(fn) as fp:
-            code = fp.read()
-            exec(code, _)
+        with ContextImport(fn) as module:
             try:
-                doc = _['main'](doc)
+                module.main(doc)
             except:
                 debug("Failed to run filter: " + ff)
-                if 'main' not in _:
+                if not hasattr(module, 'main'):
                     debug(' - Possible cause: filter lacks a main() function')
                 debug('Filter code:')
                 debug('-' * 64)
