@@ -1,5 +1,7 @@
-# os: linux and sudo: false is assumed, which means it is using container-based Ubuntu 12.04
 language: python
+# Need to keep up-to-date with the latest stable distribution:
+# https://docs.travis-ci.com/user/reference/overview/
+dist: xenial
 cache: pip
 # build matrix: different python and pandoc versions
 python:
