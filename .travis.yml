@@ -15,8 +15,8 @@ python:
   - "3.8-dev" # 3.7 development branch
   - "nightly" # currently points to 3.7-dev
   # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
-  - "pypy"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
-  - "pypy3" # PyPy3 2.4.0 (CPython 3.2 compatible)
+  - "pypy2.7-6.0"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
+  - "pypy3.5-6.0" # PyPy3 2.4.0 (CPython 3.2 compatible)
 # https://groups.google.com/forum/?fromgroups#!topic/pandoc-discuss/uGASAhRydfI
 env:
   - pandocVersion=1.19.2.1
