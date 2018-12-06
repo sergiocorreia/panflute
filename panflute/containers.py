@@ -7,7 +7,8 @@ object, and the attribute of the parent object that they correspond to.
 # Imports
 # ---------------------------
 
-from collections import OrderedDict, MutableSequence, MutableMapping
+from collections import OrderedDict
+from collections.abc import MutableSequence, MutableMapping
 from .utils import check_type, encode_dict  # check_group
 
 import sys

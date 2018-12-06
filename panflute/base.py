@@ -7,7 +7,8 @@ Base classes and methods of all Pandoc elements
 # ---------------------------
 
 from operator import attrgetter
-from collections import OrderedDict, MutableSequence, MutableMapping
+from collections import OrderedDict
+from collections.abc import MutableSequence, MutableMapping
 from itertools import chain
 
 from .containers import ListContainer, DictContainer

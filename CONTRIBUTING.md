@@ -19,9 +19,8 @@ For consistency, code should try to comply (as much as possible) with [pep8](htt
 
 ### Useful tools:
 
-- [`pep8`](http://pep8.readthedocs.io/en/release-1.7.x/): run it with `pep8 > pep8-report.txt`
+- [`pycodestyle`](https://pypi.org/project/pycodestyle/) (formerly `pep8`): run it with `pycodestyle ./panflute > pycodestyle-report.txt`
 - [`pylint`](https://www.pylint.org/): run it with `pylint panflute > pylint-report.txt` from the root folder of the repo
-pep8
 - [Travis CI](https://travis-ci.org/sergiocorreia/panflute). Gets run automatically after pushing code to Github. Settings can be [customized](https://github.com/sergiocorreia/panflute/blob/master/.travis.yml), but it basically runs all files in [`\tests`](https://github.com/sergiocorreia/panflute/tree/master/tests) that fit the pattern `test_*.py`.
 
 

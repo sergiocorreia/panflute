@@ -62,7 +62,7 @@ class ContextImport():
         # Get the directory of the file
         self.path = r"/".join(file.split(r"/")[:-1])
         # Get filename without extension
-        self.file = file.split(r"/")[-1].replace(".py","")
+        self.file = file.split(r"/")[-1].replace(".py", "")
 
     def __enter__(self):
         sys.path.insert(0, self.path)
