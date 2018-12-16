@@ -129,29 +129,31 @@ def autorun_filters(filters, doc, extra_dirs, verbose, sys_path=True):
 
     file_names = OrderedDict()
 
-    for file_ in filters:
+    for filter_ in filters:
         for path in search_path:
             # Allow with and without .py ending
-            filter_path = p.join(path, file_ + ('' if file_.endswith('.py') else '.py'))
+            filter_path = p.abspath(p.normpath(
+                p.join(path, filter_ + ('' if filter_.endswith('.py') else '.py'))
+            ))
 
             if p.isfile(filter_path):
                 if verbose:
-                    debug("panflute: filter <{}> found in {}".format(file_, filter_path))
-                file_names[file_] = filter_path
+                    debug("panflute: filter <{}> found in {}".format(filter_, filter_path))
+                file_names[filter_] = filter_path
                 break
             elif verbose:
-                debug("          filter <{}> NOT found in {}".format(file_, filter_path))
+                debug("          filter <{}> NOT found in {}".format(filter_, filter_path))
         else:
-            raise Exception("filter not found: " + file_)
+            raise Exception("filter not found: " + filter_)
 
-    for file_, filter_path in file_names.items():
+    for filter_, filter_path in file_names.items():
         if verbose:
-            debug("panflute: running filter <{}>".format(file_))
+            debug("panflute: running filter <{}>".format(filter_))
         with ContextImport(filter_path) as module:
             try:
                 module.main(doc)
             except Exception as e:
-                debug("Failed to run filter: " + file_)
+                debug("Failed to run filter: " + filter_)
                 if not hasattr(module, 'main'):
                     debug(' - Possible cause: filter lacks a main() function')
                 debug('Filter code:')
@@ -161,6 +163,6 @@ def autorun_filters(filters, doc, extra_dirs, verbose, sys_path=True):
                 debug('-' * 64)
                 raise Exception(e)
         if verbose:
-            debug("panflute: filter <{}> completed".format(file_))
+            debug("panflute: filter <{}> completed".format(filter_))
 
     return doc
