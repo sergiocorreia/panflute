@@ -8,6 +8,7 @@ Auxiliary functions that have no dependencies
 
 from collections import OrderedDict
 import sys
+import os.path as p
 
 # ---------------------------
 # Functions
@@ -43,26 +44,30 @@ def encode_dict(tag, content):
 
 
 class ContextImport():
-    """Import File Context Manager
-    Adds temporarly the director of zed file to the path, and puts in context
-    the file.
-    :params file: Full path to file with extension
-    :type file: `str`
+    """
+    Import File Context Manager
+    Adds temporarly the director of zed file to the path,
+    and puts in context the file.
 
-    :Example:
-        >>> filename = 'foo.py'[:-3] # With out py extension
+    Example:
+        >>> filename = 'foo'  # without .py extension
         >>> with add_path('/path/to/dir'):
-                modules = __import__(filename)
+                module = __import__(filename)
                 bar = module.bar
                 baz = module.baz
         >>> baz()
         >>> print(bar)
     """
-    def __init__(self, file):
+    def __init__(self, file_):
+        """
+        :param file_: str
+            Full path to file with extension
+        """
         # Get the directory of the file
-        self.path = r"/".join(file.split(r"/")[:-1])
-        # Get filename without extension
-        self.file = file.split(r"/")[-1].replace(".py", "")
+        self.path = p.dirname(file_)
+        # Get filename without .py extension:
+        name, ext = p.splitext(p.basename(file_))
+        self.file = name + ext.replace('.py', '')
 
     def __enter__(self):
         sys.path.insert(0, self.path)
