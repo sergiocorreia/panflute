@@ -130,12 +130,15 @@ def autorun_filters(filters, doc, extra_dirs, verbose, sys_path=True):
     file_names = OrderedDict()
 
     for filter_ in filters:
+        if not filter_.endswith('.py') and not (p.sep in filter_):
+            file_names[filter_] = filter_
+            continue
+
         for path in search_path:
             # Allow with and without .py ending
             filter_path = p.abspath(p.normpath(
                 p.join(path, filter_ + ('' if filter_.endswith('.py') else '.py'))
             ))
-
             if p.isfile(filter_path):
                 if verbose:
                     debug("panflute: filter <{}> found in {}".format(filter_, filter_path))
@@ -149,7 +152,7 @@ def autorun_filters(filters, doc, extra_dirs, verbose, sys_path=True):
     for filter_, filter_path in file_names.items():
         if verbose:
             debug("panflute: running filter <{}>".format(filter_))
-        with ContextImport(filter_path) as module:
+        with ContextImport(filter_path, extra_dirs) as module:
             try:
                 module.main(doc)
             except Exception as e:
