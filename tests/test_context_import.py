@@ -10,7 +10,7 @@ def test_context_import():
     test_file = os.path.join(os.getcwd(), 'tests/dependency/dependency.py')
     print("Importing from the file: \n\t", end="")
     print(test_file)
-    with ContextImport(test_file, p.dirname(test_file)) as module:
+    with ContextImport(test_file) as module:
         test_function_res = module.test_function()
         test_class = module.test_class()
         test_class_method_test = test_class.test_me()

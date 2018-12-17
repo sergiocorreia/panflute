@@ -210,11 +210,11 @@ def autorun_filters(filters, doc, search_dirs, verbose):
                 if verbose:
                     debug("panflute: filter <{}> found in {}".format(filter_, filter_path))
 
-                if module:
-                    extra_dir = None if (path in reduced_sys_path) else p.abspath(path)
+                if module and not (path in reduced_sys_path):
+                    extra_dir = p.abspath(path)
                     # `path` already doesn't contain `.`, `..`, env vars or `~`
                 else:
-                    extra_dir = p.dirname(filter_path)
+                    extra_dir = None
 
                 filter_paths.append((filter_, filter_path, filter_exp, extra_dir))
                 break
