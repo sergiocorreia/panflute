@@ -9,6 +9,7 @@ Auxiliary functions that have no dependencies
 from collections import OrderedDict
 import sys
 import os.path as p
+import re
 
 # ---------------------------
 # Functions
