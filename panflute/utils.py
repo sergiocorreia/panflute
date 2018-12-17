@@ -41,51 +41,43 @@ def encode_dict(tag, content):
 # ---------------------------
 # Classes
 # ---------------------------
+rstrip_py = re.compile(r'\.py$')
 
 
 class ContextImport():
     """
-    Import file or module context manager.
-
-    * if module provided then temporarily adds extra dirs
-      to sys.path and imports the module,
-    * if python file provided then temporarily adds it's dir
-      to sys.path and imports the file as a module.
+    Import module context manager.
+    Temporarily prepends extra dir
+    to sys.path and imports the module,
 
     Example:
-        >>> with ContextImport('/path/dir/fi.py', dirs) as module:
+        >>> # /path/dir/fi.py
+        >>> with ContextImport('fi', '/path/dir') as module:
                 # prepends '/path/dir' to sys.path
                 # module = __import__('fi')
                 module.main()
-            with ContextImport('dir.fi', dirs) as module:
-                # prepends dirs to sys.path
+            with ContextImport('dir.fi', '/path') as module:
+                # prepends '/path' to sys.path
                 # module = __import__('dir.fi')
                 module.main()
     """
-    def __init__(self, file_, extra_dirs):
+    def __init__(self, module, extra_dir):
         """
-        :param file_: str
-            full path to file or module spec. That is:
-            '/' not in file, doesn't end with '.py'
-        :param extra_dirs: list of str
-            list of extra dirs to prepend to sys.path
-            in case of file_ is a module
+        :param module: str
+            module spec for import or file path
+            from that only basename without .py is used
+        :param extra_dir: str or None
+            extra dir to prepend to sys.path
+            doesn't change sys.path if None
         """
-        if not file_.endswith('.py') and not (p.sep in file_):
-            self.extra_dirs = extra_dirs
-            self.module = file_
-        else:
-            # Get the directory of the file
-            self.extra_dirs = [p.dirname(file_)]
-            # Get filename without .py extension:
-            name, ext = p.splitext(p.basename(file_))
-            self.module = name + ext.replace('.py', '')
+        self.extra_dir = extra_dir
+        self.module = rstrip_py.sub('', p.basename(module))
 
     def __enter__(self):
-        for path in reversed(self.extra_dirs):
-            sys.path.insert(0, path)
+        if self.extra_dir is not None:
+            sys.path.insert(0, self.extra_dir)
         return __import__(self.module)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        for path in self.extra_dirs:
+        if self.extra_dir is not None:
             sys.path.pop(0)

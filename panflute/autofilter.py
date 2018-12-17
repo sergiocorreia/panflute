@@ -1,21 +1,23 @@
 """
-Allow Panflute to be run as a command line script
-main():
-    to be used as a Pandoc filter
-panfl():
-    to be used in Pandoctools shell scripts as
-    Pandoc filter with arguments
+Allow Panflute to be run as a command line executable
+to be used as a Pandoc filter or used in Pandoctools
+shell scripts as Pandoc filter with arguments.
+
+Exports ``main`` and ``panfl``.
 """
 
 import os
 import os.path as p
 import sys
-from collections import OrderedDict
 import click
+import re
 
 from .io import load, dump
 from .tools import debug
 from .utils import ContextImport
+
+
+reduced_sys_path = [dir_ for dir_ in sys.path if (dir_ not in ('', '.')) and p.isdir(dir_)]
 
 
 def get_filter_dir(hardcoded=False):
@@ -32,15 +34,15 @@ def get_filter_dir(hardcoded=False):
         info = [row for row in info if row.startswith(prefix)]
         assert len(info) == 1
         data_dir = info[0][len(prefix):]
-        return p.join(data_dir, 'filters')
+        return p.normpath(p.expanduser(p.expandvars(p.join(data_dir, 'filters'))))
 
 
-def _main(filters=None, extra_dirs=None, data_dir=True, sys_path=True, panfl_=False):
+def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False):
     """
     :param filters: Union[List[str], None]
         if not None then it's panfl
         instead of panflute
-    :param extra_dirs: Union[List[str], None]
+    :param search_dirs: Union[List[str], None]
         if not None then it's panfl
         instead of panflute
     :param data_dir: bool
@@ -52,19 +54,34 @@ def _main(filters=None, extra_dirs=None, data_dir=True, sys_path=True, panfl_=Fa
     # meta = doc.metadata  # Local variable 'meta' value is not used
     verbose = doc.get_metadata('panflute-verbose', False)
 
-    if extra_dirs is None:
+    if search_dirs is None:
         # metadata 'panflute-path' can be a list, a string, or missing
-        # `extra_dirs` should be a list of str
-        extra_dirs = doc.get_metadata('panflute-path', [])
-        if type(extra_dirs) != list:
-            extra_dirs = [extra_dirs]
-    
+        # `search_dirs` should be a list of str
+        search_dirs = doc.get_metadata('panflute-path', [])
+        if type(search_dirs) != list:
+            search_dirs = [search_dirs]
+        if '--data-dir' in search_dirs:
+            data_dir=True
+        if '--no-sys-path' in search_dirs:
+            sys_path=False
+        search_dirs = [dir_ for dir_ in search_dirs if dir_ not in ('--data-dir', '--no-sys-path')]
+
+    search_dirs = [p.normpath(p.expanduser(p.expandvars(dir_))) for dir_ in search_dirs]
+
     if not panfl_:
-        extra_dirs.append('.')
+        # default panflute bahaviour:
+        search_dirs.append('.')
         if data_dir:
-            extra_dirs.append(get_filter_dir())
-    elif data_dir:
-        extra_dirs.append(get_filter_dir(hardcoded=True))
+            search_dirs.append(get_filter_dir())
+        if sys_path:
+            search_dirs += sys.path
+    else:
+        # panfl/pandoctools behaviour:
+        if data_dir:
+            search_dirs.append(get_filter_dir(hardcoded=True))
+        if sys_path:
+            search_dirs += reduced_sys_path
+
 
     # Display message (tests that everything is working ok)
     msg = doc.get_metadata('panflute-echo', False)
@@ -82,7 +99,7 @@ def _main(filters=None, extra_dirs=None, data_dir=True, sys_path=True, panfl_=Fa
         if verbose:
             msg = "panflute: will run the following filters:"
             debug(msg, ' '.join(filters))
-        doc = autorun_filters(filters, doc, extra_dirs, verbose, sys_path)
+        doc = autorun_filters(filters, doc, search_dirs, verbose)
     elif verbose:
         debug("panflute: no filters were provided")
 
@@ -90,81 +107,135 @@ def _main(filters=None, extra_dirs=None, data_dir=True, sys_path=True, panfl_=Fa
 
 
 def main():
+    """
+    Allows Panflute to be run as a command line executable
+    to be used as a Pandoc filter.
+    """
     _main()
 
 
-@click.command(help="Filters should have basename only (may be with or without .py extension). " +
-               "Search preserves directories order (except for --data-dir and `sys.path`).")
+help_str = """Allows Panflute to be run as a command line executable:
+    
+* to be used in Pandoctools shell scripts as Pandoc filter with
+  multiple arguments (should have -t/--to option in this case):
+  `pandoc -t json | panfl -t markdown <...> | pandoc -f json`
+
+* to be used as a Pandoc filter (in this case only one positional
+  argument is allowed of all options):
+  `pandoc --filter panfl`
+
+Mind that Panflute temporarily prepends folder of the filter
+to the `sys.path` before importing the filter.
+Filters may be with or without .py extension.
+Can be paths to files or modules spec. Search preserves directories order
+(except for --data-dir and `sys.path`).
+"""
+
+
+@click.command(help=help_str)
 @click.argument('filters', nargs=-1)
 @click.option('-w', '-t', '--write', '--to', 'to', type=str, default=None,
               help='Pandoc writer option.')
-@click.option('--dir', '-d', 'extra_dirs', multiple=True,
+@click.option('--dir', '-d', 'search_dirs', multiple=True,
               help="Search filters in provided directories: `-d dir1 -d dir2`.")
 @click.option('--data-dir', is_flag=True, default=False,
               help="Search filters in default user data directory listed in `pandoc --version` " +
                    "(in it's `filters` subfolder actually). It's appended to the search list.")
 @click.option('--no-sys-path', is_flag=True, default=False,
-              help="Disable search filters in python's `sys.path` " +
-                   "(I tried to remove current working directory either way) " +
+              help="Disable search filters in python's `sys.path` (without '' and '.') " +
                    "that is appended to the search list.")
-def panfl(filters, to, extra_dirs, data_dir, no_sys_path):
+def panfl(filters, to, search_dirs, data_dir, no_sys_path):
+    """
+    Allows Panflute to be run as a command line executable:
+    
+    * to be used in Pandoctools shell scripts as Pandoc filter with
+      multiple arguments (should have -t/--to option in this case):
+      ``pandoc -t json | panfl -t markdown <...> | pandoc -f json``
+
+    * to be used as a Pandoc filter (in this case only one positional
+      argument is allowed of all options):
+      ``pandoc --filter panfl``
+      
+    Mind that Panflute temporarily prepends folder of the filter
+    to the ``sys.path`` before importing the filter.
+    """
     # TODO assume it may be an empty list but not None in click
     filters = list(filters) if filters else []
-    extra_dirs = list(extra_dirs) if extra_dirs else []
+    search_dirs = list(search_dirs) if search_dirs else []
+    sys_path = not no_sys_path
 
     if to is None:
-        if (len(filters) > 1) or extra_dirs or no_sys_path or data_dir:
-            raise ValueError('When no `--to` option then only one positional argument is allowed of all options.')
+        if (len(filters) > 1) or search_dirs or no_sys_path or data_dir:
+            raise ValueError('When no `--to` option then only one positional ' +
+                             'argument is allowed of all options.')
         else:
-            filters, extra_dirs = None, None
-            data_dir = True
+            filters, search_dirs = None, None
+            sys_path, data_dir = True, False
     else:
         # `load()` in `_main()` needs `to` in the 2nd arg
-        sys.argv[1:] = []  # TODO check in place
+        sys.argv[1:] = []
         sys.argv.append(to)
 
-    _main(filters, extra_dirs, data_dir, not no_sys_path, panfl_=True)
+    _main(filters, search_dirs, data_dir, sys_path, panfl_=True)
 
 
-def autorun_filters(filters, doc, extra_dirs, verbose, sys_path):
+def autorun_filters(filters, doc, search_dirs, verbose):
     """
     :param filters: list of str
     :param doc: panflute.Doc
-    :param extra_dirs: list of str
+    :param search_dirs: list of str
     :param verbose: bool
-    :param sys_path: bool
     :return: panflute.Doc
     """
-    search_path = extra_dirs
-    if sys_path:
-        search_path += [dir_ for dir_ in sys.path if (dir_ != '') and (dir_ != '.') and p.isdir(dir_)]
-
-    file_names = OrderedDict()
+    filter_paths = []
+    module_regex = re.compile(r'^\w+(\.\w+)*$')
+    file_regex = re.compile(r'^\w+$')
+    rstrip_py = re.compile(r'\.py$')
 
     for filter_ in filters:
-        if not filter_.endswith('.py') and not (p.sep in filter_):
-            file_names[filter_] = filter_
-            continue
-
-        for path in search_path:
+        filter_exp = p.normpath(p.expanduser(p.expandvars(filter_)))
+ 
+        if module_regex.match(filter_exp) and not filter_exp.endswith('.py'):
+            module = True
+            path_postf = filter_exp.replace('.', p.sep) + '.py'
+        elif file_regex.match(rstrip_py.sub('', p.basename(filter_exp))):
+            module = False
             # Allow with and without .py ending
-            filter_path = p.abspath(p.normpath(
-                p.join(path, filter_ + ('' if filter_.endswith('.py') else '.py'))
-            ))
+            path_postf = rstrip_py.sub('', filter_exp) + '.py'
+        else:
+            raise ValueError('Unsupported filter name:' + filter_)
+
+        for path in search_dirs:
+            if p.isabs(path_postf):
+                filter_path = path_postf
+            else:
+                filter_path = p.abspath(p.normpath(p.join(path, path_postf)))
+
             if p.isfile(filter_path):
                 if verbose:
                     debug("panflute: filter <{}> found in {}".format(filter_, filter_path))
-                file_names[filter_] = filter_path
+
+                if module:
+                    extra_dir = None if (path in reduced_sys_path) else p.abspath(path)
+                    # `path` already doesn't contain `.`, `..`, env vars or `~`
+                else:
+                    extra_dir = p.dirname(filter_path)
+
+                filter_paths.append((filter_, filter_path, filter_exp, extra_dir))
                 break
+            elif p.isabs(path_postf):
+                if verbose:
+                    debug("          filter <{}> NOT found in {}".format(filter_, filter_path))
+                raise Exception("filter not found: " + filter_)
             elif verbose:
                 debug("          filter <{}> NOT found in {}".format(filter_, filter_path))
         else:
             raise Exception("filter not found: " + filter_)
 
-    for filter_, filter_path in file_names.items():
+    for filter_, filter_path, filter_exp, extra_dir in filter_paths:
         if verbose:
             debug("panflute: running filter <{}>".format(filter_))
-        with ContextImport(filter_path, extra_dirs) as module:
+        with ContextImport(filter_exp, extra_dir) as module:
             try:
                 module.main(doc)
             except Exception as e:
