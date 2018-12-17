@@ -62,7 +62,8 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
             data_dir=True
         if '--no-sys-path' in search_dirs:
             sys_path=False
-        search_dirs = [dir_ for dir_ in search_dirs if dir_ not in ('--data-dir', '--no-sys-path')]
+        search_dirs = [dir_ for dir_ in search_dirs
+                       if dir_ not in ('--data-dir', '--no-sys-path')]
 
     search_dirs = [p.normpath(p.expanduser(p.expandvars(dir_))) for dir_ in search_dirs]
 
@@ -139,10 +140,10 @@ Can be paths to files or modules spec. Search preserves directories order
 @click.option('--data-dir', is_flag=True, default=False,
               help="Search filters in default user data directory listed in `pandoc --version` " +
                    "(in it's `filters` subfolder actually). It's appended to the search list.")
-@click.option('--no-sys-path', is_flag=True, default=False,
+@click.option('--no-sys-path', 'sys_path', is_flag=True, default=True,
               help="Disable search filters in python's `sys.path` (without '' and '.') " +
                    "that is appended to the search list.")
-def panfl(filters, to, search_dirs, data_dir, no_sys_path):
+def panfl(filters, to, search_dirs, data_dir, sys_path):
     """
     Allows Panflute to be run as a command line executable:
     
@@ -157,19 +158,15 @@ def panfl(filters, to, search_dirs, data_dir, no_sys_path):
     Mind that Panflute temporarily prepends folder of the filter
     to the ``sys.path`` before importing the filter.
     """
-    # TODO assume it may be an empty list but not None in click
-    filters = list(filters) if filters else []
-    search_dirs = list(search_dirs) if search_dirs else []
-    sys_path = not no_sys_path
-
     if to is None:
-        if (len(filters) > 1) or search_dirs or no_sys_path or data_dir:
+        if (len(filters) > 1) or search_dirs or not sys_path or data_dir:
             raise ValueError('When no `--to` option then only one positional ' +
                              'argument is allowed of all options.')
         else:
             filters, search_dirs = None, None
             sys_path, data_dir = True, False
     else:
+        filters, search_dirs = list(filters), list(search_dirs)
         # `load()` in `_main()` needs `to` in the 2nd arg
         sys.argv[1:] = []
         sys.argv.append(to)
