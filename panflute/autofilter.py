@@ -40,9 +40,9 @@ def get_filter_dir(hardcoded=False):
 def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False):
     """
     :param filters: Union[List[str], None]
-        if not None then read from metadata
+        if None then read from metadata
     :param search_dirs: Union[List[str], None]
-        if not None then read from metadata
+        if None then read from metadata
     :param data_dir: bool
     :param sys_path: bool
     :param panfl_: bool
@@ -59,9 +59,9 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
         if type(search_dirs) != list:
             search_dirs = [search_dirs]
         if '--data-dir' in search_dirs:
-            data_dir=True
+            data_dir = True
         if '--no-sys-path' in search_dirs:
-            sys_path=False
+            sys_path = False
         search_dirs = [dir_ for dir_ in search_dirs
                        if dir_ not in ('--data-dir', '--no-sys-path')]
 

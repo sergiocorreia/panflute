@@ -54,13 +54,13 @@ class ContextImport():
 
     Example:
         >>> # /path/dir/fi.py
-        >>> with ContextImport('fi', '/path/dir') as module:
+        >>> with ContextImport('/path/dir/fi.py') as module:
                 # prepends '/path/dir' to sys.path
-                # module = __import__('fi')
+                # module = import_module('fi')
                 module.main()
             with ContextImport('dir.fi', '/path') as module:
                 # prepends '/path' to sys.path
-                # module = __import__('dir.fi')
+                # module = import_module('dir.fi')
                 module.main()
     """
     def __init__(self, module, extra_dir=None):
