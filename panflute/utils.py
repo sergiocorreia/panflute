@@ -9,7 +9,6 @@ Auxiliary functions that have no dependencies
 from collections import OrderedDict
 import sys
 import os.path as p
-import re
 from importlib import import_module
 
 # ---------------------------
@@ -43,8 +42,6 @@ def encode_dict(tag, content):
 # ---------------------------
 # Classes
 # ---------------------------
-remove_py = re.compile(r'\.py$')
-
 
 class ContextImport():
     """
@@ -73,7 +70,10 @@ class ContextImport():
             if module then doesn't change sys.path if None
             if file then prepends dir if None
         """
-        self.module = remove_py.sub('', p.basename(module))
+        def remove_py(s):
+            return s[:-3] if s.endswith('.py') else s
+
+        self.module = remove_py(p.basename(module))
         if (extra_dir is None) and (module != p.basename(module)):
             extra_dir = p.dirname(module)
         self.extra_dir = extra_dir

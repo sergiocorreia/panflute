@@ -10,7 +10,6 @@ import os
 import os.path as p
 import sys
 import click
-import re
 
 from .io import load, dump
 from .tools import debug
@@ -182,11 +181,10 @@ def autorun_filters(filters, doc, search_dirs, verbose):
     :param verbose: bool
     :return: panflute.Doc
     """
+    def remove_py(s):
+            return s[:-3] if s.endswith('.py') else s
+
     filter_paths = []
-    _remove_py = re.compile(r'\.py$')
-
-    def remove_py(s): return _remove_py.sub('', s)
-
     for filter_ in filters:
         filter_exp = p.normpath(p.expanduser(p.expandvars(filter_)))
 
