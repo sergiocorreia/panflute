@@ -10,6 +10,7 @@ from collections import OrderedDict
 import sys
 import os.path as p
 import re
+from importlib import import_module
 
 # ---------------------------
 # Functions
@@ -42,7 +43,7 @@ def encode_dict(tag, content):
 # ---------------------------
 # Classes
 # ---------------------------
-rstrip_py = re.compile(r'\.py$')
+remove_py = re.compile(r'\.py$')
 
 
 class ContextImport():
@@ -72,7 +73,7 @@ class ContextImport():
             if module then doesn't change sys.path if None
             if file then prepends dir if None
         """
-        self.module = rstrip_py.sub('', p.basename(module))
+        self.module = remove_py.sub('', p.basename(module))
         if (extra_dir is None) and (module != p.basename(module)):
             extra_dir = p.dirname(module)
         self.extra_dir = extra_dir
@@ -80,7 +81,7 @@ class ContextImport():
     def __enter__(self):
         if self.extra_dir is not None:
             sys.path.insert(0, self.extra_dir)
-        return __import__(self.module)
+        return import_module(self.module)
 
     def __exit__(self, exc_type, exc_value, traceback):
         if self.extra_dir is not None:

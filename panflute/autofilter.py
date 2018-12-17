@@ -183,22 +183,21 @@ def autorun_filters(filters, doc, search_dirs, verbose):
     :return: panflute.Doc
     """
     filter_paths = []
-    module_regex = re.compile(r'^\w+(\.\w+)*$')
-    file_regex = re.compile(r'^\w+$')
-    rstrip_py = re.compile(r'\.py$')
+    _remove_py = re.compile(r'\.py$')
+
+    def remove_py(s): return _remove_py.sub('', s)
 
     for filter_ in filters:
         filter_exp = p.normpath(p.expanduser(p.expandvars(filter_)))
- 
-        if module_regex.match(filter_exp) and not filter_exp.endswith('.py'):
+
+        if filter_exp == remove_py(p.basename(filter_exp)).lstrip('.'):
+            # import .foo  # is not supported
             module = True
             path_postf = filter_exp.replace('.', p.sep) + '.py'
-        elif file_regex.match(rstrip_py.sub('', p.basename(filter_exp))):
-            module = False
-            # Allow with and without .py ending
-            path_postf = rstrip_py.sub('', filter_exp) + '.py'
         else:
-            raise ValueError('Unsupported filter name:' + filter_)
+            module = False
+            # allow with and without .py ending
+            path_postf = remove_py(filter_exp) + '.py'
 
         for path in search_dirs:
             if p.isabs(path_postf):
