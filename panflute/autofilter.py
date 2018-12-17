@@ -35,7 +35,7 @@ def get_filter_dir(hardcoded=False):
         return p.join(data_dir, 'filters')
 
 
-def _main(filters=None, extra_dirs=None, data_dir=False, sys_path=True):
+def _main(filters=None, extra_dirs=None, data_dir=True, sys_path=True, panfl_=False):
     """
     :param filters: Union[List[str], None]
         if not None then it's panfl
@@ -45,6 +45,7 @@ def _main(filters=None, extra_dirs=None, data_dir=False, sys_path=True):
         instead of panflute
     :param data_dir: bool
     :param sys_path: bool
+    :param panfl_: bool
     :return: json doc
     """
     doc = load()
@@ -57,11 +58,12 @@ def _main(filters=None, extra_dirs=None, data_dir=False, sys_path=True):
         extra_dirs = doc.get_metadata('panflute-path', [])
         if type(extra_dirs) != list:
             extra_dirs = [extra_dirs]
+    
+    if not panfl_:
         extra_dirs.append('.')
         if data_dir:
             extra_dirs.append(get_filter_dir())
     elif data_dir:
-        # panfl case:
         extra_dirs.append(get_filter_dir(hardcoded=True))
 
     # Display message (tests that everything is working ok)
@@ -88,33 +90,43 @@ def _main(filters=None, extra_dirs=None, data_dir=False, sys_path=True):
 
 
 def main():
-    _main(data_dir=True)
+    _main()
 
 
 @click.command(help="Filters should have basename only (may be with or without .py extension). " +
                "Search preserves directories order (except for --data-dir and `sys.path`).")
 @click.argument('filters', nargs=-1)
-@click.option('-w', '-t', '--write', '--to', 'to', type=str, default='html',
+@click.option('-w', '-t', '--write', '--to', 'to', type=str, default=None,
               help='Pandoc writer option.')
 @click.option('--dir', '-d', 'extra_dirs', multiple=True,
               help="Search filters in provided directories: `-d dir1 -d dir2`.")
 @click.option('--data-dir', is_flag=True, default=False,
               help="Search filters in default user data directory listed in `pandoc --version` " +
                    "(in it's `filters` subfolder actually). It's appended to the search list.")
-@click.option('--no-sys-path', 'not_sys_path', is_flag=True, default=False,
+@click.option('--no-sys-path', is_flag=True, default=False,
               help="Disable search filters in python's `sys.path` " +
                    "(I tried to remove current working directory either way) " +
                    "that is appended to the search list.")
-def panfl(filters, to, extra_dirs, data_dir, not_sys_path):
-    # `load()` in `_main()` needs `to` in the 2nd arg
-    if len(sys.argv) > 1:
-        sys.argv[1] = to
-    elif len(sys.argv) == 1:
+def panfl(filters, to, extra_dirs, data_dir, no_sys_path):
+    # TODO assume it may be an empty list but not None in click
+    filters = list(filters) if filters else []
+    extra_dirs = list(extra_dirs) if extra_dirs else []
+
+    if to is None:
+        if (len(filters) > 1) or extra_dirs or no_sys_path or data_dir:
+            raise ValueError('When no `--to` option then only one positional argument is allowed of all options.')
+        else:
+            filters, extra_dirs = None, None
+            data_dir = True
+    else:
+        # `load()` in `_main()` needs `to` in the 2nd arg
+        sys.argv[1:] = []  # TODO check in place
         sys.argv.append(to)
-    _main(list(filters), list(extra_dirs), data_dir, sys_path=not not_sys_path)
+
+    _main(filters, extra_dirs, data_dir, not no_sys_path, panfl_=True)
 
 
-def autorun_filters(filters, doc, extra_dirs, verbose, sys_path=True):
+def autorun_filters(filters, doc, extra_dirs, verbose, sys_path):
     """
     :param filters: list of str
     :param doc: panflute.Doc
