@@ -40,11 +40,9 @@ def get_filter_dir(hardcoded=False):
 def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False):
     """
     :param filters: Union[List[str], None]
-        if not None then it's panfl
-        instead of panflute
+        if not None then read from metadata
     :param search_dirs: Union[List[str], None]
-        if not None then it's panfl
-        instead of panflute
+        if not None then read from metadata
     :param data_dir: bool
     :param sys_path: bool
     :param panfl_: bool
