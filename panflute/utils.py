@@ -1,7 +1,6 @@
 """
 Auxiliary functions that have no dependencies
 """
-
 # ---------------------------
 # Imports
 # ---------------------------
@@ -10,6 +9,7 @@ from collections import OrderedDict
 import sys
 import os.path as p
 from importlib import import_module
+
 
 # ---------------------------
 # Functions
@@ -39,11 +39,12 @@ def check_group(value, group):
 def encode_dict(tag, content):
     return OrderedDict((("t", tag), ("c", content)))
 
+
 # ---------------------------
 # Classes
 # ---------------------------
 
-class ContextImport():
+class ContextImport:
     """
     Import module context manager.
     Temporarily prepends extra dir
@@ -52,13 +53,13 @@ class ContextImport():
     Example:
         >>> # /path/dir/fi.py
         >>> with ContextImport('/path/dir/fi.py') as module:
-                # prepends '/path/dir' to sys.path
-                # module = import_module('fi')
-                module.main()
-            with ContextImport('dir.fi', '/path') as module:
-                # prepends '/path' to sys.path
-                # module = import_module('dir.fi')
-                module.main()
+        >>>     # prepends '/path/dir' to sys.path
+        >>>     # module = import_module('fi')
+        >>>     module.main()
+        >>> with ContextImport('dir.fi', '/path') as module:
+        >>>     # prepends '/path' to sys.path
+        >>>     # module = import_module('dir.fi')
+        >>>     module.main()
     """
     def __init__(self, module, extra_dir=None):
         """
