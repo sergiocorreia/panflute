@@ -1,0 +1,28 @@
+* also check:
+from panflute import _get_filter_dir
+
+
+* stdout should output `$1+1markdown$`
+
+echo $1-1$ | pandoc -t json | panfl -t markdown -d "./tests/test_panfl" "test_filter/test_filter.py" | pandoc -f json -t markdown
+
+echo $1-1$ | pandoc -t json | panfl -t markdown "%cd%\tests\test_panfl\test_filter\test_filter.py" | pandoc -f json -t markdown
+
+echo $1-1$ | pandoc -t json | panfl -t markdown -d "./tests/test_panfl" "test_filter.test_filter" | pandoc -f json -t markdown
+
+echo $1-1$ | pandoc --metadata "panflute-filters: test_filter.test_filter" --metadata "panflute-path: ./tests/test_panfl" --filter panfl -t markdown
+
+
+* stdout or stderr should contain `panflute: data_dir=True sys_path=False`
+
+echo $1-1$ | pandoc --metadata "panflute-verbose: True" --metadata "panflute-filters: test_filter.test_filter" --metadata "panflute-path: --no-sys-path" --filter panfl -t markdown
+
+
+* stdout should contain `panflute: data_dir=True sys_path=False`
+
+echo $1-1$ | pandoc --metadata "panflute-verbose: True" -t json | panfl -t markdown -d "./tests/test_panfl" "test_filter.test_filter" --no-sys-path --data-dir | pandoc -f json -t markdown
+
+
+* stdout should contain `panflute: data_dir=False sys_path=False`
+
+echo $1-1$ | pandoc --metadata "panflute-verbose: True" -t json | panfl -t markdown -d "./tests/test_panfl" "test_filter.test_filter" --no-sys-path | pandoc -f json -t markdown

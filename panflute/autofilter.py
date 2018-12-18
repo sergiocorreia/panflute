@@ -67,6 +67,8 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
         search_dirs = [dir_ for dir_ in search_dirs
                        if dir_ not in ('--data-dir', '--no-sys-path')]
 
+    if verbose:
+        debug('data_dir={}'.format(data_dir), 'sys_path={}'.format(sys_path))
     search_dirs = [p.normpath(p.expanduser(p.expandvars(dir_))) for dir_ in search_dirs]
 
     if not panfl_:
@@ -219,8 +221,9 @@ def autorun_filters(filters, doc, search_dirs, verbose):
                     # `path` already doesn't contain `.`, `..`, env vars or `~`
                 else:
                     extra_dir = None
+                module_ = filter_exp if module else filter_path
 
-                filter_paths.append((filter_, filter_path, filter_exp, extra_dir))
+                filter_paths.append((filter_, filter_path, module_, extra_dir))
                 break
             elif p.isabs(path_postf):
                 if verbose:
@@ -231,10 +234,10 @@ def autorun_filters(filters, doc, search_dirs, verbose):
         else:
             raise Exception("filter not found: " + filter_)
 
-    for filter_, filter_path, filter_exp, extra_dir in filter_paths:
+    for filter_, filter_path, module_, extra_dir in filter_paths:
         if verbose:
             debug("panflute: running filter <{}>".format(filter_))
-        with ContextImport(filter_exp, extra_dir) as module:
+        with ContextImport(module_, extra_dir) as module:
             try:
                 module.main(doc)
             except Exception as e:
