@@ -122,11 +122,16 @@ help_str = """Allows Panflute to be run as a command line executable:
   argument is allowed of all options):
   `pandoc --filter panfl`
 
-Mind that Panflute temporarily prepends folder of the filter
-to the `sys.path` before importing the filter.
-Filters may be with or without .py extension.
-Can be paths to files or modules spec. Search preserves directories order
-(except for --data-dir and `sys.path`).
+Filters may be set with or without .py extension.
+It can be relative or absolutele paths to files or modules specs
+like `foo.bar`.
+
+MIND THAT Panflute temporarily prepends folder of the filter
+(or relevant dir provided if module spec) TO THE `sys.path` before
+importing the filter!
+
+Search preserves directories order (except for --data-dir and
+`sys.path`).
 """
 
 
