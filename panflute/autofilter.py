@@ -68,7 +68,7 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
                        if dir_ not in ('--data-dir', '--no-sys-path')]
 
     if verbose:
-        debug('data_dir={}'.format(data_dir), 'sys_path={}'.format(sys_path))
+        debug('panflute: data_dir={} sys_path={}'.format(data_dir, sys_path))
     search_dirs = [p.normpath(p.expanduser(p.expandvars(dir_))) for dir_ in search_dirs]
 
     if not panfl_:
