@@ -38,6 +38,9 @@ def get_filter_dir(hardcoded=False):
 
 def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False):
     """
+    Reads JSON from stdin and second CLI argument:
+    ``sys.argv[1]``. Dumps JSON doc to the stdout.
+
     :param filters: Union[List[str], None]
         if None then read from metadata
     :param search_dirs: Union[List[str], None]
@@ -45,7 +48,7 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
     :param data_dir: bool
     :param sys_path: bool
     :param panfl_: bool
-    :return: json doc
+    :return: None
     """
     doc = load()
     # meta = doc.metadata  # Local variable 'meta' value is not used
@@ -163,8 +166,8 @@ def panfl(filters, to, search_dirs, data_dir, sys_path):
     """
     if to is None:
         if (len(filters) > 1) or search_dirs or not sys_path or data_dir:
-            raise ValueError('When no `--to` option then only one positional ' +
-                             'argument is allowed of all options.')
+            raise ValueError('When no `--to` option then Pandoc filter mode assumed and ' +
+                             'only one positional argument is allowed of all options.')
         else:
             filters, search_dirs = None, None
             sys_path, data_dir = True, False
