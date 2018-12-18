@@ -201,7 +201,7 @@ def autorun_filters(filters, doc, search_dirs, verbose):
             # import .foo  # is not supported
             module = True
             mod_path = filter_exp.replace('.', p.sep)
-            path_postfixes = (mod_path + '.py', p.join(mod_path, '__init__.py'))
+            path_postfixes = (p.join(mod_path, '__init__.py'), mod_path + '.py')
         else:
             module = False
             # allow with and without .py ending
