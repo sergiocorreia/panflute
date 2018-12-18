@@ -67,7 +67,7 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
     search_dirs = [p.normpath(p.expanduser(p.expandvars(dir_))) for dir_ in search_dirs]
 
     if not panfl_:
-        # default panflute bahaviour:
+        # default panflute behaviour:
         search_dirs.append('.')
         if data_dir:
             search_dirs.append(get_filter_dir())
@@ -79,7 +79,6 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
             search_dirs.append(get_filter_dir(hardcoded=True))
         if sys_path:
             search_dirs += reduced_sys_path
-
 
     # Display message (tests that everything is working ok)
     msg = doc.get_metadata('panflute-echo', False)
@@ -113,14 +112,13 @@ def main():
 
 
 help_str = """Allows Panflute to be run as a command line executable:
-    
+
 * to be used in Pandoctools shell scripts as Pandoc filter with
-  multiple arguments (should have -t/--to option in this case):
-  `pandoc -t json | panfl -t markdown <...> | pandoc -f json`
+multiple arguments (should have -t/--to option in this case):
+`pandoc -t json | panfl -t markdown foo.bar | pandoc -f json`
 
 * to be used as a Pandoc filter (in this case only one positional
-  argument is allowed of all options):
-  `pandoc --filter panfl`
+argument is allowed of all options): `pandoc --filter panfl`
 
 Filters may be set with or without .py extension.
 It can be relative or absolutele paths to files or modules specs
@@ -150,17 +148,18 @@ Search preserves directories order (except for --data-dir and
 def panfl(filters, to, search_dirs, data_dir, sys_path):
     """
     Allows Panflute to be run as a command line executable:
-    
+
     * to be used in Pandoctools shell scripts as Pandoc filter with
       multiple arguments (should have -t/--to option in this case):
-      ``pandoc -t json | panfl -t markdown <...> | pandoc -f json``
+      ``pandoc -t json | panfl -t markdown foo.bar | pandoc -f json``
 
     * to be used as a Pandoc filter (in this case only one positional
       argument is allowed of all options):
       ``pandoc --filter panfl``
-      
-    Mind that Panflute temporarily prepends folder of the filter
-    to the ``sys.path`` before importing the filter.
+
+    MIND THAT Panflute temporarily prepends folder of the filter
+    (or relevant dir provided if module spec) TO THE `sys.path` before
+    importing the filter!
     """
     if to is None:
         if (len(filters) > 1) or search_dirs or not sys_path or data_dir:
