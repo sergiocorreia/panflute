@@ -7,8 +7,11 @@ from panflute import _get_filter_dir
 echo $1-1$ | pandoc -t json | panfl -t markdown -d "./tests/test_panfl" "test_filter/test_filter.py" | pandoc -f json -t markdown
 
 echo $1-1$ | pandoc -t json | panfl -t markdown "%cd%\tests\test_panfl\test_filter\test_filter.py" | pandoc -f json -t markdown
+echo $1-1$ | pandoc -t json | panfl -t markdown "$PWD/tests/test_panfl/test_filter/test_filter.py" | pandoc -f json -t markdown
 
 echo $1-1$ | pandoc -t json | panfl -t markdown -d "./tests/test_panfl" "test_filter.test_filter" | pandoc -f json -t markdown
+
+echo $1-1$ | pandoc -t json | panfl -t markdown -d "./tests/test_panfl" "test_filter" | pandoc -f json -t markdown
 
 echo $1-1$ | pandoc --metadata "panflute-filters: test_filter.test_filter" --metadata "panflute-path: ./tests/test_panfl" --filter panfl -t markdown
 
@@ -26,3 +29,8 @@ echo $1-1$ | pandoc --metadata "panflute-verbose: True" -t json | panfl -t markd
 * stdout should contain `panflute: data_dir=False sys_path=False`
 
 echo $1-1$ | pandoc --metadata "panflute-verbose: True" -t json | panfl -t markdown -d "./tests/test_panfl" "test_filter.test_filter" --no-sys-path | pandoc -f json -t markdown
+
+
+* stdout should output `$\frac{1}{1}$`:
+
+echo "\$1∕1$" | pandoc -t json | panfl -t markdown sugartex | pandoc -f json -t markdown

@@ -200,13 +200,16 @@ def autorun_filters(filters, doc, search_dirs, verbose):
         if filter_exp == remove_py(p.basename(filter_exp)).lstrip('.'):
             # import .foo  # is not supported
             module = True
-            path_postf = filter_exp.replace('.', p.sep) + '.py'
+            mod_path = filter_exp.replace('.', p.sep)
+            path_postfixes = (mod_path + '.py', p.join(mod_path, '__init__.py'))
         else:
             module = False
             # allow with and without .py ending
-            path_postf = remove_py(filter_exp) + '.py'
+            path_postfixes = (remove_py(filter_exp) + '.py',)
 
-        for path in search_dirs:
+        for path, path_postf in [(path, path_postf)
+                                 for path in search_dirs
+                                 for path_postf in path_postfixes]:
             if p.isabs(path_postf):
                 filter_path = path_postf
             else:
