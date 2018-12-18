@@ -136,7 +136,7 @@ Search preserves directories order (except for --data-dir and
 @click.command(help=help_str)
 @click.argument('filters', nargs=-1)
 @click.option('-w', '-t', '--write', '--to', 'to', type=str, default=None,
-              help='Pandoc writer option.')
+              help='Derivative of Pandoc writer option that Pandoc passes to filters.')
 @click.option('--dir', '-d', 'search_dirs', multiple=True,
               help="Search filters in provided directories: `-d dir1 -d dir2`.")
 @click.option('--data-dir', is_flag=True, default=False,
