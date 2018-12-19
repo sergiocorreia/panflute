@@ -1,24 +1,60 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-# noinspection PyProtectedMember
-from panflute import _get_filter_dir
+import panflute as pf
 import subprocess
 from subprocess import PIPE
 import os.path as p
 import os
+import sys
+import io
 
 os.chdir(p.dirname(p.dirname(__file__)))
 
 in1 = '$1-1$'
 out1 = '$1+1markdown$'
-out1a = 'panflute: data_dir={} sys_path={}'
-
-in2 = '$1∕1$'
-out2 = r'$\frac{1}{1}$'
+out1err = 'panflute: data_dir={dd} sys_path={sp}'
+r"""
+echo \$1-1$ | pandoc -t json
+"""
+json1 = (
+    '{"blocks":[{"t":"Para","c":[{"t":"Math","c":[{"t":"InlineMath"},"1-1"]}]}],' +
+    '"pandoc-api-version":[1,17,5,4],"meta":{}}'
+)
+r"""
+echo \$1-1$ | pandoc --metadata "panflute-filters: test_filter" \
+--metadata "panflute-path: ./tests/test_panfl" -t json
+"""
+json1a = (
+    '{"blocks":[{"t":"Para","c":[{"t":"Math","c":[{"t":"InlineMath"},"1-1"]}]}],' +
+    '"pandoc-api-version":[1,17,5,4],"meta":{"panflute-filters":{"t":"MetaString","c":"test_filter"},' +
+    '"panflute-path":{"t":"MetaString","c":"./tests/test_panfl"}}}'
+)
 
 
 def test_all():
-    assert _get_filter_dir() == _get_filter_dir(hardcoded=True)
+    assert pf.get_filter_dir() == pf.get_filter_dir(hardcoded=False)
+
+    def assert3(*extra_args, stdin):
+        """
+        filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False
+        """
+        sys.argv[1:] = []
+        sys.argv.append('markdown')
+        _stdout = io.StringIO()
+        pf.stdio(*extra_args, input_stream=io.StringIO(stdin), output_stream=_stdout)
+        _stdout = pf.convert_text(_stdout.getvalue(), 'json', 'markdown')
+        assert _stdout == out1
+
+    assert3(None, None, True, True, True, stdin=json1a)
+    assert3(None, None, True, True, False, stdin=json1a)
+    assert3(['test_filter/test_filter.py'], ['./tests/test_panfl'], False, True, True, stdin=json1)
+    assert3([p.abspath('./tests/test_panfl/test_filter/test_filter.py')], [], False, True, True, stdin=json1)
+    assert3(['test_filter.test_filter'], ['./tests/test_panfl'], False, True, True, stdin=json1)
+    assert3(['test_filter'], ['./tests/test_panfl'], False, True, True, stdin=json1)
+
+    # --------------------------------
+    if sys.version_info[0:2] < (3, 6):
+        return
 
     def run_proc(*args, stdin):
         proc = subprocess.run(args, stdout=PIPE, stderr=PIPE, input=stdin,
@@ -26,18 +62,16 @@ def test_all():
         _stdout, _stderr = proc.stdout, proc.stderr
         return (_stdout if _stdout else '').strip(), (_stderr if _stderr else '').strip()
 
-    _in, _out = [in1], [out1]
-
-    def template1(*extra_args):
-        _stdout = run_proc('pandoc', '-t', 'json', stdin=_in[0])[0]
+    def assert1(*extra_args):
+        _stdout = run_proc('pandoc', '-t', 'json', stdin=in1)[0]
         _stdout = run_proc('panfl', '-t', 'markdown', *extra_args, stdin=_stdout)[0]
         _stdout = run_proc('pandoc', '-f', 'json', '-t', 'markdown', stdin=_stdout)[0]
-        return _stdout == _out[0]
+        assert _stdout == out1
 
-    assert template1('-d', './tests/test_panfl', 'test_filter/test_filter.py')
-    assert template1(p.abspath('./tests/test_panfl/test_filter/test_filter.py'))
-    assert template1('-d', './tests/test_panfl', 'test_filter.test_filter')
-    assert template1('-d', './tests/test_panfl', 'test_filter')
+    # assert1('-d', './tests/test_panfl', 'test_filter/test_filter.py')
+    # assert1(p.abspath('./tests/test_panfl/test_filter/test_filter.py'))
+    # assert1('-d', './tests/test_panfl', 'test_filter.test_filter')
+    assert1('-d', './tests/test_panfl', 'test_filter')
 
     stdout = run_proc('pandoc', '--filter', 'panfl', '-t', 'markdown',
                       '--metadata', 'panflute-filters: test_filter',
@@ -51,30 +85,23 @@ def test_all():
                           p.abspath('./tests/test_panfl/__filter__.py')),
                       '--metadata', 'panflute-path: --no-sys-path',
                       stdin=in1)[1]  # __filter__.py doesn't exist
-    assert out1a.format(False, False) in stderr
+    assert out1err.format(dd=False, sp=False) in stderr
 
-    def template2(*extra_args, dd, sp):
+    def assert2(*extra_args, dd, sp):
         _stdout = run_proc('pandoc', '-t', 'json',
                            '--metadata', 'panflute-verbose: True',
                            stdin=in1)[0]
         _stderr = run_proc('panfl', '-t', 'markdown', '-d', './tests/test_panfl',
                            p.abspath('./tests/test_panfl/__filter__.py'),
                            *extra_args, stdin=_stdout)[1]  # __filter__.py doesn't exist
-        return out1a.format(dd, sp) in _stderr
+        assert out1err.format(dd=dd, sp=sp) in _stderr
 
-    assert template2('--data-dir', '--no-sys-path', dd=True, sp=False)
-    assert template2('--no-sys-path', dd=False, sp=False)
+    assert2('--data-dir', '--no-sys-path', dd=True, sp=False)
+    assert2('--no-sys-path', dd=False, sp=False)
 
-    def ver_tuple(v):
-        return tuple(map(int, (v.split('+')[0].split('.')[0:3])))
-
-    try:
-        import sugartex
-        if ver_tuple(sugartex.__version__) >= (0, 1, 12):
-            _in[0], _out[0] = in2, out2
-            assert template1('sugartex')
-    except ModuleNotFoundError:
-        pass
 
 # test_all()
 # print(0, file=open(r'D:\log.txt', 'a', encoding='utf-8'))
+# with io.StringIO() as f:
+#     pf.dump(doc, f)
+#     out = f.getvalue()

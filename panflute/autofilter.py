@@ -19,7 +19,7 @@ from .utils import ContextImport
 reduced_sys_path = [dir_ for dir_ in sys.path if (dir_ not in ('', '.')) and p.isdir(dir_)]
 
 
-def get_filter_dir(hardcoded=False):
+def get_filter_dir(hardcoded=True):
     if hardcoded:
         if os.name == 'nt':
             return p.join(os.environ["APPDATA"], "pandoc", "filters")
@@ -36,7 +36,7 @@ def get_filter_dir(hardcoded=False):
         return p.normpath(p.expanduser(p.expandvars(p.join(data_dir, 'filters'))))
 
 
-def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False):
+def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False, input_stream=None, output_stream=None):
     """
     Reads JSON from stdin and second CLI argument:
     ``sys.argv[1]``. Dumps JSON doc to the stdout.
@@ -48,9 +48,13 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
     :param data_dir: bool
     :param sys_path: bool
     :param panfl_: bool
+    :param input_stream: io.StringIO or None
+        for debug purpose
+    :param output_stream: io.StringIO or None
+        for debug purpose
     :return: None
     """
-    doc = load()
+    doc = load(input_stream)
     # meta = doc.metadata  # Local variable 'meta' value is not used
     verbose = doc.get_metadata('panflute-verbose', False)
 
@@ -81,7 +85,7 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
     else:
         # panfl/pandoctools behaviour:
         if data_dir:
-            search_dirs.append(get_filter_dir(hardcoded=True))
+            search_dirs.append(get_filter_dir())
         if sys_path:
             search_dirs += reduced_sys_path
 
@@ -105,7 +109,7 @@ def _main(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
     elif verbose:
         debug("panflute: no filters were provided")
 
-    dump(doc)
+    dump(doc, output_stream)
 
 
 def main():
@@ -113,7 +117,7 @@ def main():
     Allows Panflute to be run as a command line executable
     to be used as a Pandoc filter.
     """
-    _main()
+    stdio()
 
 
 help_str = """Allows Panflute to be run as a command line executable:
@@ -175,11 +179,11 @@ def panfl(filters, to, search_dirs, data_dir, sys_path):
             sys_path, data_dir = True, False
     else:
         filters, search_dirs = list(filters), list(search_dirs)
-        # `load()` in `_main()` needs `to` in the 2nd arg
+        # `load()` in `stdio()` needs `to` in the 2nd arg
         sys.argv[1:] = []
         sys.argv.append(to)
 
-    _main(filters, search_dirs, data_dir, sys_path, panfl_=True)
+    stdio(filters, search_dirs, data_dir, sys_path, panfl_=True)
 
 
 def autorun_filters(filters, doc, search_dirs, verbose):
