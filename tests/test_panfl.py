@@ -13,26 +13,19 @@ os.chdir(p.dirname(p.dirname(__file__)))
 in1 = '$1-1$'
 out1 = '$1+1markdown$'
 out1err = 'panflute: data_dir={dd} sys_path={sp}'
-r"""
-echo \$1-1$ | pandoc -t json
+in1a = f"""---
+panflute-filters: test_filter
+panflute-path: ./tests/test_panfl
+...
+{in1}
 """
-json1 = (
-    '{"blocks":[{"t":"Para","c":[{"t":"Math","c":[{"t":"InlineMath"},"1-1"]}]}],' +
-    '"pandoc-api-version":[1,17,5,4],"meta":{}}'
-)
-r"""
-echo \$1-1$ | pandoc --metadata "panflute-filters: test_filter" \
---metadata "panflute-path: ./tests/test_panfl" -t json
-"""
-json1a = (
-    '{"blocks":[{"t":"Para","c":[{"t":"Math","c":[{"t":"InlineMath"},"1-1"]}]}],' +
-    '"pandoc-api-version":[1,17,5,4],"meta":{"panflute-filters":{"t":"MetaString","c":"test_filter"},' +
-    '"panflute-path":{"t":"MetaString","c":"./tests/test_panfl"}}}'
-)
 
 
 def test_all():
     assert pf.get_filter_dir() == pf.get_filter_dir(hardcoded=False)
+
+    def to_json(text):
+        return pf.convert_text(text, 'markdown', 'json')
 
     def assert3(*extra_args, stdin):
         """
@@ -45,8 +38,11 @@ def test_all():
         _stdout = pf.convert_text(_stdout.getvalue(), 'json', 'markdown')
         assert _stdout == out1
 
+    json1, json1a = to_json(in1), to_json(in1a)
+
     assert3(None, None, True, True, True, stdin=json1a)
     assert3(None, None, True, True, False, stdin=json1a)
+
     assert3(['test_filter/test_filter.py'], ['./tests/test_panfl'], False, True, True, stdin=json1)
     assert3([p.abspath('./tests/test_panfl/test_filter/test_filter.py')], [], False, True, True, stdin=json1)
     assert3(['test_filter.test_filter'], ['./tests/test_panfl'], False, True, True, stdin=json1)
