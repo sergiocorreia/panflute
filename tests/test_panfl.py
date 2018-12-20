@@ -13,7 +13,7 @@ os.chdir(p.dirname(p.dirname(__file__)))
 in1 = '$1-1$'
 out1 = '$1+1markdown$'
 out1err = 'panflute: data_dir={dd} sys_path={sp}'
-in1a = f"""---
+in1a = """---
 panflute-filters: test_filter
 panflute-path: ./tests/test_panfl
 ...
