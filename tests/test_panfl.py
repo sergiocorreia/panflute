@@ -17,8 +17,8 @@ in1a = f"""---
 panflute-filters: test_filter
 panflute-path: ./tests/test_panfl
 ...
-{in1}
-"""
+{}
+""".format(in1)
 
 
 def test_all():
