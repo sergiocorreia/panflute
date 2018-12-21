@@ -20,4 +20,3 @@ def test_context_import():
 
 if __name__ == "__main__":
     test_all()
-
