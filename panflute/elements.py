@@ -1483,10 +1483,12 @@ def builtin2meta(val):
         return MetaBool(val)
     elif isinstance(val, (float, int)):
         return MetaString(str(val))
+    elif isinstance(val, str):
+        return MetaString(val)
     elif isinstance(val, list):
-        return MetaList(*val)
+        return MetaList(*[builtin2meta(x) for x in val])
     elif isinstance(val, dict):
-        return MetaMap(*val.items())
+        return MetaMap(*[(k, builtin2meta(v)) for k, v in val.items()])
     elif isinstance(val, Block):
         return MetaBlocks(val)
     elif isinstance(val, Inline):
