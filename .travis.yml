@@ -1,29 +1,33 @@
-# os: linux and sudo: false is assumed, which means it is using container-based Ubuntu 12.04
 language: python
+# Need to keep up-to-date with the latest stable distribution:
+# https://docs.travis-ci.com/user/reference/overview/
+dist: xenial
 cache: pip
 # build matrix: different python and pandoc versions
 python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
+  # Exclude end-of-life branches
+  # https://devguide.python.org/#branchstatus
+  - "2.7"     # EOL 2020-01-01 (plus remove py2 compat)
+  - "3.5"     # EOL 2020-09-13
   - "3.6"
-  - "3.6-dev" # 3.6 development branch
-  # - "3.7-dev" # 3.7 development branch
+  - "3.7"
+  - "3.7-dev" # 3.7 development branch
+  - "3.8-dev" # 3.7 development branch
   - "nightly" # currently points to 3.7-dev
   # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
-  - "pypy"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
-  - "pypy3" # PyPy3 2.4.0 (CPython 3.2 compatible)
+  #- "pypy2.7-6.0"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
+  - "pypy3.5-6.0" # PyPy3 2.4.0 (CPython 3.2 compatible)
 # https://groups.google.com/forum/?fromgroups#!topic/pandoc-discuss/uGASAhRydfI
 env:
-  - pandocVersion=1.19.2.1
+  #- pandocVersion=1.19.2.1 # Jan2017; disabled to reduce TravisCI time
+  - pandocVersion=2.5
   - pandocVersion=latest
 matrix:
   allow_failures:
     - python: "3.6-dev"
-    # - python: "3.7-dev"
+    - python: "3.7-dev"
+    - python: "3.8-dev"
     - python: "nightly"
-    # - python: "pypy3"
   fast_finish: true
 # download pandoc
 before_install:
@@ -93,5 +97,5 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-    python: "3.6"
+    python: "3.7"
     condition: $pandocVersion = latest

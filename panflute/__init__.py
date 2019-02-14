@@ -32,6 +32,6 @@ from .io import load_reader_options
 from .tools import (
     stringify, yaml_filter, shell, run_pandoc, convert_text, debug, get_option)
 
-from .autofilter import main
+from .autofilter import main, panfl, get_filter_dir, stdio
 
 from .version import __version__

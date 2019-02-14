@@ -7,6 +7,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Code style reports
+pycodestyle-report.txt
+pylint-report.txt
+
 # C extensions
 *.so
 
@@ -49,6 +53,7 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
+.pytest_cache/
 
 # Translations
 *.mo

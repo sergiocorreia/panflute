@@ -1309,7 +1309,7 @@ CITATION_MODE = {'AuthorInText', 'SuppressAuthor', 'NormalCitation'}
 MATH_FORMATS = {'DisplayMath', 'InlineMath'}
 
 RAW_FORMATS = {'html', 'tex', 'latex', 'context', 'rtf', 'opendocument',
-               'noteref', 'openxml'}
+               'noteref', 'openxml', 'icml'}
 
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
     MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
@@ -1481,10 +1481,12 @@ def builtin2meta(val):
         return MetaBool(val)
     elif isinstance(val, (float, int, string_types)):
         return MetaString(str(val))
+    elif isinstance(val, str):
+        return MetaString(val)
     elif isinstance(val, list):
-        return MetaList(*val)
+        return MetaList(*[builtin2meta(x) for x in val])
     elif isinstance(val, dict):
-        return MetaMap(*val.items())
+        return MetaMap(*[(k, builtin2meta(v)) for k, v in val.items()])
     elif isinstance(val, Block):
         return MetaBlocks(val)
     elif isinstance(val, Inline):
