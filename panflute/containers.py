@@ -6,14 +6,20 @@ object, and the attribute of the parent object that they correspond to.
 # ---------------------------
 # Imports
 # ---------------------------
-from six import string_types
 
-from collections import OrderedDict, MutableSequence, MutableMapping
+import sys
+py2 = sys.version_info[0] == 2
+
+if py2:
+    from collections import OrderedDict, MutableSequence, MutableMapping
+else:
+    from collections import OrderedDict
+    from collections.abc import MutableSequence, MutableMapping
 from .utils import check_type, encode_dict  # check_group
 
+from six import string_types
 
-
-# ---------------------------
+#---------------------------
 # Container Classes
 # ---------------------------
 # These are list and OrderedDict containers that
