@@ -19,7 +19,7 @@ from .utils import check_type, encode_dict  # check_group
 
 from six import string_types
 
-#---------------------------
+# ---------------------------
 # Container Classes
 # ---------------------------
 # These are list and OrderedDict containers that
