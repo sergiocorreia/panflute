@@ -9,13 +9,10 @@ Base classes and methods of all Pandoc elements
 from operator import attrgetter
 from collections import OrderedDict, MutableSequence, MutableMapping
 from itertools import chain
+from six import string_types
 
 from .containers import ListContainer, DictContainer
 from .utils import check_type, encode_dict  # check_group
-
-import sys
-py2 = sys.version_info[0] == 2
-if py2: str = basestring
 
 
 # ---------------------------
@@ -84,8 +81,8 @@ class Element(object):
     # ---------------------------
 
     def _set_ica(self, identifier, classes, attributes):
-        self.identifier = check_type(identifier, str)
-        self.classes = [check_type(cl, str) for cl in classes]
+        self.identifier = check_type(identifier, string_types)
+        self.classes = [check_type(cl, string_types) for cl in classes]
         self.attributes = OrderedDict(attributes)
 
     def _ica_to_json(self):

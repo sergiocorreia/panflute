@@ -4,13 +4,11 @@
 
 from collections import OrderedDict
 
+from six import string_types
+
 from .utils import check_type, check_group, encode_dict
 from .containers import ListContainer, DictContainer
 from .base import Element, Block, Inline, MetaValue
-
-import sys
-py2 = sys.version_info[0] == 2
-if py2: str = basestring
 
 
 # ---------------------------
@@ -505,7 +503,7 @@ class Citation(Element):
 
     def __init__(self, id, mode='NormalCitation', prefix='', suffix='',
                  hash=0, note_num=0):
-        self.id = check_type(id, str)
+        self.id = check_type(id, string_types)
         self.mode = check_group(mode, CITATION_MODE)
         self.hash = check_type(hash, int)
         self.note_num = check_type(note_num, int)
@@ -582,8 +580,8 @@ class Link(Inline):
                  identifier='', classes=[], attributes={}):
         self._set_content(args, Inline)
         self._set_ica(identifier, classes, attributes)
-        self.url = check_type(url, str)
-        self.title = check_type(title, str)
+        self.url = check_type(url, string_types)
+        self.title = check_type(title, string_types)
 
     def _slots_to_json(self):
         ut = [self.url, self.title]
@@ -617,8 +615,8 @@ class Image(Inline):
                  identifier='', classes=[], attributes={}):
         self._set_content(args, Inline)
         self._set_ica(identifier, classes, attributes)
-        self.url = check_type(url, str)
-        self.title = check_type(title, str)
+        self.url = check_type(url, string_types)
+        self.title = check_type(title, string_types)
 
     def _slots_to_json(self):
         ut = [self.url, self.title]
@@ -641,7 +639,7 @@ class Str(Inline):
     __slots__ = ['text']
 
     def __init__(self, text):
-        self.text = check_type(text, str)
+        self.text = check_type(text, string_types)
 
     def __repr__(self):
         return 'Str({})'.format(self.text)
@@ -668,7 +666,7 @@ class CodeBlock(Block):
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=[], attributes={}):
-        self.text = check_type(text, str)
+        self.text = check_type(text, string_types)
         self._set_ica(identifier, classes, attributes)
 
     def _slots_to_json(self):
@@ -689,7 +687,7 @@ class RawBlock(Block):
     __slots__ = ['text', 'format']
 
     def __init__(self, text, format='html'):
-        self.text = check_type(text, str)
+        self.text = check_type(text, string_types)
         self.format = check_group(format, RAW_FORMATS)
 
     def _slots_to_json(self):
@@ -714,7 +712,7 @@ class Code(Inline):
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=[], attributes={}):
-        self.text = check_type(text, str)
+        self.text = check_type(text, string_types)
         self._set_ica(identifier, classes, attributes)
 
     def _slots_to_json(self):
@@ -735,7 +733,7 @@ class Math(Inline):
     __slots__ = ['text', 'format']
 
     def __init__(self, text, format='DisplayMath'):
-        self.text = check_type(text, str)
+        self.text = check_type(text, string_types)
         self.format = check_group(format, MATH_FORMATS)
 
     def _slots_to_json(self):
@@ -760,7 +758,7 @@ class RawInline(Inline):
     __slots__ = ['text', 'format']
 
     def __init__(self, text, format='html'):
-        self.text = check_type(text, str)
+        self.text = check_type(text, string_types)
         self.format = check_group(format, RAW_FORMATS)
 
     def _slots_to_json(self):
@@ -1259,7 +1257,7 @@ class MetaString(MetaValue):
     __slots__ = ['text']
 
     def __init__(self, text):
-        self.text = check_type(text, str)
+        self.text = check_type(text, string_types)
 
     def __repr__(self):
         return 'MetaString({})'.format(self.text)
@@ -1481,7 +1479,7 @@ def from_json(data):
 def builtin2meta(val):
     if isinstance(val, bool):
         return MetaBool(val)
-    elif isinstance(val, (float, int)):
+    elif isinstance(val, (float, int, string_types)):
         return MetaString(str(val))
     elif isinstance(val, list):
         return MetaList(*val)
@@ -1491,5 +1489,9 @@ def builtin2meta(val):
         return MetaBlocks(val)
     elif isinstance(val, Inline):
         return MetaInlines(val)
-    else:
+    elif isinstance(val, (MetaBool, MetaString, MetaValue,
+                          MetaList, MetaMap, MetaBlocks,
+                          MetaInlines)):
         return val
+    
+    raise TypeError("cannot convert: {} (type: {})".format(val, type(val)))

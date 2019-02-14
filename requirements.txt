@@ -1,3 +1,4 @@
 pyyaml
 future
 shutilwhich
+six

@@ -6,13 +6,11 @@ object, and the attribute of the parent object that they correspond to.
 # ---------------------------
 # Imports
 # ---------------------------
+from six import string_types
 
 from collections import OrderedDict, MutableSequence, MutableMapping
 from .utils import check_type, encode_dict  # check_group
 
-import sys
-py2 = sys.version_info[0] == 2
-if py2: str = basestring
 
 
 # ---------------------------
@@ -147,7 +145,7 @@ class DictContainer(MutableMapping):
 # ---------------------------
 
 def attach(element, parent, location):
-    if not isinstance(element, (int, str, bool)):
+    if not isinstance(element, (int, string_types, bool)):
         element.parent = parent
         element.location = location
     else:
@@ -156,7 +154,7 @@ def attach(element, parent, location):
 
 
 def to_json_wrapper(e):
-    if isinstance(e, str):
+    if isinstance(e, string_types):
         return e
     elif isinstance(e, bool):
         return encode_dict('MetaBool', e)
