@@ -14,7 +14,7 @@ def prepare(doc):
     doc.ignore = False
 
 def comment(el, doc):
-    is_relevant = (type(el) == pf.RawBlock) and (doc.format == 'html')
+    is_relevant = (type(el) == pf.RawBlock) and (el.format == 'html')
     if is_relevant and re.search("<!-- BEGIN COMMENT -->", el.text):
         doc.ignore = True
     if doc.ignore:
