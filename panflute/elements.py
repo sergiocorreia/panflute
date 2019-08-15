@@ -362,8 +362,8 @@ class Header(Block):
     def __init__(self, *args, level=1,
                  identifier='', classes=[], attributes={}):
         self.level = check_type(level, int)
-        if not 0 < self.level <= 6:
-            raise TypeError('Header level not between 1 and 6')
+        if not 0 < self.level <= 10:
+            raise TypeError('Header level not between 1 and 10')
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Inline)
 
