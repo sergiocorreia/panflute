@@ -1057,7 +1057,12 @@ class Table(Block):
 
         self._set_content(args, TableRow)
         self.rows = len(self.content)
-        self.cols = len(self.content[0].content)
+        if self.content:
+            self.cols = len(self.content[0].content)
+        elif self.header:
+            self.cols = len(self.header[0].content)
+        else:
+            self.cols = 0
         self.header = header
         self.caption = caption if caption else []
 
