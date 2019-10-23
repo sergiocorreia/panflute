@@ -109,6 +109,29 @@ ipsum"""
     print("[MD]", repr(md2panflute2md))
     assert md == md2panflute2md
 
+    print("\nBack and forth conversions... gfm table (empty) -> json(standalone) -> gfm table (empty)")
+    md = """lorem
+
+| x | y |
+| - | - |
+
+ipsum"""
+    print("[MD]", repr(md))
+    md2json = pf.convert_text(md, input_format='gfm', output_format='json', standalone=True)
+    print("[json]", md2json)
+    md2json2md = pf.convert_text(md2json, input_format='json', output_format='gfm')
+    print("[MD]", repr(md2json2md))
+    assert md == md2json2md
+
+
+    print("\nBack and forth conversions... gfm table (empty) -> panflute(standalone) -> gfm table (empty)")
+    print("[MD]", repr(md))
+    md2panflute = pf.convert_text(md, input_format='gfm', output_format='panflute', standalone=True)
+    print("[PANFLUTE]", md2panflute)
+    md2panflute2md = pf.convert_text(md2panflute, input_format='panflute', output_format='gfm')
+    print("[MD]", repr(md2panflute2md))
+    assert md == md2panflute2md
+
 
 if __name__ == "__main__":
     test_all()

@@ -1059,11 +1059,11 @@ class Table(Block):
         self.rows = len(self.content)
         if self.content:
             self.cols = len(self.content[0].content)
-        elif self.header:
-            self.cols = len(self.header[0].content)
+        self.header = header
+        if self.header:
+            self.cols = len(self.header.content)
         else:
             self.cols = 0
-        self.header = header
         self.caption = caption if caption else []
 
         if alignment is None:
@@ -1083,9 +1083,6 @@ class Table(Block):
 
     @property
     def header(self):
-        if self._header is not None:
-            self._header.parent = self
-            self._header.location = 'header'
         return self._header
 
     @header.setter
@@ -1096,7 +1093,9 @@ class Table(Block):
 
         value = value.content if isinstance(value, TableRow) else list(value)
         self._header = TableRow(*value)
-        if len(value) != self.cols:
+        self._header.parent = self
+        self._header.location = 'header'
+        if hasattr(self, 'cols') and len(value) != self.cols:
             msg = 'table header has an incorrect number of cols:'
             msg += ' {} rows but expected {}'.format(len(value), self.cols)
             raise IndexError(msg)
