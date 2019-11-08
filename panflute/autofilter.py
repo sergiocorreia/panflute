@@ -10,6 +10,7 @@ import os
 import os.path as p
 import sys
 import click
+from io import StringIO
 
 from .io import load, dump
 from .tools import debug
@@ -241,6 +242,9 @@ def autorun_filters(filters, doc, search_dirs, verbose):
         else:
             raise Exception("filter not found: " + filter_)
 
+    # Intercept any print() statements made by filters (which would cause Pandoc to fail)
+    sys.stdout = alt_stdout = StringIO()
+
     for filter_, filter_path, module_, extra_dir in filter_paths:
         if verbose:
             debug("panflute: running filter <{}>".format(filter_))
@@ -259,5 +263,15 @@ def autorun_filters(filters, doc, search_dirs, verbose):
                 raise Exception(e)
         if verbose:
             debug("panflute: filter <{}> completed".format(filter_))
+        
+        alt_stdout_data = alt_stdout.getvalue()
+        if alt_stdout_data:
+            debug('[PANFLUTE WARNING] Filter "{}" wrote to stdout, but Pandoc does not allow that'.format(filter_))
+            debug(alt_stdout_data)
+            sys.stderr.flush()
+            sys.stdout = alt_stdout = StringIO()
+
+    # Restore stdout
+    sys.stdout = sys.__stdout__
 
     return doc

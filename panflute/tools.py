@@ -332,8 +332,10 @@ def run_pandoc(text='', args=None):
     proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = proc.communicate(input=text.encode('utf-8'))
     exitcode = proc.returncode
+    if err:
+        debug(err.decode('utf-8'))
     if exitcode != 0:
-        raise IOError(err)
+        raise IOError('')
     return out.decode('utf-8')
 
 
