@@ -1315,7 +1315,7 @@ CITATION_MODE = {'AuthorInText', 'SuppressAuthor', 'NormalCitation'}
 MATH_FORMATS = {'DisplayMath', 'InlineMath'}
 
 RAW_FORMATS = {'html', 'tex', 'latex', 'context', 'rtf', 'opendocument',
-               'noteref', 'openxml', 'icml', 'markdown'}
+               'noteref', 'openxml', 'icml', 'markdown', 'mediawiki'}
 
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
     MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
