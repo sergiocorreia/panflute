@@ -6,17 +6,9 @@ Base classes and methods of all Pandoc elements
 # Imports
 # ---------------------------
 
-import sys
-py2 = sys.version_info[0] == 2
-if py2: str = basestring
-
 from operator import attrgetter
-if py2:
-    from collections import OrderedDict, MutableSequence, MutableMapping
-else:
-    from collections import OrderedDict
-    from collections.abc import MutableSequence, MutableMapping
-
+from collections import OrderedDict
+from collections.abc import MutableSequence, MutableMapping
 from itertools import chain
 
 from .containers import ListContainer, DictContainer

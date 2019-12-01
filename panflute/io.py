@@ -16,8 +16,6 @@ import codecs  # Used in sys.stdout writer
 from collections import OrderedDict
 from functools import partial
 
-py2 = sys.version_info[0] == 2
-
 
 # ---------------------------
 # Functions
@@ -50,7 +48,7 @@ def load(input_stream=None):
     """
 
     if input_stream is None:
-        input_stream = io.open(sys.stdin.fileno()) if py2 else io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+        input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 
     # Load JSON and validate it
     doc = json.load(input_stream, object_pairs_hook=from_json)
@@ -126,7 +124,7 @@ def dump(doc, output_stream=None):
 
     assert type(doc) == Doc, "panflute.dump needs input of type panflute.Doc"
     if output_stream is None:
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout) if py2 else codecs.getwriter("utf-8")(sys.stdout.detach())
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
         output_stream = sys.stdout
 
     # Switch to legacy JSON output; eg: {'t': 'Space', 'c': []}
@@ -176,7 +174,7 @@ def toJSONFilter(*args, **kwargs):
     """
     Wapper for :func:`.run_filter`, which calls :func:`.run_filters`
 
-    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, \*\*kwargs)
+    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
     Receive a Pandoc document from stdin, apply the *action* function to each element, and write it back to stdout.
 
     See also :func:`.toJSONFilters`
@@ -222,7 +220,7 @@ def run_filters(actions,
         (default is :data:`sys.stdout`)
     :param doc: ``None`` unless running panflute as a filter, in which case this will be a :class:`.Doc` element
     :type doc: ``None`` | :class:`.Doc`
-    :param \*kwargs: keyword arguments will be passed through to the *action*
+    :param *kwargs: keyword arguments will be passed through to the *action*
      functions (so they can actually receive more than just two arguments
      (*element* and *doc*)
     """

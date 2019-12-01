@@ -8,10 +8,6 @@ from .utils import check_type, check_group, encode_dict
 from .containers import ListContainer, DictContainer
 from .base import Element, Block, Inline, MetaValue
 
-import sys
-py2 = sys.version_info[0] == 2
-if py2: str = basestring
-
 
 # ---------------------------
 # Special Root Class
