@@ -1,103 +1,122 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-import panflute as pf
-import subprocess
-from subprocess import PIPE
-import os.path as p
+"""
+Tests for the -autofilter- option, where pandoc is called as:
+> pandoc -F panf
+
+And the metadata of the python file has the keys:
+  panflute-filters  : a string or list
+  panflute-path     : optional folder that contains filters
+
+Additionally, there are two extra keys:
+  panflute-verbose  : True to display debugging info
+  panflute-echo     : Message to display on success
+"""
+
+# ---------------------------
+# Imports
+# ---------------------------
+
+
 import os
-import sys
 import io
+import sys
+import subprocess
+from pathlib import Path
 
-os.chdir(p.dirname(p.dirname(__file__)))
-
-in1 = '$1-1$'
-out1 = '$1+1markdown$'
-out1err = 'panflute: data_dir={dd} sys_path={sp}'
-in1a = """---
-panflute-filters: test_filter
-panflute-path: ./tests/test_panfl
-...
-{}
-""".format(in1)
+import panflute as pf
 
 
-def test_all():
+# ---------------------------
+# Setup
+# ---------------------------
+
+# Change path to the root panflute folder
+os.chdir(str(Path(__file__).parents[1]))
+
+
+# ---------------------------
+# Tests
+# ---------------------------
+
+def test_filter_dirs():
     assert pf.get_filter_dir() == pf.get_filter_dir(hardcoded=False)
+
+
+def test_metadata():
+    """
+    panfl can receive filter lists either as a metadata argument or in the YAML block
+    This tests that both work
+
+    test_filter.py is a simple filter that edits a math expression by replacing "-" with "+"
+    and attaching the document type (html, markdown, etc.)
+    """
 
     def to_json(text):
         return pf.convert_text(text, 'markdown', 'json')
 
-    def assert3(*extra_args, stdin):
+    def assert_equal(*extra_args, input_text, output_text):
         """
+        Default values for extra_args:
         filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False
         """
+        
+        # Set --from=markdown
         sys.argv[1:] = []
         sys.argv.append('markdown')
+
         _stdout = io.StringIO()
-        pf.stdio(*extra_args, input_stream=io.StringIO(stdin), output_stream=_stdout)
+        pf.stdio(*extra_args, input_stream=io.StringIO(input_text), output_stream=_stdout)
         _stdout = pf.convert_text(_stdout.getvalue(), 'json', 'markdown')
-        assert _stdout == out1
+        assert _stdout == output_text
 
-    json1, json1a = to_json(in1), to_json(in1a)
+    md_contents = "$1-1$"
+    md_document = """---
+panflute-filters: test_filter
+panflute-path: ./tests/test_panfl/bar
+...
+{}
+""".format(md_contents)
+    expected_output = '$1+1markdown$'
 
-    assert3(None, None, True, True, True, stdin=json1a)
-    assert3(None, None, True, True, False, stdin=json1a)
+    json_contents = to_json(md_contents)
+    json_document = to_json(md_document)
 
-    assert3(['test_filter/test_filter.py'], ['./tests/test_panfl'], False, True, True, stdin=json1)
-    assert3([p.abspath('./tests/test_panfl/test_filter/test_filter.py')], [], False, True, True, stdin=json1)
-    assert3(['test_filter.test_filter'], ['./tests/test_panfl'], False, True, True, stdin=json1)
-    assert3(['test_filter'], ['./tests/test_panfl'], False, True, True, stdin=json1)
+    # Filter in YAML block; try `panf_` true and false (this is a minor option that changes how the path gets built)
+    assert_equal(None, None, True, True, True, input_text=json_document, output_text=expected_output)
+    assert_equal(None, None, True, True, False, input_text=json_document, output_text=expected_output)
 
-    # --------------------------------
-    if sys.version_info[0:2] < (3, 6):
-        return
+    # Open the filter as a standalone python script within a folder
+    assert_equal(['test_filter.py'], ['./tests/test_panfl/bar'], True, True, False, input_text=json_contents, output_text=expected_output)
+
+    # Open the filter with the exact abs. path (no need for folder)
+    assert_equal([os.path.abspath('./tests/test_panfl/bar/test_filter.py')], [], False, True, True, input_text=json_contents, output_text=expected_output)
+
+    # Open the filter as part of a package (packagename.module)
+    assert_equal(['foo.test_filter'], ['./tests/test_panfl'], False, True, True, input_text=json_contents, output_text=expected_output)
+    assert_equal(['test_filter'], ['./tests/test_panfl/foo'], False, True, True, input_text=json_contents, output_text=expected_output)
+
+
+def test_pandoc_call():
+    """
+    This is a more difficult test as it also relies on Pandoc calling Panflute
+    """
 
     def run_proc(*args, stdin):
-        proc = subprocess.run(args, stdout=PIPE, stderr=PIPE, input=stdin,
-                              encoding='utf-8', cwd=os.getcwd())
+        #assert not args, args
+        proc = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, input=stdin, encoding='utf-8', cwd=os.getcwd())
         _stdout, _stderr = proc.stdout, proc.stderr
         return (_stdout if _stdout else '').strip(), (_stderr if _stderr else '').strip()
 
-    def assert1(*extra_args):
-        _stdout = run_proc('pandoc', '-t', 'json', stdin=in1)[0]
-        _stdout = run_proc('panfl', '-t', 'markdown', *extra_args, stdin=_stdout)[0]
-        _stdout = run_proc('pandoc', '-f', 'json', '-t', 'markdown', stdin=_stdout)[0]
-        assert _stdout == out1
+    md_contents = "$1-1$"
+    expected_output = '$1+1markdown$'
 
-    # assert1('-d', './tests/test_panfl', 'test_filter/test_filter.py')
-    # assert1(p.abspath('./tests/test_panfl/test_filter/test_filter.py'))
-    # assert1('-d', './tests/test_panfl', 'test_filter.test_filter')
-    assert1('-d', './tests/test_panfl', 'test_filter')
+    stdout = run_proc('pandoc', '--filter=panfl', '--to=markdown',
+                      '--metadata=panflute-verbose:True',
+                      '--metadata=panflute-filters:' + os.path.abspath('./tests/test_panfl/bar/test_filter.py'),
+                      stdin=md_contents)[0]
+    assert stdout == expected_output
 
-    stdout = run_proc('pandoc', '--filter', 'panfl', '-t', 'markdown',
-                      '--metadata', 'panflute-filters: test_filter',
-                      '--metadata', 'panflute-path: ./tests/test_panfl',
-                      stdin=in1)[0]
-    assert stdout == out1
-
-    stderr = run_proc('pandoc', '--filter', 'panfl', '-t', 'markdown',
-                      '--metadata', 'panflute-verbose: True',
-                      '--metadata', 'panflute-filters: "{}"'.format(
-                          p.abspath('./tests/test_panfl/__filter__.py')),
-                      '--metadata', 'panflute-path: --no-sys-path',
-                      stdin=in1)[1]  # __filter__.py doesn't exist
-    assert out1err.format(dd=False, sp=False) in stderr
-
-    def assert2(*extra_args, dd, sp):
-        _stdout = run_proc('pandoc', '-t', 'json',
-                           '--metadata', 'panflute-verbose: True',
-                           stdin=in1)[0]
-        _stderr = run_proc('panfl', '-t', 'markdown', '-d', './tests/test_panfl',
-                           p.abspath('./tests/test_panfl/__filter__.py'),
-                           *extra_args, stdin=_stdout)[1]  # __filter__.py doesn't exist
-        assert out1err.format(dd=dd, sp=sp) in _stderr
-
-    assert2('--data-dir', '--no-sys-path', dd=True, sp=False)
-    assert2('--no-sys-path', dd=False, sp=False)
-
-
-# test_all()
-# print(0, file=open(r'D:\log.txt', 'a', encoding='utf-8'))
-# with io.StringIO() as f:
-#     pf.dump(doc, f)
-#     out = f.getvalue()
+    stdout = run_proc('pandoc', '--filter=panfl', '--to=markdown',
+                      '--metadata=panflute-filters:test_filter',
+                      '--metadata=panflute-path:./tests/test_panfl/bar',
+                      stdin=md_contents)[0]
+    assert stdout == expected_output

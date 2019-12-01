@@ -55,6 +55,7 @@ def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
         for debug purpose
     :return: None
     """
+
     doc = load(input_stream)
     # meta = doc.metadata  # Local variable 'meta' value is not used
     verbose = doc.get_metadata('panflute-verbose', False)
