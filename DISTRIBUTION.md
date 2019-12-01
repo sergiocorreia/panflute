@@ -55,3 +55,30 @@ py.test --cov=panflute tests && coverage html && cd htmlcov && index.html && cd 
 ```
 
 This requires `pip install coverage` and `pip install pytest-cov`.
+
+
+## Pushing to PyPI through Twine
+
+First, ensure that you have `twine` installed and the checks pass:
+
+```bash
+cls && python setup.py sdist && twine check dist/*
+```
+
+Then try the test PyPI repository:
+
+```bash
+twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
+```
+
+Finally update to the official repo:
+
+```bash
+twine upload  dist/*
+```
+
+### Possible errors
+
+#### `warning: `long_description_content_type` missing. defaulting to `text/x-rst`.`
+
+Solution: ensure that files have Unix line endings (not Windows)

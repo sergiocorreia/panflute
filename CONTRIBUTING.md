@@ -37,7 +37,7 @@ For consistency, code should try to comply (as much as possible) with [pep8](htt
   3. `panflute.dump(doc)` will encode the tree into JSON and dump it to stdout, finishing execution
 
 
-## Modules in the `panflute` package
+### Modules in the `panflute` package
 
 - `__init__.py`: loads the functions that will be part of API of the package.
 - `utils.py`: contains auxiliary functions that *do not* depend on any other part of `panflute`.

@@ -7,26 +7,17 @@ cache: pip
 python:
   # Exclude end-of-life branches
   # https://devguide.python.org/#branchstatus
-  - "2.7"     # EOL 2020-01-01 (plus remove py2 compat)
-  - "3.5"     # EOL 2020-09-13
   - "3.6"
   - "3.7"
-  - "3.7-dev" # 3.7 development branch
-  - "3.8-dev" # 3.7 development branch
+  - "3.8" # 3.7 development branch
   - "nightly" # currently points to 3.7-dev
-  # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
-  #- "pypy2.7-6.0"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
-  - "pypy3.5-6.0" # PyPy3 2.4.0 (CPython 3.2 compatible)
+  #- "pypy3.5-6.0" # PyPy3 2.4.0 (CPython 3.2 compatible)
 # https://groups.google.com/forum/?fromgroups#!topic/pandoc-discuss/uGASAhRydfI
 env:
   #- pandocVersion=1.19.2.1 # Jan2017; disabled to reduce TravisCI time
-  - pandocVersion=2.5
+  - pandocVersion=2.8.0.1
   - pandocVersion=latest
 matrix:
-  allow_failures:
-    - python: "3.6-dev"
-    - python: "3.7-dev"
-    - python: "3.8-dev"
     - python: "nightly"
   fast_finish: true
 # download pandoc
@@ -49,15 +40,6 @@ install:
   - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy3" ]]; then pip install -U pip; fi
   - pip install -e .[test]
 before_script:
-  # pasteurize for py2 only, except setup.py & panflute/version.py
-  - |
-    if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" || "$TRAVIS_PYTHON_VERSION" == "pypy" ]]; then
-      mv setup.py setup.py.temp
-      mv panflute/version.py panflute/version.py.temp
-      pasteurize -wnj 4 .
-      mv setup.py.temp setup.py
-      mv panflute/version.py.temp panflute/version.py
-    fi
 # commands to run tests
 script:
   - py.test -vv --cov=panflute tests
@@ -75,19 +57,8 @@ before_deploy:
   ## test if the rst output is valid
   - rst2html.py README.rst > README.html
   # building wheels
-  ## unpasteurized python3 wheel
   - python3 setup.py bdist_wheel
-  ## pasteurized python2 wheel
-  ### pasteurize except setup.py & panflute/version.py
-  - |
-    mv setup.py setup.py.temp
-    mv panflute/version.py panflute/version.py.temp
-    pasteurize -wnj 4 .
-    mv setup.py.temp setup.py
-    mv panflute/version.py.temp panflute/version.py
   ### prepare wheel
-  - pip2 install wheel
-  - python2 setup.py bdist_wheel
 deploy:
   provider: pypi
   user: sergiocorreia
@@ -97,5 +68,5 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-    python: "3.7"
+    python: "3.8"
     condition: $pandocVersion = latest

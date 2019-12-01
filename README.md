@@ -21,7 +21,7 @@ To install panflute, open the command line and type:
 pip install panflute
 ```
 
-Python 2.7+, 3.3+, PyPy, and PyPy3 are supported.
+Python 3.6+ and PyPy3 are supported (Python 2.7 and Python 3.3-3.5 were supported up to version 1.11.4).
 
 ## Uninstall
 
@@ -33,19 +33,10 @@ pip uninstall panflute
 
 After cloning the repo and opening the panflute folder:
 
-`python setup.py install`
-: installs the package locally
+`python setup.py install`: installs the package locally
 
-`python setup.py develop`
-: installs locally with a symlink so changes are automatically updated
+`python setup.py develop`: installs locally with a symlink so changes are automatically updated
 
-In addition, if you use python2, you need to pasteurize the code before running tests. In this directory, Run
-
-```bash
-# install pasteurize if you didn't have it yet
-pip2 install -U future
-pasteurize -wnj 4 .
-```
 
 ## Contributing
 
