@@ -20,6 +20,7 @@ jobs:
     container:
       image: docker://pandoc/core:latest
     strategy:
+      fail-fast: false
       max-parallel: 5
       matrix:
         python-version: [3.6, 3.7, 3.8, pypy3]
