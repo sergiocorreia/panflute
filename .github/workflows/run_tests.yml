@@ -3,7 +3,7 @@
 # Available software:
 # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/software-installed-on-github-hosted-runners
 
-name: Run CI Tests
+name: CI Tests
 on: [push]
 jobs:
   build:
