@@ -45,6 +45,7 @@ jobs:
         url="https://github.com/jgm/pandoc/releases/latest"
         path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')
         downloadUrl="https://github.com$path"
+        file=${path##*/}
         wget $downloadUrl &&
         sudo dpkg -i $file
         pandoc --version
