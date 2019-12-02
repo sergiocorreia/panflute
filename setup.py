@@ -9,10 +9,15 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-# Get the long description from the README file
 here = path.abspath(path.dirname(__file__))
+
+# Get the long description from the README file
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-        long_description = f.read()
+    long_description = f.read()
+
+# Get requirements from 'requirements.txt'
+with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+    requirements = [x.strip() for x in f.readlines()]
 
 # Import version number
 version = {}
@@ -88,7 +93,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['pyyaml', 'click'],
+    install_requires=requirements,
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
