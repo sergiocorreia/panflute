@@ -53,10 +53,11 @@ jobs:
       run: |
         pip install -e .[test]
         pytest
-   - name: Test by running existing filters
-     run: |
+    - name: Test by running existing filters
+      run: |
        mkdir -p $HOME/.pandoc/filters
 # put filters in $DATADIR for panflute's autofilter
        find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} $HOME/.pandoc/filters/ \;
 # running all available .md files through panflute
        find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
+
