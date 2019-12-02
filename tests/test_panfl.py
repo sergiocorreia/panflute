@@ -95,7 +95,7 @@ panflute-path: ./tests/test_panfl/bar
     assert_equal(['test_filter'], ['./tests/test_panfl/foo'], False, True, True, input_text=json_contents, output_text=expected_output)
 
 
-def test_pandoc_call1():
+def test_pandoc_call():
     """
     This is a more difficult test as it also relies on Pandoc calling Panflute
     """
@@ -119,48 +119,4 @@ def test_pandoc_call1():
                       '--metadata=panflute-filters:test_filter',
                       '--metadata=panflute-path:./tests/test_panfl/bar',
                       stdin=md_contents)[0]
-    assert stdout == expected_output
-
-
-
-def test_pandoc_call2():
-    """
-    This is a more difficult test as it also relies on Pandoc calling Panflute
-    """
-
-    def run_proc(*args, stdin):
-        #assert not args, args
-        proc = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, input=stdin, encoding='utf-8', cwd=os.getcwd())
-        _stdout, _stderr = proc.stdout, proc.stderr
-        return (_stdout if _stdout else '').strip(), (_stderr if _stderr else '').strip()
-
-    md_contents = "$1-1$"
-    expected_output = '$1+1markdown$'
-
-    stdout = run_proc('pandoc', '--filter=panfl', '--to=markdown',
-                      '--metadata=panflute-filters:test_filter',
-                      '--metadata=panflute-path:./tests/test_panfl/bar',
-                      stdin=md_contents)[0]
-    assert stdout == expected_output
-    
-
-
-def test_pandoc_call3():
-    """
-    This is a more difficult test as it also relies on Pandoc calling Panflute
-    """
-
-    def run_proc(*args, stdin):
-        #assert not args, args
-        proc = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, input=stdin, encoding='utf-8', cwd=os.getcwd())
-        _stdout, _stderr = proc.stdout, proc.stderr
-        return (_stdout if _stdout else '').strip(), (_stderr if _stderr else '').strip()
-
-    md_contents = "$1-1$"
-    expected_output = '$1+1markdown$'
-
-    stdout = run_proc('pandoc', '--filter=panfl', '--to=markdown',
-                      '--metadata=panflute-verbose:True',
-                      '--metadata=panflute-filters:' + os.path.abspath('./tests/test_panfl/bar/test_filter.py'),
-                      stdin=md_contents)
     assert stdout == expected_output
