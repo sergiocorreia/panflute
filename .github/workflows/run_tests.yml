@@ -17,8 +17,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: docker://pandoc/core:latest
     strategy:
       fail-fast: false
       max-parallel: 5
@@ -42,8 +40,15 @@ jobs:
         flake8 ./panflute --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 ./panflute --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Download Pandoc
+      run: |
+        url="https://github.com/jgm/pandoc/releases/latest"
+        path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')
+        downloadUrl="https://github.com$path"
+        wget $downloadUrl &&
+        sudo dpkg -i $file
+        pandoc --version
     - name: Test with pytest
       run: |
-        pandoc --version
         pip install pytest
         pytest
