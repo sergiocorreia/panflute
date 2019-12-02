@@ -677,7 +677,7 @@ class RawBlock(Block):
 
     :param text: a string of raw text with another underlying format
     :type text: :class:`str`
-    :param format: Format of the raw text ('html', 'tex', 'latex' or 'context')
+    :param format: Format of the raw text ('html', 'tex', 'latex', 'context', etc.)
     :type format: ``str``
     :Base: :class:`Block`
      """
@@ -748,7 +748,7 @@ class RawInline(Inline):
 
     :param text: a string of raw text with another underlying format
     :type text: :class:`str`
-    :param format: Format of the raw text ('html', 'tex', 'latex' or 'context')
+    :param format: Format of the raw text ('html', 'tex', 'latex', 'context', etc.)
     :type format: ``str``
     :Base: :class:`Inline`
      """
@@ -1310,8 +1310,45 @@ CITATION_MODE = {'AuthorInText', 'SuppressAuthor', 'NormalCitation'}
 
 MATH_FORMATS = {'DisplayMath', 'InlineMath'}
 
-RAW_FORMATS = {'html', 'tex', 'latex', 'context', 'rtf', 'opendocument',
-               'noteref', 'openxml', 'icml', 'markdown', 'mediawiki'}
+RAW_FORMATS = {'tex',
+               'latex',
+               'html',
+               'context',
+               'rtf',
+               'opendocument',
+               'noteref',
+               'openxml',
+               'icml',
+               'commonmark',
+               'creole',
+               'docbook',
+               'docx',
+               'dokuwiki',
+               'epub',
+               'fb2',
+               'gfm',
+               'haddock',
+               'ipynb',
+               'jats',
+               'json',
+               'man',
+               'markdown',
+               'markdown_github',
+               'markdown_mmd',
+               'markdown_phpextra',
+               'markdown_strict',
+               'mediawiki',
+               'muse',
+               'native',
+               'odt',
+               'opml',
+               'org',
+               'rst',
+               't2t',
+               'textile',
+               'tikiwiki',
+               'twiki',
+               'vimwiki'}
 
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
     MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
