@@ -1,10 +1,16 @@
 # Documentation:
 # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions
+
 # Available software:
 # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/software-installed-on-github-hosted-runners
 
-name: Run CI Tests
-on: [push]
+# Pandoc info:
+# https://github.com/pandoc/dockerfiles#available-images
+# https://github.com/leolabs/bachelor/blob/master/.github/workflows/main.yml
+# https://github.com/maxheld83/pandoc/blob/master/.github/workflows/main.yml
+
+name: CI Tests
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,11 +31,15 @@ jobs:
     - name: Lint with flake8
       run: |
         pip install flake8
+        pip install pandocfilters
         # stop the build if there are Python syntax errors or undefined names
         flake8 ./panflute --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 ./panflute --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Install pandoc
+      uses: docker://pandoc/core:latest
     - name: Test with pytest
       run: |
+        pandoc --version
         pip install pytest
         pytest
