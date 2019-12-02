@@ -4,6 +4,9 @@
 # Available software:
 # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/software-installed-on-github-hosted-runners
 
+# Useful info:
+# https://stackoverflow.com/a/57549440/3977107
+
 # Pandoc info:
 # https://github.com/pandoc/dockerfiles#available-images
 # https://github.com/leolabs/bachelor/blob/master/.github/workflows/main.yml
@@ -15,9 +18,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: [3.6, 3.7, 3.8, pypy3]
+        python-version: [3.6, 3.7, 3.8] # , pypy3]
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
@@ -36,10 +40,24 @@ jobs:
         flake8 ./panflute --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 ./panflute --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Install pandoc
-      uses: docker://pandoc/core:latest
+    - name: Download Pandoc
+      run: |
+        url="https://github.com/jgm/pandoc/releases/latest"
+        path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')
+        downloadUrl="https://github.com$path"
+        file=${path##*/}
+        wget $downloadUrl &&
+        sudo dpkg -i $file
+        pandoc --version
     - name: Test with pytest
       run: |
-        pandoc --version
-        pip install pytest
+        pip install -e .[test]
         pytest
+    - name: Test by running existing filters
+      run: |
+       mkdir -p $HOME/.pandoc/filters
+       find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} $HOME/.pandoc/filters/ \;
+       find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
+
+# put filters in $DATADIR for panflute's autofilter
+# running all available .md files through panflute
