@@ -20,21 +20,35 @@ from .utils import ContextImport
 reduced_sys_path = [dir_ for dir_ in sys.path if (dir_ not in ('', '.')) and p.isdir(dir_)]
 
 
-def get_filter_dir(hardcoded=True):
+def get_filter_dirs(hardcoded=True):
+    """
+    Return directories where we expect to find filters.
+
+    If hardcoded=True use paths we know ex ante; if False ask Pandoc for a list
+    """
     if hardcoded:
         if os.name == 'nt':
-            return p.join(os.environ["APPDATA"], "pandoc", "filters")
+            d1 = [p.join(os.environ["APPDATA"], "pandoc", "filters")]
+            return d1
         else:
-            return p.join(os.environ["HOME"], ".pandoc", "filters")
+            d1 = p.join(os.environ["HOME"], ".pandoc", "filters")
+            d2 = p.join(os.environ["HOME"], ".local", "share", "pandoc", "filters")
+            return [d1, d2]
     else:
         from .tools import run_pandoc
+        
         # Extract $DATADIR
         info = run_pandoc(args=['--version']).splitlines()
         prefix = "Default user data directory: "
         info = [row for row in info if row.startswith(prefix)]
         assert len(info) == 1
         data_dir = info[0][len(prefix):]
-        return p.normpath(p.expanduser(p.expandvars(p.join(data_dir, 'filters'))))
+
+        # data_dir might contain multiple folders:
+        # Default user data directory: /home/runner/.local/share/pandoc or /home/runner/.pandoc/filters
+        data_dir = data_dir.split(' or ')
+        data_dir = [p.normpath(p.expanduser(p.expandvars(p.join(d, 'filters')))) for d in data_dir]
+        return data_dir
 
 
 def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False, input_stream=None, output_stream=None):
@@ -81,13 +95,13 @@ def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
         # default panflute behaviour:
         search_dirs.append('.')
         if data_dir:
-            search_dirs.append(get_filter_dir())
+            search_dirs.extend(get_filter_dirs())
         if sys_path:
             search_dirs += sys.path
     else:
         # panfl/pandoctools behaviour:
         if data_dir:
-            search_dirs.append(get_filter_dir())
+            search_dirs.extend(get_filter_dirs())
         if sys_path:
             search_dirs += reduced_sys_path
 

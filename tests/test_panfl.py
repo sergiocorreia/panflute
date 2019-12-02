@@ -37,8 +37,8 @@ os.chdir(str(Path(__file__).parents[1]))
 # Tests
 # ---------------------------
 
-def test_filter_dirs():
-    assert pf.get_filter_dir() == pf.get_filter_dir(hardcoded=False)
+def test_get_filter_dirs():
+    assert pf.get_filter_dirs() == pf.get_filter_dirs(hardcoded=False)
 
 
 def test_metadata():
