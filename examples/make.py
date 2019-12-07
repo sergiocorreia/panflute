@@ -33,7 +33,7 @@ def main():
 
     pandoc_filters = os.listdir('./pandocfilters')
     panflute_filters = os.listdir('./panflute')
-    excluded = ('abc.py', 'plantuml.py', 'tikz')
+    excluded = ('abc.py', 'plantuml.py', 'tikz', 'gabc') # GABC requires installing miktex packages...
 
     for fn in pandoc_filters:
         if fn in panflute_filters and not fn.startswith('__') and fn not in excluded:

@@ -1048,34 +1048,47 @@ class Table(Block):
                  'alignment', 'width', 'rows', 'cols']
     _children = ['header', 'content', 'caption']
 
+
     def __init__(self, *args, header=None, caption=None,
                  alignment=None, width=None):
 
         self._set_content(args, TableRow)
-        self.rows = len(self.content)
-        if self.content:
-            self.cols = len(self.content[0].content)
         self.header = header
-        if self.header:
-            self.cols = len(self.header.content)
-        else:
-            self.cols = 0
         self.caption = caption if caption else []
 
+        self.rows = len(self.content)
+        self.cols = 0
+
+        if self.content:
+            self.cols = len(self.content[0].content)
+        
+        if self.header:
+            header_cols = len(self.header.content)
+            if not self.cols:
+                self.cols = header_cols
+            elif self.cols != header_cols:
+                msg = '\n\nInvalid number of header columns.'
+                msg += 'Expected {} but received {}\n'.format(self.cols, header_cols)
+                raise IndexError(msg)
+        
         if alignment is None:
             self.alignment = ['AlignDefault'] * self.cols
         else:
-            self.alignment = [check_group(a, TABLE_ALIGNMENT)
-                              for a in alignment]
-            if len(self.alignment) != self.cols:
-                raise IndexError('alignment has an incorrect number of cols')
+            self.alignment = [check_group(a, TABLE_ALIGNMENT) for a in alignment]
+            if self.cols != len(self.alignment):
+                msg = '\n\nInvalid number of alignment columns.'
+                msg += 'Expected {} but received {}\n'.format(self.cols, len(self.alignment))
+                raise IndexError(msg)
 
         if width is None:
             self.width = [0.0] * self.cols
         else:
             self.width = [check_type(w, (float, int)) for w in width]
-            if len(self.width) != self.cols:
-                raise IndexError('width has an incorrect number of cols')
+            if self.cols != len(self.width):
+                msg = '\n\nInvalid number of width columns.'
+                msg += 'Expected {} but received {}\n'.format(self.cols, len(self.width))
+                raise IndexError(msg)
+
 
     @property
     def header(self):
@@ -1092,7 +1105,7 @@ class Table(Block):
         self._header.parent = self
         self._header.location = 'header'
         if hasattr(self, 'cols') and len(value) != self.cols:
-            msg = 'table header has an incorrect number of cols:'
+            msg = 'table header has an incorrect number of columns:'
             msg += ' {} rows but expected {}'.format(len(value), self.cols)
             raise IndexError(msg)
 
