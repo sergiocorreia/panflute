@@ -15,13 +15,47 @@ from importlib import import_module
 # Functions
 # ---------------------------
 
+
+def get_caller_name():
+    '''Get the name of the calling Element
+
+    This is just the name of the Class of the __init__ calling function
+    '''
+
+    # References:
+    # https://jugad2.blogspot.com/2015/09/find-caller-and-callers-caller-of.html
+    # https://stackoverflow.com/a/47956089/3977107
+    # https://stackoverflow.com/a/11799376/3977107
+
+    pos = 1
+    while True:
+        pos += 1
+        try:
+            callingframe = sys._getframe(pos)
+        except ValueError:
+            return 'Panflute'
+        #print(pos, callingframe.f_code.co_name, file=sys.stderr)
+
+        if callingframe.f_code.co_name == '__init__':
+            class_name = callingframe.f_locals['self'].__class__.__name__
+            if 'Container' not in class_name:
+                return class_name
+
+
 def check_type(value, oktypes):
     # This allows 'Space' instead of 'Space()'
     if callable(value):
         value = value()
     if not isinstance(value, oktypes):
+
+        caller = get_caller_name()
         tag = type(value).__name__
-        msg = 'received {} but expected {}'.format(tag, oktypes)
+        
+        print(oktypes, file=sys.stderr)
+        #oktypes_names = [x.name for x in oktypes]
+        #print(oktypes, file=sys.stderr)
+        
+        msg = '\n\nElement "{}" received "{}" but expected {}\n'.format(caller, tag, oktypes)
         raise TypeError(msg)
     else:
         return value
