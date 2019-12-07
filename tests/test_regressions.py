@@ -21,6 +21,15 @@ def test_all():
         pf.dump(pf.Doc(t2), f)
         print(f.getvalue())
 
+def test_quotes_129():
+    #pf https://github.com/sergiocorreia/panflute/issues/129
+    text = [pf.Str("Some"), pf.Space, pf.Str("quoted text")]
+    quoted_text = pf.Quoted(*text)
+    para = pf.Para(quoted_text)
+    output = pf.stringify(para, False)
+    assert output == '"Some quoted text"'
+
 
 if __name__ == "__main__":
     test_all()
+    test_quotes_129()

@@ -190,6 +190,14 @@ def stringify(element, newlines=True):
             ans = ''
         else:
             ans = ''
+
+        # Add quotes around the contents of Quoted()
+        if type(e.parent) == Quoted:
+            if e.index == 0:
+                ans = '"' + ans
+            if e.index == len(e.container) - 1:
+                ans += '"'
+        
         answer.append(ans)
 
     answer = []
