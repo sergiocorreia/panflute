@@ -134,15 +134,17 @@ Running filters automatically
 
 If you run panflute as a filter (``pandoc ... -F panflute``), then panflute will run all filters specified in the metadata field ``panflute-filters``. This is faster and more convenient than typing the precise list and order of filters used every time the document is run.
 
-You can also specify the location of the filters with the ``panflute-path`` field, which will take precedence over ``.``, ``$datadir``, and ``$path``
+You can also specify the location of the filters with the ``panflute-path`` field, which will take precedence over Pandoc's search `locations <https://pandoc.org/MANUAL.html#reader-options>`_ (``.``, ``$datadir/filters``, and ``$path``).
 
 Example:
 
 .. literalinclude:: _static/autofilters.md
 
-In order for this to work, the filters need to have a very specific
+For this to work, the filters need to have a very specific
 structure, with a `main()` function of the following form:
 
 .. literalinclude:: _static/template.py
 
 .. note:: To be able to run filters automatically, the main function needs to be exactly as shown, with an optional argument ``doc``, that gets passed to ``run_filter``, and which is ``return`` ed back.
+
+.. note:: You can add ``panflute-verbose: true`` to the metadata to display debugging information, including the folders searched and the filters executed.

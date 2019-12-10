@@ -40,7 +40,7 @@ extensions = [
 ]
 
 # See http://www.sphinx-doc.org/en/stable/ext/intersphinx.html
-intersphinx_mapping = {'python': ('https://docs.python.org/3.5', None)}
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'panflute'
-copyright = '2016, Sergio Correia'
+copyright = '2020, Sergio Correia'
 author = 'Sergio Correia'
 
 # The version info for the project you're documenting, acts as replacement for

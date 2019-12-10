@@ -71,7 +71,6 @@ def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
     """
 
     doc = load(input_stream)
-    # meta = doc.metadata  # Local variable 'meta' value is not used
     verbose = doc.get_metadata('panflute-verbose', False)
 
     if search_dirs is None:
@@ -104,6 +103,10 @@ def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=F
             search_dirs.extend(get_filter_dirs())
         if sys_path:
             search_dirs += reduced_sys_path
+
+    if verbose:
+        debug('panflute will search for filters in the following folders:')
+        debug(' '.join('"{}"'.format(f) for f in search_dirs))
 
     # Display message (tests that everything is working ok)
     msg = doc.get_metadata('panflute-echo', False)
