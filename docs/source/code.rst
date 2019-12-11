@@ -101,6 +101,7 @@ These are the standard Pandoc elements, as described `here <https://hackage.hask
    (so we can do ``Para().content`` but not ``Str().content``).
 
 .. automodule:: panflute.elements
+   :noindex:
    :members: Doc
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

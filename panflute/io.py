@@ -1,3 +1,8 @@
+"""
+I/O related functions
+"""
+
+
 # ---------------------------
 # Imports
 # ---------------------------
@@ -174,7 +179,7 @@ def toJSONFilter(*args, **kwargs):
     """
     Wapper for :func:`.run_filter`, which calls :func:`.run_filters`
 
-    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, **kwargs)
+    toJSONFilter(action, prepare=None, finalize=None, input_stream=None, output_stream=None, \*\*kwargs)
     Receive a Pandoc document from stdin, apply the *action* function to each element, and write it back to stdout.
 
     See also :func:`.toJSONFilters`
@@ -220,7 +225,7 @@ def run_filters(actions,
         (default is :data:`sys.stdout`)
     :param doc: ``None`` unless running panflute as a filter, in which case this will be a :class:`.Doc` element
     :type doc: ``None`` | :class:`.Doc`
-    :param *kwargs: keyword arguments will be passed through to the *action*
+    :param \*kwargs: keyword arguments will be passed through to the *action*
      functions (so they can actually receive more than just two arguments
      (*element* and *doc*)
     """

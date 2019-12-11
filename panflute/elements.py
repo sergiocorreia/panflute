@@ -1,3 +1,7 @@
+"""
+Classes corresponding to Pandoc elements
+"""
+
 # ---------------------------
 # Imports
 # ---------------------------

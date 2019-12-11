@@ -1,3 +1,8 @@
+"""
+Useful (but not essential) functions for writing panflute filters
+"""
+
+
 # ---------------------------
 # Imports
 # ---------------------------
@@ -517,10 +522,9 @@ Element.replace_keyword = _replace_keyword
 
 
 def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=None, error_on_none=True):
-    """ fetch an option variable, 
-    from either a local (element) level option/attribute tag, 
-    document level metadata tag,
-    or a default
+    """
+    Fetch an option variable from either a local (element) level option/attribute tag,
+    a document level metadata tag, or a default.
 
      :type options: ``dict``
      :type local_tag: ``str``
@@ -534,9 +538,13 @@ def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=Non
     Also, if error_on_none=True and the final variable is None, then a ValueError will be raised  
 
     In this manner you can set global variables, which can be optionally overriden at a local level.
-    For example, to apply different styles to docx text
+    For example, the two files below show how to apply different styles to docx text:
 
-    main.md:
+    **main.md:**
+
+    .. code-block:: none
+        :linenos:
+
         ------------------
         style-div:
             name: MyStyle
@@ -550,7 +558,11 @@ def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=Non
         some more text
         :::
 
-    style_filter.py:
+    **style_filter.py:**
+
+    .. code-block:: python
+        :linenos:
+
         import panflute as pf
 
         def action(elem, doc):

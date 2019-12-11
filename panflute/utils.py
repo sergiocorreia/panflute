@@ -1,6 +1,7 @@
 """
 Auxiliary functions that have no dependencies
 """
+
 # ---------------------------
 # Imports
 # ---------------------------
