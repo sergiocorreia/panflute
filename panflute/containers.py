@@ -67,7 +67,10 @@ class ListContainer(MutableSequence):
         del self.list[i]
 
     def __setitem__(self, i, v):
-        v = check_type(v, self.oktypes)
+        if isinstance(i, slice):
+            v = (check_type(x, self.oktypes) for x in v)
+        else:
+            v = check_type(v, self.oktypes)
         self.list[i] = v
 
     def insert(self, i, v):
