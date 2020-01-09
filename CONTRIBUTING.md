@@ -28,7 +28,7 @@ flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
 - [`pycodestyle`](https://pypi.org/project/pycodestyle/) (formerly `pep8`): run it with `pycodestyle ./panflute > pycodestyle-report.txt`
 - [`pylint`](https://www.pylint.org/): run it with `pylint panflute > pylint-report.txt` from the root folder of the repo
-- [Travis CI](https://travis-ci.org/sergiocorreia/panflute). Gets run automatically after pushing code to Github. Settings can be [customized](https://github.com/sergiocorreia/panflute/blob/master/.travis.yml), but it basically runs all files in [`\tests`](https://github.com/sergiocorreia/panflute/tree/master/tests) that fit the pattern `test_*.py`.
+- [Github Actions](https://github.com/sergiocorreia/panflute/blob/master/.github/workflows/run_tests.yml). CI tool that run automatically after pushing code. Amongst other things, it runs pytest on all the `test_*.py` files in the [`\tests`](https://github.com/sergiocorreia/panflute/tree/master/tests) folder. 
 
 
 ## Panflute internals
