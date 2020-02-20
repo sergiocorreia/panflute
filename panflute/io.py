@@ -127,7 +127,10 @@ def dump(doc, output_stream=None):
         (default is :data:`sys.stdout`)
     """
 
-    assert type(doc) == Doc, "panflute.dump needs input of type panflute.Doc"
+    if not isinstance(doc, Doc):
+        msg = 'panflute.dump needs input of type "panflute.Doc" but received one of type "{}"'.format(type(doc).__name__)
+        raise TypeError(msg)
+
     if output_stream is None:
         sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
         output_stream = sys.stdout

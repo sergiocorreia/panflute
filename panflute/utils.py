@@ -47,19 +47,17 @@ def check_type(value, oktypes):
     # This allows 'Space' instead of 'Space()'
     if callable(value):
         value = value()
-    if not isinstance(value, oktypes):
-
-        caller = get_caller_name()
-        tag = type(value).__name__
-        
-        print(oktypes, file=sys.stderr)
-        #oktypes_names = [x.name for x in oktypes]
-        #print(oktypes, file=sys.stderr)
-        
-        msg = '\n\nElement "{}" received "{}" but expected {}\n'.format(caller, tag, oktypes)
-        raise TypeError(msg)
-    else:
+    
+    if isinstance(value, oktypes):
         return value
+    
+    # Invalid type
+    caller = get_caller_name()
+    tag = type(value).__name__
+    #oktypes_names = [x.name for x in oktypes]
+    #print(oktypes, file=sys.stderr)
+    msg = '\n\nElement "{}" received "{}" but expected {}\n'.format(caller, tag, oktypes)
+    raise TypeError(msg)
 
 
 def check_group(value, group):

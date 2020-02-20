@@ -272,7 +272,7 @@ class Element(object):
                 raise TypeError(type(obj))
             setattr(self, child, ans)
 
-        # Then apply the action to the element
+        # Then apply the action to the root element
         altered = action(self, doc)
         return self if altered is None else altered
 
