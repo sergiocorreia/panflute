@@ -42,7 +42,12 @@ After cloning the repo and opening the panflute folder:
 
 ## Contributing
 
-Feel free to submit push requests. For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8) (as long as its reasonable), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [google](http://google.github.io/styleguide/pyguide.html). Read more [here](/CONTRIBUTING.md).
+Feel free to submit push requests.
+For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8)
+(as long as its reasonable),
+and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/)
+and [google](http://google.github.io/styleguide/pyguide.html).
+Read more [here](/CONTRIBUTING.md).
 
 ## License
 
