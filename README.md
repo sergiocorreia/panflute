@@ -46,5 +46,4 @@ Feel free to submit push requests. For consistency, code should comply with [pep
 
 ## License
 
-BSD3 license (following  `pandocfilters` by @jgm).
-
+BSD3 license (following [`pandocfilters`](https://github.com/jgm/pandocfilters) by @jgm).
