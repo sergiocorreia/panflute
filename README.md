@@ -23,13 +23,20 @@ To install panflute, open the command line and type:
 pip install panflute
 ```
 
-Python 3.6+ and PyPy3 are supported (Python 2.7 and Python 3.3-3.5 were supported up to version 1.11.4).
+###### Python version
+
+> You may need to use `pip3`/`python3` explicitly,
+> as `pip`/`python` still means `pip2`/`python2` on some systems.\
+> Python 3.6+ and PyPy3 are currently supported,
+> while Python 2.7 and Python 3.3 - 3.5 were supported up to panflute version 1.11.4.
 
 ## Uninstall
 
 ```bash
 pip uninstall panflute
 ```
+
+(or `pip3 ...`, see [Python version](#python-version) above)
 
 ## Dev Install
 
@@ -39,6 +46,7 @@ After cloning the repo and opening the panflute folder:
 
 `python setup.py develop`: installs locally with a symlink so changes are automatically updated
 
+(or `python3 ...`, see [Python version](#python-version) above)
 
 ## Contributing
 
