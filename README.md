@@ -51,5 +51,4 @@ Read more [here](/CONTRIBUTING.md).
 
 ## License
 
-BSD3 license (following  `pandocfilters` by @jgm).
-
+BSD3 license (following [`pandocfilters`](https://github.com/jgm/pandocfilters) by @jgm).
