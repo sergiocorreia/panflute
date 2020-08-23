@@ -111,7 +111,7 @@ def dump(doc, output_stream=None):
 
     To dump to file:
 
-        >>> with open('some-document.json', 'w'. encoding='utf-8') as f:
+        >>> with open('some-document.json', 'w', encoding='utf-8') as f:
         >>>     pf.dump(doc, f)
 
     To dump to a  string:
