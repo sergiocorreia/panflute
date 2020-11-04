@@ -83,7 +83,7 @@ class Doc(Element):
             return {
                 'pandoc-api-version': self.api_version,
                 'meta': meta,
-                'blocks']: blocks,
+                'blocks': blocks,
             }
 
 
