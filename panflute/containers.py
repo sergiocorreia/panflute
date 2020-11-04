@@ -7,7 +7,6 @@ object, and the attribute of the parent object that they correspond to.
 # Imports
 # ---------------------------
 
-from collections import OrderedDict
 from collections.abc import MutableSequence, MutableMapping
 from .utils import check_type, encode_dict  # check_group
 
@@ -15,7 +14,7 @@ from .utils import check_type, encode_dict  # check_group
 # ---------------------------
 # Container Classes
 # ---------------------------
-# These are list and OrderedDict containers that
+# These are list and dict containers that
 #  (a) track the identity of their parents, and
 #  (b) track the parent's property where they are stored
 # They attach these two to the elements requested through __getattr__
@@ -107,7 +106,7 @@ class DictContainer(MutableMapping):
         self.parent = parent
         self.location = None
 
-        self.dict = OrderedDict()
+        self.dict = dict()
         self.update(args)  # Must be a sequence of tuples
         self.update(kwargs)  # Order of kwargs is not preserved
 
@@ -137,9 +136,7 @@ class DictContainer(MutableMapping):
         return self.dict.__iter__()
 
     def to_json(self):
-        items = self.dict.items()
-        return OrderedDict((k, to_json_wrapper(v)) for k, v in items)
-        return [item.to_json() for item in self.dict]
+        return {k: to_json_wrapper(v) for k, v in self.dict.items()}
 
 
 # ---------------------------

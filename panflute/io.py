@@ -18,7 +18,6 @@ import os
 import sys
 import json
 import codecs  # Used in sys.stdout writer
-from collections import OrderedDict
 from functools import partial
 
 
@@ -56,7 +55,7 @@ def load(input_stream=None):
         input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 
     # Load JSON and validate it
-    doc = json.load(input_stream, object_pairs_hook=from_json)
+    doc = json.load(input_stream, object_hook=from_json)
 
     # Notes:
     # - We use 'object_pairs_hook' instead of 'object_hook' to preserve the
@@ -271,5 +270,5 @@ def load_reader_options():
     Retrieve Pandoc Reader options from the environment
     """
     options = os.environ['PANDOC_READER_OPTIONS']
-    options = json.loads(options, object_pairs_hook=OrderedDict)
+    options = json.loads(options)
     return options

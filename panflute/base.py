@@ -7,7 +7,6 @@ Base classes and methods of all Pandoc elements
 # ---------------------------
 
 from operator import attrgetter
-from collections import OrderedDict
 from collections.abc import MutableSequence, MutableMapping
 from itertools import chain
 
@@ -52,7 +51,7 @@ class Element(object):
         for key in self.__slots__:
             if not key.startswith('_') and key != 'text':
                 val = getattr(self, key)
-                if val not in ([], OrderedDict(), ''):
+                if val not in ([], dict(), ''):
                     extra.append([key, val])
 
         if extra:
@@ -83,7 +82,7 @@ class Element(object):
     def _set_ica(self, identifier, classes, attributes):
         self.identifier = check_type(identifier, str)
         self.classes = [check_type(cl, str) for cl in classes]
-        self.attributes = OrderedDict(attributes)
+        self.attributes = dict(attributes)
 
     def _ica_to_json(self):
         return [self.identifier, self.classes, list(self.attributes.items())]
