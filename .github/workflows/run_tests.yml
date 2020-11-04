@@ -21,9 +21,16 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: [3.6, 3.7, 3.8, pypy3]
-        # last 1.x verison
-        pandoc-version: [2.7.3, 2.8.1, latest]
+        # see setup.py for supported versions
+        python-version: [3.6, 3.7, 3.8, 3.9, pypy3]
+        # pandoc testing versions note:
+        # lowest supported version is 2.7
+        # no major API change between 2.7 to 2.9
+        # 2.10 has breaking change
+        # 2.11 has minor breaking change, fixing some quirks in 2.10
+        # should test sparingly across API breaking boundaries
+        # as of writing, panflute only support pandoc<= 2.9. But GitHub workflow does not support "allow failure" yet. See https://github.com/actions/toolkit/issues/399
+        pandoc-version: [2.7.3, 2.9.2.1, 2.10.1, latest]
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
