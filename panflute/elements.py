@@ -1404,6 +1404,106 @@ def _decode_row(row):
     return TableRow(*row)
 
 
+# _res_func is a dict from key to a function
+# which is going to eat `c`
+# to be used in from_json below
+_res_func = {
+    'Str': Str,
+    'MetaBool': MetaBool,
+    'MetaString': MetaString,
+    # ignore c
+    'Null': lambda c: Null(),
+    'Space': lambda c: Space(),
+    'HorizontalRule': lambda c: HorizontalRule(),
+    'SoftBreak': lambda c: SoftBreak(),
+    'LineBreak': lambda c: LineBreak(),
+    # eat *c instead
+    'Plain': lambda c: Plain(*c),
+    'Para': lambda c: Para(*c),
+    'BlockQuote': lambda c: BlockQuote(*c),
+    'Emph': lambda c: Emph(*c),
+    'Strong': lambda c: Strong(*c),
+    'Strikeout': lambda c: Strikeout(*c),
+    'Superscript': lambda c: Superscript(*c),
+    'Subscript': lambda c: Subscript(*c),
+    'SmallCaps': lambda c: SmallCaps(*c),
+    'Note': lambda c: Note(*c),
+    'MetaList': lambda c: MetaList(*c),
+    'MetaInlines': lambda c: MetaInlines(*c),
+    'MetaBlocks': lambda c: MetaBlocks(*c),
+    # other cases
+    'Div': lambda c: Div(
+        *c[1],
+        **_decode_ica(c[0])
+    ),
+    'Span': lambda c: Span(
+        *c[1],
+        **_decode_ica(c[0])
+    ),
+    'Header': lambda c: Header(
+        *c[2],
+        level=c[0],
+        **_decode_ica(c[1])
+    ),
+    'Quoted': lambda c: Quoted(
+        *c[1],
+        quote_type=c[0]
+    ),
+    'Link': lambda c: Link(
+        *c[1],
+        url=c[2][0],
+        title=c[2][1],
+        **_decode_ica(c[0])
+    ),
+    'Image': lambda c: Image(
+        *c[1],
+        url=c[2][0],
+        title=c[2][1],
+        **_decode_ica(c[0])
+    ),
+    'CodeBlock': lambda c: CodeBlock(
+        text=c[1],
+        **_decode_ica(c[0])
+    ),
+    'RawBlock': lambda c: RawBlock(
+        text=c[1],
+        format=c[0]
+    ),
+    'Code': lambda c: Code(
+        text=c[1],
+        **_decode_ica(c[0])
+    ),
+    'Math': lambda c: Math(
+        text=c[1],
+        format=c[0]
+    ),
+    'RawInline': lambda c: RawInline(
+        text=c[1],
+        format=c[0]
+    ),
+    'Cite': lambda c: Cite(
+        *c[1],
+        citations=[_decode_citation(dct) for dct in c[0]]
+    ),
+    'BulletList': lambda c: BulletList(*[ListItem(*item) for item in c]),
+    'OrderedList': lambda c: OrderedList(
+        *[ListItem(*item) for item in c[1]],
+        start=c[0][0],
+        style=c[0][1], delimiter=c[0][2]
+    ),
+    'DefinitionList': lambda c: DefinitionList(*[_decode_definition_item(item) for item in c]),
+    'LineBlock': lambda c: LineBlock(*[LineItem(*item) for item in c]),
+    'Table': lambda c: Table(
+        *[_decode_row(x) for x in c[4]],
+        caption=c[0],
+        alignment=c[1],
+        width=c[2],
+        header=_decode_row(c[3])
+    ),
+    'MetaMap': lambda c: MetaMap(*c.items()),
+}
+
+
 def from_json(data):
 
     # OrderedDict should be fast in 3.6+, so don't worry about speed:
@@ -1436,100 +1536,14 @@ def from_json(data):
     tag = data['t']
     c = data.get('c')
 
-    # Maybe using globals() is too slow?
-    # TODO: Try w/out globals, as json.load() is a bit slow
-
-    if tag == 'Str':
-        return Str(c)
-
-    elif tag in ('Null', 'Space', 'HorizontalRule', 'SoftBreak', 'LineBreak'):
-        return globals()[tag]()
-
-    elif tag in ('Plain', 'Para', 'BlockQuote', 'Emph', 'Strong', 'Strikeout',
-                 'Superscript', 'Subscript', 'SmallCaps', 'Note'):
-        return globals()[tag](*c)
-
-    elif tag in ('Div', 'Span'):
-        return globals()[tag](*c[1], **_decode_ica(c[0]))
-
-    elif tag == 'Header':
-        return Header(*c[2], level=c[0], **_decode_ica(c[1]))
-
-    elif tag == 'Quoted':
-        return Quoted(*c[1], quote_type=c[0])
-
-    elif tag == 'Link':
-        return Link(*c[1], url=c[2][0], title=c[2][1], **_decode_ica(c[0]))
-
-    elif tag == 'Image':
-        return Image(*c[1], url=c[2][0], title=c[2][1], **_decode_ica(c[0]))
-
-    elif tag == 'CodeBlock':
-        return CodeBlock(text=c[1], **_decode_ica(c[0]))
-
-    elif tag == 'RawBlock':
-        return RawBlock(text=c[1], format=c[0])
-
-    elif tag == 'Code':
-        return Code(text=c[1], **_decode_ica(c[0]))
-
-    elif tag == 'Math':
-        return Math(text=c[1], format=c[0])
-
-    elif tag == 'RawInline':
-        return RawInline(text=c[1], format=c[0])
-
-    elif tag == 'Cite':
-        items = [_decode_citation(dct) for dct in c[0]]
-        return Cite(*c[1], citations=items)
-
-    elif tag == 'BulletList':
-        items = [ListItem(*item) for item in c]
-        return BulletList(*items)
-
-    elif tag == 'OrderedList':
-        items = [ListItem(*item) for item in c[1]]
-        return OrderedList(*items, start=c[0][0],
-                           style=c[0][1], delimiter=c[0][2])
-
-    elif tag == 'DefinitionList':
-        items = [_decode_definition_item(item) for item in c]
-        return DefinitionList(*items)
-
-    elif tag == 'LineBlock':
-        items = [LineItem(*item) for item in c]
-        return LineBlock(*items)
-
-    elif tag == 'Table':
-        header = _decode_row(c[3])
-        data = [_decode_row(x) for x in c[4]]
-        return Table(*data, caption=c[0], alignment=c[1], width=c[2],
-                     header=header)
-
-    elif tag == 'MetaList':
-        return MetaList(*c)
-
-    elif tag == 'MetaMap':
-        return MetaMap(*c.items())
-
-    elif tag == 'MetaInlines':
-        return MetaInlines(*c)
-
-    elif tag == 'MetaBlocks':
-        return MetaBlocks(*c)
-
-    elif tag == 'MetaString':
-        return MetaString(c)
-
-    elif tag == 'MetaBool':
-        assert c in {True, False}, c
-        return MetaBool(c)
-
+    # This was slow previously because of the huge if then
+    # use a dict for O(1) lookup
+    if tag in _res_func:
+        return _res_func[tag](c)
     elif tag in SPECIAL_ELEMENTS:
         return tag
-
     else:
-        raise Exception('unknown tag: ' + tag)
+        raise NotImplementedError(f'Unknown tag: {tag}')
 
 
 def builtin2meta(val):
