@@ -17,7 +17,7 @@ from .elements import (
 
 from .elements import (
     Null, HorizontalRule, Space, SoftBreak, LineBreak, Str,
-    Code, BlockQuote, Note, Div, Plain, Para, Emph, Strong, Strikeout,
+    Code, BlockQuote, Note, Div, Plain, Para, Emph, Strong, Underline, Strikeout,
     Superscript, Subscript, SmallCaps, Span, RawBlock, RawInline, Math,
     CodeBlock, Link, Image, BulletList, OrderedList, DefinitionList,
     LineBlock, Header, Quoted, Cite, Table)

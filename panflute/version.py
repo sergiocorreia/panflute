@@ -2,4 +2,4 @@
 Panflute version
 """
 
-__version__ = '1.12.5'
+__version__ = '1.13.0'

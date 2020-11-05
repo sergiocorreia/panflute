@@ -241,6 +241,23 @@ class Strong(Inline):
         return self.content.to_json()
 
 
+class Underline(Inline):
+    """Underlined text
+
+    :param args: elements that will be underlined
+    :type args: :class:`Inline`
+    :Base: :class:`Inline`
+     """
+    __slots__ = ['_content']
+    _children = ['content']
+
+    def __init__(self, *args):
+        self._set_content(args, Inline)
+
+    def _slots_to_json(self):
+        return self.content.to_json()
+
+
 class Strikeout(Inline):
     """Strikeout text
 
@@ -1418,6 +1435,7 @@ _res_func = {
     'BlockQuote': lambda c: BlockQuote(*c),
     'Emph': lambda c: Emph(*c),
     'Strong': lambda c: Strong(*c),
+    'Underline': lambda c: Underline(*c),
     'Strikeout': lambda c: Strikeout(*c),
     'Superscript': lambda c: Superscript(*c),
     'Subscript': lambda c: Subscript(*c),
