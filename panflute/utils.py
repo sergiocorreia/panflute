@@ -6,7 +6,6 @@ Auxiliary functions that have no dependencies
 # Imports
 # ---------------------------
 
-from collections import OrderedDict
 import sys
 import os.path as p
 from importlib import import_module
@@ -70,7 +69,10 @@ def check_group(value, group):
 
 
 def encode_dict(tag, content):
-    return OrderedDict((("t", tag), ("c", content)))
+    return {
+        "t": tag,
+        "c": content,
+    }
 
 
 # ---------------------------

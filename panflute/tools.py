@@ -261,8 +261,7 @@ def meta2builtin(meta):
     elif isinstance(meta, MetaList):
         return [meta2builtin(v) for v in meta.content.list]
     elif isinstance(meta, MetaMap):
-        return OrderedDict((k, meta2builtin(v)) for (k, v)
-                           in meta.content.dict.items())
+        return {k: meta2builtin(v) for k, v in meta.content.dict.items()}
     elif isinstance(meta, (MetaInlines, MetaBlocks)):
         return stringify(meta)
     else:
@@ -418,7 +417,7 @@ def convert_text(text,
     out = inner_convert_text(text, in_fmt, out_fmt, extra_args)
 
     if output_format == 'panflute':
-        out = json.loads(out, object_pairs_hook=from_json)
+        out = json.loads(out, object_hook=from_json)
 
         if standalone:
             if not isinstance(out, Doc):  # Pandoc 1.7.2 and earlier

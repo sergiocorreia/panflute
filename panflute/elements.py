@@ -6,8 +6,6 @@ Classes corresponding to Pandoc elements
 # Imports
 # ---------------------------
 
-from collections import OrderedDict
-
 from .utils import check_type, check_group, encode_dict
 from .containers import ListContainer, DictContainer
 from .base import Element, Block, Inline, MetaValue
@@ -71,10 +69,7 @@ class Doc(Element):
 
     @metadata.setter
     def metadata(self, value):
-        if isinstance(value, MetaMap):
-            value = value.content
-        else:
-            value = OrderedDict(value)
+        value = value.content if isinstance(value, MetaMap) else dict(value)
         self._metadata = MetaMap(*value.items())
 
     def to_json(self):
@@ -85,11 +80,11 @@ class Doc(Element):
         if self.api_version is None:
             return [{'unMeta': meta}, blocks]
         else:
-            ans = OrderedDict()
-            ans['pandoc-api-version'] = self.api_version
-            ans['meta'] = meta
-            ans['blocks'] = blocks
-            return ans
+            return {
+                'pandoc-api-version': self.api_version,
+                'meta': meta,
+                'blocks': blocks,
+            }
 
 
 # ---------------------------
@@ -534,25 +529,25 @@ class Citation(Element):
 
     def to_json(self):
         # Replace default .to_json ; we don't need _slots_to_json()
-        ans = OrderedDict()
-        ans['citationSuffix'] = self.suffix.to_json()
-        ans['citationNoteNum'] = self.note_num
-        ans['citationMode'] = {'t': self.mode}
-        ans['citationPrefix'] = self.prefix.to_json()
-        ans['citationId'] = self.id
-        ans['citationHash'] = self.hash
-        return ans
+        return {
+            'citationSuffix': self.suffix.to_json(),
+            'citationNoteNum': self.note_num,
+            'citationMode': {'t': self.mode},
+            'citationPrefix': self.prefix.to_json(),
+            'citationId': self.id,
+            'citationHash': self.hash,
+        }
 
     def to_json_legacy(self):
         # Replace default .to_json ; we don't need _slots_to_json()
-        ans = OrderedDict()
-        ans['citationSuffix'] = self.suffix.to_json()
-        ans['citationNoteNum'] = self.note_num
-        ans['citationMode'] = encode_dict(self.mode, [])
-        ans['citationPrefix'] = self.prefix.to_json()
-        ans['citationId'] = self.id
-        ans['citationHash'] = self.hash
-        return ans
+        return {
+            'citationSuffix': self.suffix.to_json(),
+            'citationNoteNum': self.note_num,
+            'citationMode': encode_dict(self.mode, []),
+            'citationPrefix': self.prefix.to_json(),
+            'citationId': self.id,
+            'citationHash': self.hash,
+        }
 
 
 class Link(Inline):
@@ -1405,11 +1400,6 @@ def _decode_row(row):
 
 
 def from_json(data):
-
-    # OrderedDict should be fast in 3.6+, so don't worry about speed:
-    # https://twitter.com/raymondh/status/773978885092323328
-    data = OrderedDict(data)
-
     # Metadata key (legacy)
     if 'unMeta' in data:
         assert len(data) == 1
