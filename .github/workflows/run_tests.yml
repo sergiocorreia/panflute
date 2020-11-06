@@ -55,7 +55,7 @@ jobs:
     - name: Download Pandoc
       run: |
         downloadUrl=$(python .github/workflows/pandoc_url.py ${{ matrix.pandoc-version }})
-        wget $downloadUrl
+        wget --no-verbose $downloadUrl
         sudo dpkg -i ${downloadUrl##*/}
         pandoc --version
     - name: Test with pytest
