@@ -51,10 +51,15 @@ Then copy the resulting PDF into the Panflute folder of the website.
 To run unit tests locally and check code coverage, run:
 
 ```
-py.test --cov=panflute tests && coverage html && cd htmlcov && index.html && cd ..
+pytest --cov=panflute tests && coverage html && cd htmlcov && index.html && cd ..
 ```
 
-This requires `pip install coverage` and `pip install pytest-cov`.
+This requires a development environment,
+which can be installed from the repository's root directory using:
+
+```shell
+pip install --editable ".[dev]"
+```
 
 
 ## Pushing to PyPI through Twine
