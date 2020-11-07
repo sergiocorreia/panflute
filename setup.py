@@ -5,8 +5,6 @@ https://github.com/sergiocorreia/panflute
 """
 
 from setuptools import setup, find_packages
-# To use a consistent encoding
-from codecs import open
 from os import path
 
 here = path.abspath(path.dirname(__file__))
@@ -14,10 +12,6 @@ here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
-
-# Get requirements from 'requirements.txt'
-with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    requirements = [x.strip() for x in f.readlines()]
 
 # Import version number
 version = {}
@@ -39,6 +33,11 @@ setup(
 
     # The project's main homepage.
     url='https://github.com/sergiocorreia/panflute',
+    project_urls={
+        "Source": "https://github.com/sergiocorreia/panflute",
+        "Documentation": "http://scorreia.com/software/panflute/",
+        "Tracker": "https://github.com/sergiocorreia/panflute/issues",
+    },
 
     # Author details
     author="Sergio Correia",
@@ -86,24 +85,34 @@ setup(
     # simple. Or you can use find_packages().
     packages=find_packages(exclude=['contrib', 'docs', 'tests', 'examples']),
 
-    # Alternatively, if you want to distribute just a my_module.py, uncomment
-    # this:
-    #   py_modules=["my_module"],
-
+    python_requires='>=3.6',
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=requirements,
+    install_requires=[
+        'click',
+        'pyyaml',
+    ],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
-    # $ pip install -e .[dev,test]
+    # $ pip install -e .[dev,pypi]
     extras_require={
-    #    'dev': ['check-manifest'],
-        'test': ['pandocfilters', 'configparser', 'pytest-cov'],
-        'pypi': ['docutils', 'Pygments']
+        'dev': [
+            'configparser',
+            'coverage',
+            'flake8',
+            'pandocfilters',
+            'pytest-cov',
+            'requests',
+        ],
+        'pypi': [
+            'docutils',
+            'Pygments',
+            'twine',
+        ]
     },
 
     # If there are data files included in your packages that need to be
