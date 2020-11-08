@@ -54,9 +54,10 @@ jobs:
         flake8 ./panflute --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Download Pandoc
       run: |
-        downloadUrl=$(python -c 'import requests, sys; v = sys.argv[1]; url = "https://api.github.com/repos/jgm/pandoc/releases/" + ("" if v == "latest" else "tags/") + v; print(next(i["browser_download_url"] for i in requests.get(url).json()["assets"] if i["name"][-3:] == "deb"))' ${{ matrix.pandoc-version }})
-        wget --no-verbose $downloadUrl
-        sudo dpkg -i ${downloadUrl##*/}
+        [[ ${{ matrix.pandoc-version }} == "latest" ]] && url="https://github.com/jgm/pandoc/releases/latest" || url="https://github.com/jgm/pandoc/releases/tag/${{ matrix.pandoc-version }}"
+        downloadUrl="https://github.com$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')"
+        wget --no-verbose "$downloadUrl"
+        sudo dpkg -i "${downloadUrl##*/}"
         pandoc --version
     - name: Test with pytest
       run: pytest
