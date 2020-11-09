@@ -109,7 +109,7 @@ def load_pandoc_version():
     try:
         return tuple(int(i) for i in os.environ['PANDOC_VERSION'].split('.'))
     except KeyError:
-        debug(f'Environment variable PANDOC_VERSION is missing, ignoring...')
+        pass
     except (AttributeError, ValueError):
         debug(f'Environment variable PANDOC_VERSION is malformed, ignoring...')
 
@@ -124,7 +124,7 @@ def load_pandoc_reader_options():
         options = json.loads(os.environ['PANDOC_READER_OPTIONS'])
         return options
     except KeyError:
-        debug(f'Environment variable PANDOC_READER_OPTIONS is missing, ignoring...')
+        pass
     except json.JSONDecodeError:
         debug(f'Environment variable PANDOC_READER_OPTIONS is malformed, ignoring...')
     return dict()
