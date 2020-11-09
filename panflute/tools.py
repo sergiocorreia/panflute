@@ -153,15 +153,6 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                 return function(options=options, data=data,
                                 element=element, doc=doc)
 
-
-def debug(*args, **kwargs):
-    """
-    Same as print, but prints to ``stderr``
-    (which is not intercepted by Pandoc).
-    """
-    print(file=sys.stderr, *args, **kwargs)
-
-
 # ---------------------------
 # Functions that extract content
 # ---------------------------

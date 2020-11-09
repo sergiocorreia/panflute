@@ -13,8 +13,7 @@ import click
 from io import StringIO
 
 from .io import load, dump
-from .tools import debug
-from .utils import ContextImport
+from .utils import debug, ContextImport
 
 
 reduced_sys_path = [dir_ for dir_ in sys.path if (dir_ not in ('', '.')) and p.isdir(dir_)]

@@ -29,8 +29,9 @@ from .io import load, dump, run_filter, run_filters
 from .io import toJSONFilter, toJSONFilters  # Wrappers
 from .io import load_reader_options
 
-from .tools import (
-    stringify, yaml_filter, shell, run_pandoc, convert_text, debug, get_option)
+from .utils import debug
+
+from .tools import stringify, yaml_filter, shell, run_pandoc, convert_text, get_option
 
 from .autofilter import main, panfl, get_filter_dirs, stdio
 

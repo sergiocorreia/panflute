@@ -1,14 +1,18 @@
 """
 Classes corresponding to Pandoc elements
+
+Notation:
+- "ica" is shorthand for "identifier, classes, attributes"
 """
 
 # ---------------------------
 # Imports
 # ---------------------------
 
-from .utils import check_type, check_group, encode_dict
+from .utils import check_type, check_group, encode_dict, decode_ica
 from .containers import ListContainer, DictContainer
 from .base import Element, Block, Inline, MetaValue
+from .table_elements import Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption, TABLE_ALIGNMENT, TABLE_WIDTH, table_from_json
 
 
 # ---------------------------
@@ -592,8 +596,8 @@ class Link(Inline):
 
     def __init__(self, *args, url='', title='',
                  identifier='', classes=[], attributes={}):
-        self._set_content(args, Inline)
         self._set_ica(identifier, classes, attributes)
+        self._set_content(args, Inline)
         self.url = check_type(url, str)
         self.title = check_type(title, str)
 
@@ -627,8 +631,8 @@ class Image(Inline):
 
     def __init__(self, *args, url='', title='',
                  identifier='', classes=[], attributes={}):
-        self._set_content(args, Inline)
         self._set_ica(identifier, classes, attributes)
+        self._set_content(args, Inline)
         self.url = check_type(url, str)
         self.title = check_type(title, str)
 
@@ -680,8 +684,8 @@ class CodeBlock(Block):
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=[], attributes={}):
-        self.text = check_type(text, str)
         self._set_ica(identifier, classes, attributes)
+        self.text = check_type(text, str)
 
     def _slots_to_json(self):
         return [self._ica_to_json(), self.text]
@@ -726,8 +730,8 @@ class Code(Inline):
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
     def __init__(self, text, identifier='', classes=[], attributes={}):
-        self.text = check_type(text, str)
         self._set_ica(identifier, classes, attributes)
+        self.text = check_type(text, str)
 
     def _slots_to_json(self):
         ica = self._ica_to_json()
@@ -996,167 +1000,9 @@ class LineBlock(Block):
         return self.content.to_json()
 
 
-class TableCell(Element):
-    """
-    Table Cell
-
-    :param args: elements
-    :type args: :class:`Block`
-    :Base: :class:`Element`
-     """
-    __slots__ = ['_content']
-    _children = ['content']
-
-    def __init__(self, *args):
-        self._set_content(args, Block)
-
-    def to_json(self):
-        return self.content.to_json()
-
-
-class TableRow(Element):
-    """
-    Table Row
-
-    :param args: cells
-    :type args: :class:`TableCell`
-    :Base: :class:`Element`
-     """
-    __slots__ = ['_content']
-    _children = ['content']
-
-    def __init__(self, *args):
-        self._set_content(args, TableCell)
-
-    def to_json(self):
-        return self.content.to_json()
-
-
-class Table(Block):
-    """Table, made by a list of table rows, and
-    with optional caption, column alignments, relative column widths and
-    column headers.
-
-    Example:
-
-        >>> x = [Para(Str('Something')), Para(Space, Str('else'))]
-        >>> c1 = TableCell(*x)
-        >>> c2 = TableCell(Header(Str('Title')))
-        >>>
-        >>> rows = [TableRow(c1, c2)]
-        >>> table = Table(*rows, header=TableRow(c2,c1))
-
-    :param args: Table rows
-    :type args: :class:`TableRow`
-    :param header: A special row specifying the column headers
-    :type header: :class:`TableRow`
-    :param caption: The caption of the table
-    :type caption: [:class:`Inline`]
-    :param alignment: List of row alignments
-        (either 'AlignLeft', 'AlignRight', 'AlignCenter' or 'AlignDefault').
-    :type alignment: [:class:`str`]
-    :param width: Relative column widths (default is a list of 0.0s)
-    :type width: [:class:`float`]
-    :Base: :class:`Block`
-     """
-
-    __slots__ = ['_content', '_header', '_caption',
-                 'alignment', 'width', 'rows', 'cols']
-    _children = ['header', 'content', 'caption']
-
-
-    def __init__(self, *args, header=None, caption=None,
-                 alignment=None, width=None):
-
-        self._set_content(args, TableRow)
-        self.header = header
-        self.caption = caption if caption else []
-
-        self.rows = len(self.content)
-        self.cols = 0
-
-        if self.content:
-            self.cols = len(self.content[0].content)
-        
-        if self.header:
-            header_cols = len(self.header.content)
-            if not self.cols:
-                self.cols = header_cols
-            elif self.cols != header_cols:
-                msg = '\n\nInvalid number of header columns.'
-                msg += 'Expected {} but received {}\n'.format(self.cols, header_cols)
-                raise IndexError(msg)
-        
-        if alignment is None:
-            self.alignment = ['AlignDefault'] * self.cols
-        else:
-            self.alignment = [check_group(a, TABLE_ALIGNMENT) for a in alignment]
-            if self.cols != len(self.alignment):
-                msg = '\n\nInvalid number of alignment columns.'
-                msg += 'Expected {} but received {}\n'.format(self.cols, len(self.alignment))
-                raise IndexError(msg)
-
-        if width is None:
-            self.width = [0.0] * self.cols
-        else:
-            self.width = [check_type(w, (float, int)) for w in width]
-            if self.cols != len(self.width):
-                msg = '\n\nInvalid number of width columns.'
-                msg += 'Expected {} but received {}\n'.format(self.cols, len(self.width))
-                raise IndexError(msg)
-
-
-    @property
-    def header(self):
-        return self._header
-
-    @header.setter
-    def header(self, value):
-        if not value or (isinstance(value, TableRow) and not value.content):
-            self._header = None
-            return
-
-        value = value.content if isinstance(value, TableRow) else list(value)
-        self._header = TableRow(*value)
-        self._header.parent = self
-        self._header.location = 'header'
-        if hasattr(self, 'cols') and len(value) != self.cols:
-            msg = 'table header has an incorrect number of columns:'
-            msg += ' {} rows but expected {}'.format(len(value), self.cols)
-            raise IndexError(msg)
-
-    @property
-    def caption(self):
-        return self._caption
-
-    @caption.setter
-    def caption(self, value):
-        value = value.list if isinstance(value, ListContainer) else list(value)
-        self._caption = ListContainer(*value, oktypes=Inline, parent=self)
-        self._caption.location = 'caption'
-
-    def _slots_to_json(self):
-        caption = [chunk.to_json() for chunk in self.caption]
-        alignment = [{'t': x} for x in self.alignment]
-        if self.header is None:
-            header = [[]] * self.cols
-        else:
-            header = self.header.to_json()
-        items = self.content.to_json()
-        content = [caption, alignment, self.width, header, items]
-        return content
-
-    def _slots_to_json_legacy(self):
-        caption = [chunk.to_json() for chunk in self.caption]
-        alignment = [encode_dict(x, []) for x in self.alignment]
-        if self.header is None:
-            header = [[]] * self.cols
-        else:
-            header = self.header.to_json()
-        items = self.content.to_json()
-        content = [caption, alignment, self.width, header, items]
-        return content
-
+# ---------------------------
+# Classes - Metadata
+# ---------------------------
 
 class MetaList(MetaValue):
     """Metadata list container
@@ -1206,10 +1052,6 @@ class MetaMap(MetaValue):
 
     def _slots_to_json(self):
         return self.content.to_json()
-
-    # ---------------------------
-    # replace .content container (ListContainer to DictContainer)
-    # ---------------------------
 
     @property
     def content(self):
@@ -1329,8 +1171,6 @@ LIST_NUMBER_STYLES = {
 
 LIST_NUMBER_DELIMITERS = {'DefaultDelim', 'Period', 'OneParen', 'TwoParens'}
 
-TABLE_ALIGNMENT = {'AlignLeft', 'AlignRight', 'AlignCenter', 'AlignDefault'}
-
 QUOTE_TYPES = {'SingleQuote', 'DoubleQuote'}
 
 CITATION_MODE = {'AuthorInText', 'SuppressAuthor', 'NormalCitation'}
@@ -1380,7 +1220,7 @@ RAW_FORMATS = {'tex',
                'vimwiki'}
 
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
-    MATH_FORMATS | TABLE_ALIGNMENT | QUOTE_TYPES | CITATION_MODE
+    MATH_FORMATS | QUOTE_TYPES | CITATION_MODE | TABLE_ALIGNMENT | TABLE_WIDTH
 
 EMPTY_ELEMENTS = {Null, Space, HorizontalRule, SoftBreak, LineBreak}
 
@@ -1388,12 +1228,6 @@ EMPTY_ELEMENTS = {Null, Space, HorizontalRule, SoftBreak, LineBreak}
 # ---------------------------
 # Functions
 # ---------------------------
-
-def _decode_ica(lst):
-    return {'identifier': lst[0],
-            'classes': lst[1],
-            'attributes': lst[2]}
-
 
 def _decode_citation(dct):
     dct = dict(dct)  # Convert from list of tuples to dict
@@ -1409,11 +1243,6 @@ def _decode_definition_item(item):
     term, definitions = item
     definitions = [Definition(*x) for x in definitions]
     return DefinitionItem(term=term, definitions=definitions)
-
-
-def _decode_row(row):
-    row = [TableCell(*x) for x in row]
-    return TableRow(*row)
 
 
 # _res_func is a dict from key to a function
@@ -1447,16 +1276,16 @@ _res_func = {
     # other cases
     'Div': lambda c: Div(
         *c[1],
-        **_decode_ica(c[0])
+        **decode_ica(c[0])
     ),
     'Span': lambda c: Span(
         *c[1],
-        **_decode_ica(c[0])
+        **decode_ica(c[0])
     ),
     'Header': lambda c: Header(
         *c[2],
         level=c[0],
-        **_decode_ica(c[1])
+        **decode_ica(c[1])
     ),
     'Quoted': lambda c: Quoted(
         *c[1],
@@ -1466,17 +1295,17 @@ _res_func = {
         *c[1],
         url=c[2][0],
         title=c[2][1],
-        **_decode_ica(c[0])
+        **decode_ica(c[0])
     ),
     'Image': lambda c: Image(
         *c[1],
         url=c[2][0],
         title=c[2][1],
-        **_decode_ica(c[0])
+        **decode_ica(c[0])
     ),
     'CodeBlock': lambda c: CodeBlock(
         text=c[1],
-        **_decode_ica(c[0])
+        **decode_ica(c[0])
     ),
     'RawBlock': lambda c: RawBlock(
         text=c[1],
@@ -1484,7 +1313,7 @@ _res_func = {
     ),
     'Code': lambda c: Code(
         text=c[1],
-        **_decode_ica(c[0])
+        **decode_ica(c[0])
     ),
     'Math': lambda c: Math(
         text=c[1],
@@ -1506,18 +1335,14 @@ _res_func = {
     ),
     'DefinitionList': lambda c: DefinitionList(*[_decode_definition_item(item) for item in c]),
     'LineBlock': lambda c: LineBlock(*[LineItem(*item) for item in c]),
-    'Table': lambda c: Table(
-        *[_decode_row(x) for x in c[4]],
-        caption=c[0],
-        alignment=c[1],
-        width=c[2],
-        header=_decode_row(c[3])
-    ),
+    'ColWidth': lambda c: c,
+    'Table': table_from_json,
     'MetaMap': lambda c: MetaMap(*c.items()),
 }
 
 
 def from_json(data):
+
     # Metadata key (legacy)
     if 'unMeta' in data:
         assert len(data) == 1

@@ -58,40 +58,24 @@ def load(input_stream=None):
     doc = json.load(input_stream, object_hook=from_json)
 
     # Notes:
-    # - We use 'object_pairs_hook' instead of 'object_hook' to preserve the
-    #   order of the metadata.
     # - The hook gets called for dicts (not lists), and the deepest dicts
     #   get called first (so you can ensure that when you receive a dict,
     #   its contents have already been fed to the hook).
 
     # Compatibility:
-    # - Before Pandoc 1.8 (1.7 or earlier, AKA "Pandoc Legacy"),
-    #   the JSON is a list:
-    #   [{"unMeta":{META}},[BLOCKS]]
-    # - Afterwards, it's a dict:
+    # - As of Pandoc 1.9, JSON input is a dict:
     #   {"pandoc-api-version" : [MAJ, MIN, REV],
     #    "meta" : META, "blocks": BLOCKS}
-    # - This means that on legacy, the hook WILL NOT get called on the entire
-    #   document and we need to create the Doc() element by hand
 
     # Corner cases:
-    # - If META is missing, 'object_pairs_hook' will receive an empty list
+    # - If META is missing, 'object_hook' will receive an empty list
 
     # Output format
     format = sys.argv[1] if len(sys.argv) > 1 else 'html'
 
     # API Version
-    if isinstance(doc, Doc):
-        # Modern Pandoc
-        doc.format = format
-        pass
-    else:
-        # Legacy Pandoc
-        metadata, items = doc
-        assert type(items) == list
-        assert len(doc) == 2, 'json.load returned list with unexpected size:'
-        doc = Doc(*items, metadata=metadata, format=format)
-
+    assert isinstance(doc, Doc)
+    doc.format = format
     return doc
 
 
@@ -134,23 +118,6 @@ def dump(doc, output_stream=None):
         sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
         output_stream = sys.stdout
 
-    # Switch to legacy JSON output; eg: {'t': 'Space', 'c': []}
-    if doc.api_version is None:
-
-        # Switch .to_json() to legacy
-        Citation.backup = Citation.to_json
-        Citation.to_json = Citation.to_json_legacy
-
-        # Switch ._slots_to_json() to legacy
-        for E in [Table, OrderedList, Quoted, Math]:
-            E.backup = E._slots_to_json
-            E._slots_to_json = E._slots_to_json_legacy
-
-        # Switch .to_json() to method of base class
-        for E in EMPTY_ELEMENTS:
-            E.backup = E.to_json
-            E.to_json = Element.to_json
-
     json_serializer = lambda elem: elem.to_json()
 
     output_stream.write(json.dumps(
@@ -160,14 +127,6 @@ def dump(doc, output_stream=None):
         separators=(',', ':'),  # Compact separators, like Pandoc
         ensure_ascii=False  # For Pandoc compat
     ))
-
-    # Undo legacy changes
-    if doc.api_version is None:
-        Citation.to_json = Citation.backup
-        for E in [Table, OrderedList, Quoted, Math]:
-            E._slots_to_json = E.backup
-        for E in EMPTY_ELEMENTS:
-            E.to_json = E.backup
 
 
 def toJSONFilters(*args, **kwargs):

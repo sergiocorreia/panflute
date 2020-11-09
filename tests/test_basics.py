@@ -1,106 +1,66 @@
+'''
+Test that running panflute through a markdown file has no effect on the output
+
+For each markdown test file, this runs:
+a) pandoc --> json
+b) json --> panflute --> json
+
+And verifies that the outputs of a) and b) are the same
+'''
+
+
+import json
+from pathlib import Path
 import panflute as pf
-import pandocfilters, json
 
 
-def test_all():
-    fns = [
-        ('./tests/1/api117/benchmark.json', './tests/1/api117/panflute.json'),
-        ('./tests/1/api118/benchmark.json', './tests/1/api118/panflute.json'),
-        ('./tests/2/api117/benchmark.json', './tests/2/api117/panflute.json'),
-        ('./tests/2/api118/benchmark.json', './tests/2/api118/panflute.json'),
-        ('./tests/3/api117/benchmark.json', './tests/3/api117/panflute.json'),
-        ('./tests/3/api118/benchmark.json', './tests/3/api118/panflute.json'),
-        ('./tests/4/api117/benchmark.json', './tests/4/api117/panflute.json'),
-        ('./tests/4/api118/benchmark.json', './tests/4/api118/panflute.json')]
+def test_idempotence():
+	example_files = list(Path('./tests/sample_files').glob('*/example.md'))
+	print(f'Testing idempotence ({len(example_files)} files):')
+	
+	for fn in example_files:
+		print(f'\n - Loading markdown "{fn}"')
+		with fn.open(encoding='utf-8') as f:
+			markdown_text = f.read()
 
-    for input_fn, output_fn in fns:
-        print()
-        print('TESTING:', input_fn)
-        print(64 * '<')
-        inner_test_idempotent(input_fn, output_fn)
-        inner_test_stringify(input_fn, output_fn)
-        print(64 * '>')
-        print()
+		print(' - Converting Markdown to JSON')
+		json_pandoc = pf.convert_text(markdown_text, input_format='markdown', output_format='json', standalone=True)
 
-    print('DONE!')
+		print(' - Constructing Doc() object')
+		doc = pf.convert_text(json_pandoc, input_format='json', output_format='panflute', standalone=True)
+		
+		print(' - Converting Doc() to JSON...')
+		json_panflute = pf.convert_text(doc, input_format='panflute', output_format='json', standalone=True)
+
+		print(' - Are both JSON files equal?')
+		print(f'    - Length: {len(json_pandoc) == len(json_panflute)} ({len(json_pandoc)} vs {len(json_panflute)})')
+		print(f'    - Content: {json_pandoc == json_panflute}')
+		assert json_pandoc == json_panflute
+
+		print(' - Applying trivial filter...')
+		doc = doc.walk(action=empty_test, doc=doc)
+		json_panflute = pf.convert_text(doc, input_format='panflute', output_format='json', standalone=True)
+		print(' - Are both JSON files equal?')
+		print(f'    - Length: {len(json_pandoc) == len(json_panflute)} ({len(json_pandoc)} vs {len(json_panflute)})')
+		print(f'    - Content: {json_pandoc == json_panflute}')
+		assert json_pandoc == json_panflute
+
 
 def empty_test(element, doc):
     return
 
-def inner_test_filter(element, doc):
-    if type(element)==pf.Header:
-        return []
-    if type(element)==pf.Str:
-        element.text = element.text + '!!'
-        return element
 
-def inner_test_idempotent(input_fn, output_fn):
+def test_stringify():
+	markdown_text = '''Hello **world**! *How* are ~you~ doing?'''
+	expected_text = '''Hello world! How are you doing?\n\n'''
 
-    print('\nLoading JSON...')
+	doc = pf.convert_text(markdown_text, input_format='markdown', output_format='panflute', standalone=True)
+	output_text = pf.stringify(doc)
 
-    with open(input_fn, encoding='utf-8') as f:
-        doc = pf.load(f)
+	assert expected_text == output_text
 
-    print('Dumping JSON...')
-    with open(output_fn, mode='w', encoding='utf-8') as f:
-        pf.dump(doc, f)
-        f.write('\n')
-
-    print(' - Done!')
-
-
-    print('\nComparing...')
-
-    with open(input_fn, encoding='utf-8') as f:
-        input_data = f.read()
-
-    with open(output_fn, encoding='utf-8') as f:
-        output_data = f.read()
-
-    print('Are both files the same?')
-    print(' - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
-    print(' - Content:', input_data == output_data)
-
-    print('\nApplying trivial filter...')
-    doc = doc.walk(action=empty_test, doc=doc)
-    print(' - Done!')
-
-    print(' - Dumping JSON...')
-    with open(output_fn, mode='w', encoding='utf-8') as f:
-        pf.dump(doc, f)
-        f.write('\n')
-    print(' - Done!')
-    print(' - Comparing...')
-    with open(input_fn, encoding='utf-8') as f:
-        input_data = f.read()
-    with open(output_fn, encoding='utf-8') as f:
-        output_data = f.read()
-    print(' - Are both files the same?')
-    print('   - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
-    print('   - Content:', input_data == output_data)
-
-
-    assert input_data == output_data
-
-def inner_test_stringify(input_fn, output_fn):
-
-    output_txt_benchmark = './tests/temp_benchmark.txt'
-    output_txt_panflute = './tests/temp_panflute.txt'
-
-    print('Testing stringify()')
-    with open(input_fn, encoding='utf-8') as f:
-        doc = pf.load(f)
-    ans = pf.stringify(doc)
-    #print(repr(ans).encode('utf-8'))
-    with open(output_txt_panflute, encoding='utf-8', mode='w') as f:
-        f.write(ans)
-
-    with open(input_fn, encoding='utf-8') as f:
-        doc = json.load(f)
-    ans = pandocfilters.stringify(doc)
-    with open(output_txt_benchmark, encoding='utf-8', mode='w') as f:
-        f.write(ans)
 
 
 if __name__ == "__main__":
-    test_all()
+    test_idempotence()
+    test_stringify()
