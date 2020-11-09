@@ -37,7 +37,7 @@ def test_idempotence():
 		print(f'    - Content: {json_pandoc == json_panflute}')
 		assert json_pandoc == json_panflute
 
-		print(' - Applying trivial filter...')
+		print(' - Running filter that does nothing...')
 		doc = doc.walk(action=empty_test, doc=doc)
 		json_panflute = pf.convert_text(doc, input_format='panflute', output_format='json', standalone=True)
 		print(' - Are both JSON files equal?')

@@ -1,17 +1,21 @@
 import panflute as pf
-import pytest
+from pathlib import Path
 
 
-@pytest.mark.skip(reason="cannot rely on json files; need to convert them as we do in test_basics.py")
 def test():
     # chcp 65001 --> might be required if running from cmd on Windows
 
-    print('\nLoading JSON...')
-    fn = "./tests/input/heavy_metadata/benchmark.json"
+    fn = Path("./tests/sample_files/heavy_metadata/example.md")
+    print(f'\n - Loading markdown "{fn}"')
+    with fn.open(encoding='utf-8') as f:
+        markdown_text = f.read()
+    print(' - Converting Markdown to JSON')
+    json_pandoc = pf.convert_text(markdown_text, input_format='markdown', output_format='json', standalone=True)
+    print(' - Constructing Doc() object')
+    doc = pf.convert_text(json_pandoc, input_format='json', output_format='panflute', standalone=True)
 
-    with open(fn, encoding='utf-8') as f:
-        doc = pf.load(f)
-
+    print(' - Verifying that we can access metadata correctly')
+    
     meta = doc.get_metadata('title')
     assert meta == "Lorem Ipsum: Title"
     
@@ -35,11 +39,10 @@ def test():
     assert type(meta) == list
     assert meta[0]['Theorem'] == 'Lemma'
 
-    print('--')
     meta = doc.get_metadata('')
     assert len(meta) > 10
 
-    print('\nDone...')
+    print(' - Done!')
 
 if __name__ == "__main__":
     test()
