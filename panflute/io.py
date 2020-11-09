@@ -54,7 +54,6 @@ def load(input_stream=None):
     if input_stream is None:
         input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 
-
     # Load JSON and validate it
     doc = json.load(input_stream, object_hook=from_json)
 
@@ -112,7 +111,7 @@ def dump(doc, output_stream=None):
     """
 
     if not isinstance(doc, Doc):
-        msg = 'panflute.dump needs input of type "panflute.Doc" but received one of type "{}"'.format(type(doc).__name__)
+        msg = f'panflute.dump needs input of type "panflute.Doc" but received one of type "{type(doc).__name__}"'
         raise TypeError(msg)
 
     if output_stream is None:
@@ -223,4 +222,3 @@ def run_filter(action, *args, **kwargs):
     See :func:`.run_filters`
     """
     return run_filters([action], *args, **kwargs)
-

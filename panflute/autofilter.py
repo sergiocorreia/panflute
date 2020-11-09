@@ -8,6 +8,7 @@ Exports ``main`` and ``panfl``.
 
 import os
 import os.path as p
+from pathlib import Path
 import sys
 import click
 from io import StringIO
@@ -16,7 +17,7 @@ from .io import load, dump
 from .utils import debug, ContextImport
 
 
-reduced_sys_path = [dir_ for dir_ in sys.path if (dir_ not in ('', '.')) and p.isdir(dir_)]
+reduced_sys_path = [d for d in sys.path if (d not in ('', '.')) and p.isdir(d)]
 
 
 def get_filter_dirs(hardcoded=True):
@@ -27,15 +28,17 @@ def get_filter_dirs(hardcoded=True):
     """
     if hardcoded:
         if os.name == 'nt':
-            d1 = [p.join(os.environ["APPDATA"], "pandoc", "filters")]
-            return d1
+            base = Path(os.environ['APPDATA'])
+            d1 = base / 'pandoc' / 'filters'
+            return [str(d1)]
         else:
-            d1 = p.join(os.environ["HOME"], ".pandoc", "filters")
-            d2 = p.join(os.environ["HOME"], ".local", "share", "pandoc", "filters")
-            return [d1, d2]
+            base = Path(os.environ['HOME'])
+            d1 = base / '.pandoc' / 'filters'
+            d2 = base / '.local' / 'share' / 'pandoc' / 'filters'
+            return [str(d1), str(d2)]
     else:
         from .tools import run_pandoc
-        
+
         # Extract $DATADIR
         info = run_pandoc(args=['--version']).splitlines()
         prefix = "User data directory: "
@@ -50,7 +53,8 @@ def get_filter_dirs(hardcoded=True):
         return data_dir
 
 
-def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True, panfl_=False, input_stream=None, output_stream=None):
+def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True,
+          panfl_=False, input_stream=None, output_stream=None):
     """
     Reads JSON from stdin and second CLI argument:
     ``sys.argv[1]``. Dumps JSON doc to the stdout.
@@ -213,7 +217,7 @@ def autorun_filters(filters, doc, search_dirs, verbose):
     :return: panflute.Doc
     """
     def remove_py(s):
-            return s[:-3] if s.endswith('.py') else s
+        return s[:-3] if s.endswith('.py') else s
 
     filter_paths = []
     for filter_ in filters:
@@ -239,7 +243,7 @@ def autorun_filters(filters, doc, search_dirs, verbose):
 
             if p.isfile(filter_path):
                 if verbose:
-                    debug("panflute: filter <{}> found in {}".format(filter_, filter_path))
+                    debug(f'panflute: filter "{filter_}" found in {filter_path}')
 
                 if module and not (path in reduced_sys_path):
                     extra_dir = p.abspath(path)
@@ -252,10 +256,10 @@ def autorun_filters(filters, doc, search_dirs, verbose):
                 break
             elif p.isabs(path_postf):
                 if verbose:
-                    debug("          filter <{}> NOT found in {}".format(filter_, filter_path))
+                    debug(f'          filter "{filter_}" NOT found in {filter_path}')
                 raise Exception("filter not found: " + filter_)
             elif verbose:
-                debug("          filter <{}> NOT found in {}".format(filter_, filter_path))
+                debug(f'          filter "{filter_}" NOT found in {filter_path}')
         else:
             raise Exception("filter not found: " + filter_)
 
@@ -280,10 +284,13 @@ def autorun_filters(filters, doc, search_dirs, verbose):
                 raise Exception(e)
         if verbose:
             debug("panflute: filter <{}> completed".format(filter_))
-        
+
         alt_stdout_data = alt_stdout.getvalue()
         if alt_stdout_data:
-            debug('[PANFLUTE WARNING] Filter "{}" wrote to stdout, but Pandoc does not allow that'.format(filter_))
+            msg = (
+                f'Panflute Warning: filter "{filter_}" wrote to stdout, ',
+                'but Pandoc does not allow that')
+            debug(msg)
             debug(alt_stdout_data)
             sys.stderr.flush()
             sys.stdout = alt_stdout = StringIO()

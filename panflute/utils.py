@@ -22,6 +22,7 @@ def decode_ica(lst):
             'classes': lst[1],
             'attributes': lst[2]}
 
+
 def debug(*args, **kwargs):
     """
     Same as print, but prints to ``stderr``
@@ -59,10 +60,10 @@ def check_type(value, oktypes):
     # This allows 'Space' instead of 'Space()'
     if callable(value):
         value = value()
-    
+
     if isinstance(value, oktypes):
         return value
-    
+
     # Invalid type
     caller = get_caller_name()
     tag = type(value).__name__
@@ -83,10 +84,10 @@ def check_type_or_value(value, oktypes, okvalue):
     # This allows 'Space' instead of 'Space()'
     if callable(value):
         value = value()
-    
+
     if isinstance(value, oktypes) or (value == okvalue):
         return value
-    
+
     # Invalid type
     caller = get_caller_name()
     tag = type(value).__name__

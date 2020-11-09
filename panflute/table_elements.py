@@ -31,7 +31,7 @@ class Table(Block):
         >>> table = Table(*rows, header=TableRow(c2,c1))
 
     TODO: UPDATE EXAMPLE
-    TODO: OFFER A SIMPLE WAY TO BUILD A TABLE, with e.g. .alignments and .widths 
+    TODO: OFFER A SIMPLE WAY TO BUILD A TABLE, with e.g. .alignments and .widths
 
     :param args: Table bodies
     :type args: :class:`TableBody`
@@ -63,9 +63,8 @@ class Table(Block):
                  'identifier', 'classes', 'attributes', 'cols']
     _children = ['head', 'content', 'foot', 'caption']
 
-
     def __init__(self, *args, head=None, foot=None, caption=None,
-                colspec=None, identifier='', classes=[], attributes={}):
+                 colspec=None, identifier='', classes=[], attributes={}):
 
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, TableBody)
@@ -76,17 +75,15 @@ class Table(Block):
         self.foot = foot
         # Colspec is a list of (alignment, width) tuples
         # TODO: add validation to colspec
-        self.colspec = [(check_group(a, TABLE_ALIGNMENT), \
-                         check_type_or_value(w, (float, int), 'ColWidthDefault')) \
-                         for (a, w) in colspec] if colspec else [('AlignDefault', 'ColWidthDefault')] * self.cols
+        self.colspec = [(check_group(a, TABLE_ALIGNMENT),
+                         check_type_or_value(w, (float, int), 'ColWidthDefault'))
+                        for (a, w) in colspec] if colspec else [('AlignDefault', 'ColWidthDefault')] * self.cols
         self._validate_colspec()
-
 
     def _set_table_width(self):
         self.cols = 0
         if self.content and self.content[0].content:
-            self.cols = count_columns_in_row(self.content[0].content[0].content) # Table -> First TableBody -> IntermediateBody -> First Row
-
+            self.cols = count_columns_in_row(self.content[0].content[0].content)  # Table -> First TableBody -> IntermediateBody -> First Row
 
     def _validate_cols(self, block):
         if not len(block.content):
@@ -100,7 +97,6 @@ class Table(Block):
             msg = f'\n\nInvalid number of columns in table {block.location}.'
             msg += f'Expected {self.cols} but received {block_cols}\n'
             raise IndexError(msg)
-        
 
     def _validate_colspec(self):
         if self.cols != len(self.colspec):
@@ -108,11 +104,9 @@ class Table(Block):
             msg += 'Expected {} but received {}\n'.format(self.cols, len(self.colspec))
             raise IndexError(msg)
 
-
     @property
     def head(self):
         return self._head
-
 
     @head.setter
     def head(self, value):
@@ -121,11 +115,9 @@ class Table(Block):
         self._head.location = 'head'
         self._validate_cols(self.head)
 
-
     @property
     def foot(self):
         return self._foot
-
 
     @foot.setter
     def foot(self, value):
@@ -133,7 +125,6 @@ class Table(Block):
         self._foot.parent = self
         self._foot.location = 'foot'
         self._validate_cols(self.foot)
-
 
     @property
     def caption(self):
@@ -144,7 +135,6 @@ class Table(Block):
         self._caption = check_type(value, Caption)
         self._caption.parent = self
         self._caption.location = 'caption'
-
 
     def _slots_to_json(self):
         ica = self._ica_to_json()
@@ -228,7 +218,8 @@ class TableBody(Block):
     __slots__ = ['_content', '_head', 'row_head_columns', 'identifier', 'classes', 'attributes']
     _children = ['content', 'head']
 
-    def __init__(self, *args, head=None, row_head_columns=0, identifier='', classes=[], attributes={}):
+    def __init__(self, *args, head=None, row_head_columns=0,
+                 identifier='', classes=[], attributes={}):
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, TableRow)
         self.head = head
@@ -247,10 +238,9 @@ class TableBody(Block):
         self._head = ListContainer(*value, oktypes=TableRow, parent=self)
         self._head.location = 'head'
 
-
     def _slots_to_json(self):
-        #head = self.head.content.to_json() if self.head is not None else 
-        return [self._ica_to_json(), self.row_head_columns, self.head.to_json(), self.content.to_json()]
+        return [self._ica_to_json(), self.row_head_columns,
+                self.head.to_json(), self.content.to_json()]
 
 
 class TableRow(Element):
@@ -299,22 +289,26 @@ class TableCell(Element):
     :type attributes: :class:`dict`
     :Base: :class:`Element`
      """
-    __slots__ = ['_content', 'alignment', 'rowspan', 'colspan', 'identifier', 'classes', 'attributes']
+    __slots__ = ['_content', 'alignment', 'rowspan', 'colspan',
+                 'identifier', 'classes', 'attributes']
     _children = ['content']
 
     def __init__(self, *args, alignment='AlignDefault', rowspan=1, colspan=1,
                  identifier='', classes=[], attributes={}):
-        
+
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Block)
         self.alignment = check_group(alignment, TABLE_ALIGNMENT)
         self.rowspan = rowspan
         self.colspan = colspan
-        if (self.rowspan <= 0): raise TypeError('Cell rowspan must be positive')
-        if (self.colspan <= 0): raise TypeError('Cell colspan must be positive')
+        if (self.rowspan <= 0):
+            raise TypeError('Cell rowspan must be positive')
+        if (self.colspan <= 0):
+            raise TypeError('Cell colspan must be positive')
 
     def to_json(self):
-        return [self._ica_to_json(), {'t': self.alignment}, self.rowspan, self.colspan, self.content.to_json()]
+        return [self._ica_to_json(), {'t': self.alignment}, self.rowspan,
+                self.colspan, self.content.to_json()]
 
 
 class Caption(Element):
@@ -369,11 +363,14 @@ TABLE_WIDTH = {'ColWidthDefault'}
 def count_columns_in_row(row):
     return sum(cell.colspan for cell in row)
 
+
 def colspec_to_json(c):
-    return {'t': c} if c == 'ColWidthDefault' else encode_dict('ColWidth', c) 
+    return {'t': c} if c == 'ColWidthDefault' else encode_dict('ColWidth', c)
+
 
 def cell_from_json(c):
-    return TableCell(*c[4], alignment=c[1], rowspan=c[2], colspan=c[3], **decode_ica(c[0]))
+    return TableCell(*c[4], alignment=c[1], rowspan=c[2], colspan=c[3],
+                     **decode_ica(c[0]))
 
 
 def row_from_json(c):
@@ -384,7 +381,8 @@ def body_from_json(c):
     row_head_columns = c[1]
     head = map(row_from_json, c[2])
     body = map(row_from_json, c[3])
-    return TableBody(*body, head=head, row_head_columns=row_head_columns, **decode_ica(c[0]))
+    return TableBody(*body, head=head, row_head_columns=row_head_columns,
+                     **decode_ica(c[0]))
 
 
 def table_from_json(c):
@@ -395,6 +393,4 @@ def table_from_json(c):
     head = TableHead(*map(row_from_json, c[3][1]), **decode_ica(c[3][0]))
     bodies = map(body_from_json, c[4])
     foot = TableFoot(*map(row_from_json, c[5][1]), **decode_ica(c[5][0]))
-
     return Table(*bodies, head=head, foot=foot, caption=caption, colspec=colspec, **ica)
-

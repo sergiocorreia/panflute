@@ -13,7 +13,9 @@ from .utils import check_type, check_group, encode_dict, decode_ica, debug
 from .utils import load_pandoc_version, load_pandoc_reader_options
 from .containers import ListContainer, DictContainer
 from .base import Element, Block, Inline, MetaValue
-from .table_elements import Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption, TABLE_ALIGNMENT, TABLE_WIDTH, table_from_json
+from .table_elements import (
+    Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption,
+    TABLE_ALIGNMENT, TABLE_WIDTH, table_from_json)
 
 
 # ---------------------------
@@ -51,7 +53,7 @@ class Doc(Element):
 
     _children = ['metadata', 'content']
 
-    def __init__(self, *args, metadata={}, format='html', api_version=(1,22)):
+    def __init__(self, *args, metadata={}, format='html', api_version=(1, 22)):
         self._set_content(args, Block)
         self.metadata = metadata
         self.format = format  # Output format
@@ -72,12 +74,10 @@ class Doc(Element):
         self._metadata.location = 'metadata'
         return self._metadata
 
-
     @metadata.setter
     def metadata(self, value):
         value = value.content if isinstance(value, MetaMap) else dict(value)
         self._metadata = MetaMap(*value.items())
-
 
     def to_json(self):
         # Overrides default method

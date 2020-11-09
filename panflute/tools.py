@@ -153,6 +153,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                 return function(options=options, data=data,
                                 element=element, doc=doc)
 
+
 # ---------------------------
 # Functions that extract content
 # ---------------------------
@@ -193,7 +194,7 @@ def stringify(element, newlines=True):
                 ans = '"' + ans
             if e.index == len(e.container) - 1:
                 ans += '"'
-        
+
         answer.append(ans)
 
     answer = []
@@ -289,25 +290,6 @@ def shell(args, wait=True, msg=None):
     else:
         DETACHED_PROCESS = 0x00000008
         proc = Popen(args, creationflags=DETACHED_PROCESS)
-
-#def get_exe_path():
-#    reg = winreg.ConnectRegistry(None,winreg.HKEY_CLASSES_ROOT)
-#
-#    # Fetch verb linked to the dta extension
-#    path = '.dta'
-#    key = winreg.OpenKey(reg, path)
-#    verb = winreg.QueryValue(key, None) # Alternatives: .dta .do
-#    
-#    # Fetch command linked to that verb
-#    path = '{}\shell\open\command'.format(verb)
-#    key = winreg.OpenKey(reg, path)
-#    cmd = winreg.QueryValue(key, None)
-#    fn = cmd.strip('"').split('"')[0]
-#    #raise(Exception(fn))
-#    return fn
-#
-#def check_correct_executable(fn):
-#    return os.path.isfile(fn) and 'stata' in fn.lower()
 
 
 def run_pandoc(text='', args=None):
@@ -507,6 +489,7 @@ def _replace_keyword(self, keyword, replacement, count=0):
     else:
         raise NotImplementedError(type(replacement))
 
+
 # Bind the method
 Element.replace_keyword = _replace_keyword
 
@@ -524,8 +507,8 @@ def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=Non
      :type error_on_none: ``bool``
 
     The order of preference is local > document > default,
-    although if a local or document tag returns None, then the next level down is used. 
-    Also, if error_on_none=True and the final variable is None, then a ValueError will be raised  
+    although if a local or document tag returns None, then the next level down is used.
+    Also, if error_on_none=True and the final variable is None, then a ValueError will be raised
 
     In this manner you can set global variables, which can be optionally overriden at a local level.
     For example, the two files below show how to apply different styles to docx text:
@@ -568,7 +551,7 @@ def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=Non
 
     """
     variable = None
-    
+
     # element level
     if options is not None and local_tag is not None:
         if local_tag in options and options[local_tag] is not None:
@@ -586,5 +569,5 @@ def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=Non
     variable = default
     if variable is None and error_on_none:
         raise ValueError("could not retrieve a value for tag; local={0}, doc={1}".format(local_tag, doc_tag))
-    
+
     return variable
