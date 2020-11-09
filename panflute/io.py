@@ -111,7 +111,7 @@ def dump(doc, output_stream=None):
     """
 
     if not isinstance(doc, Doc):
-        msg = 'panflute.dump needs input of type "panflute.Doc" but received one of type "{}"'.format(type(doc).__name__)
+        msg = f'panflute.dump needs input of type "panflute.Doc" but received one of type "{type(doc).__name__}"'
         raise TypeError(msg)
 
     if output_stream is None:
@@ -222,12 +222,3 @@ def run_filter(action, *args, **kwargs):
     See :func:`.run_filters`
     """
     return run_filters([action], *args, **kwargs)
-
-
-def load_reader_options():
-    """
-    Retrieve Pandoc Reader options from the environment
-    """
-    options = os.environ['PANDOC_READER_OPTIONS']
-    options = json.loads(options)
-    return options

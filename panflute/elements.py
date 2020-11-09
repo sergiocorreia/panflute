@@ -9,10 +9,13 @@ Notation:
 # Imports
 # ---------------------------
 
-from .utils import check_type, check_group, encode_dict, decode_ica
+from .utils import check_type, check_group, encode_dict, decode_ica, debug
+from .utils import load_pandoc_version, load_pandoc_reader_options
 from .containers import ListContainer, DictContainer
 from .base import Element, Block, Inline, MetaValue
-from .table_elements import Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption, TABLE_ALIGNMENT, TABLE_WIDTH, table_from_json
+from .table_elements import (
+    Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption,
+    TABLE_ALIGNMENT, TABLE_WIDTH, table_from_json)
 
 
 # ---------------------------
@@ -50,19 +53,20 @@ class Doc(Element):
 
     _children = ['metadata', 'content']
 
-    def __init__(self, *args, metadata={}, format='html', api_version=(1,22)):
+    def __init__(self, *args, metadata={}, format='html', api_version=(1, 22)):
         self._set_content(args, Block)
         self.metadata = metadata
         self.format = format  # Output format
 
-        if api_version is None:
-            raise TypeError("invalid api version; using an older version of Pandoc?")
-        elif len(api_version) > 4:
-            raise TypeError("invalid api version", api_version)
-        elif tuple(api_version[:2]) < (1, 22):
-            raise TypeError("invalid api version", api_version)
-        else:
+        try:
             self.api_version = tuple(check_type(v, int) for v in api_version)
+        except TypeError:
+            raise TypeError("invalid api version; using an older version of Pandoc?")
+        if len(self.api_version) > 4 or self.api_version[:2] < (1, 22):
+            raise TypeError("invalid api version", api_version)
+
+        self.pandoc_version = load_pandoc_version()
+        self.pandoc_reader_options = load_pandoc_reader_options()
 
     @property
     def metadata(self):
@@ -77,17 +81,11 @@ class Doc(Element):
 
     def to_json(self):
         # Overrides default method
-        meta = self.metadata.content.to_json()
-        blocks = self.content.to_json()
-
-        if self.api_version is None:
-            return [{'unMeta': meta}, blocks]
-        else:
-            return {
-                'pandoc-api-version': self.api_version,
-                'meta': meta,
-                'blocks': blocks,
-            }
+        return {
+            'pandoc-api-version': self.api_version,
+            'meta': self.metadata.content.to_json(),
+            'blocks': self.content.to_json(),
+        }
 
 
 # ---------------------------
@@ -1341,7 +1339,6 @@ _res_func = {
 
 
 def from_json(data):
-
     # Metadata key (legacy)
     if 'unMeta' in data:
         assert len(data) == 1

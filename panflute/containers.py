@@ -8,7 +8,7 @@ object, and the attribute of the parent object that they correspond to.
 # ---------------------------
 
 from collections.abc import MutableSequence, MutableMapping
-from .utils import check_type, encode_dict  # check_group
+from .utils import check_type, encode_dict, debug
 
 
 # ---------------------------
@@ -148,7 +148,7 @@ def attach(element, parent, location):
         element.parent = parent
         element.location = location
     else:
-        print(element, 'has no parent')
+        debug(f'Warning: element "{type(element)}" has no parent')
     return element
 
 

@@ -16,15 +16,13 @@ This document contains useful resources and guidelines when contributing to the 
 
 For consistency, code should try to comply (as much as possible) with [pep8](https://pypi.python.org/pypi/pep8), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [Google](http://google.github.io/styleguide/pyguide.html).
 
-### flake8:
+### flake8
 
 ```bash
-pip install flake8
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 ```
 
-
-### Useful tools:
+### Useful tools
 
 - [`pycodestyle`](https://pypi.org/project/pycodestyle/) (formerly `pep8`): run it with `pycodestyle ./panflute > pycodestyle-report.txt`
 - [`pylint`](https://www.pylint.org/): run it with `pylint panflute > pylint-report.txt` from the root folder of the repo

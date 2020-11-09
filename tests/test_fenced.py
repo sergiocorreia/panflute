@@ -2,8 +2,7 @@
 # pandoc --smart --parse-raw --to=json fenced/input.md > fenced/input.json
 
 import panflute as pf
-import pytest
-import pandocfilters, json
+from pathlib import Path
 
 
 def fenced_action(options, data, element, doc):
@@ -15,67 +14,34 @@ def fenced_action(options, data, element, doc):
     return
 
 
-def empty_filter(element, doc):
-    return
-
-
-@pytest.mark.skip(reason="cannot rely on json files; need to convert them as we do in test_basics.py")
 def test_all():
-    input_fn = './tests/fenced/input.json'
-    output_fn = './tests/fenced/output.json'
 
-    # Test fenced filter
+    fn = Path("./tests/sample_files/fenced/example.md")
+    print(f'\n - Loading markdown "{fn}"')
+    with fn.open(encoding='utf-8') as f:
+        markdown_text = f.read()
+    print(' - Converting Markdown to JSON')
+    json_pandoc = pf.convert_text(markdown_text, input_format='markdown', output_format='json', standalone=True)
+    print(' - Constructing Doc() object')
+    doc = pf.convert_text(json_pandoc, input_format='json', output_format='panflute', standalone=True)    
 
-    print('\nLoading JSON...')
-    with open(input_fn, encoding='utf-8') as f:
-        doc = pf.load(f)
-    print('Dumping JSON...')
-    with open(output_fn, mode='w', encoding='utf-8') as f:
-        pf.dump(doc, f)
-        f.write('\n')
-    print(' - Done!')
-
-    print('\nComparing...')
-    with open(input_fn, encoding='utf-8') as f:
-        input_data = f.read()
-    with open(output_fn, encoding='utf-8') as f:
-        output_data = f.read()
-
-    print('Are both files the same?')
-    print(' - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
-    print(' - Content:', input_data == output_data)
-
-    print('\nApplying trivial filter...')
-    pf.run_filter(empty_filter, doc=doc)
-    print(' - Done!')
-    dump_and_compare(doc, input_fn, output_fn)
-
-    print('\nApplying YAML filter...')
+    print(' - Applying YAML filter...')
     pf.run_filter(pf.yaml_filter, tag='spam', function=fenced_action, doc=doc)
-    print(' - Done!')
-    dump_and_compare(doc, input_fn, output_fn)
+    json_panflute = pf.convert_text(doc, input_format='panflute', output_format='json', standalone=True)
+    print('   Are both JSON files equal?')
+    print(f'    - Length: {len(json_pandoc) == len(json_panflute)} ({len(json_pandoc)} vs {len(json_panflute)})')
+    print(f'    - Content: {json_pandoc == json_panflute}')
+    assert json_pandoc == json_panflute
 
-    print('\nApplying Strict YAML filter...')
+    print(' - Applying Strict YAML filter...')
     pf.run_filter(pf.yaml_filter, tag='eggs', function=fenced_action, doc=doc, strict_yaml=True)
-    print(' - Done!')
-    dump_and_compare(doc, input_fn, output_fn)
+    json_panflute = pf.convert_text(doc, input_format='panflute', output_format='json', standalone=True)
+    print('   Are both JSON files equal?')
+    print(f'    - Length: {len(json_pandoc) == len(json_panflute)} ({len(json_pandoc)} vs {len(json_panflute)})')
+    print(f'    - Content: {json_pandoc == json_panflute}')
+    assert json_pandoc == json_panflute
 
-
-def dump_and_compare(doc, input_fn, output_fn):
-    print(' - Dumping JSON...')
-    with open(output_fn, mode='w', encoding='utf-8') as f:
-        pf.dump(doc, f)
-        f.write('\n')
     print(' - Done!')
-    print(' - Comparing...')
-    with open(input_fn, encoding='utf-8') as f:
-        input_data = f.read()
-    with open(output_fn, encoding='utf-8') as f:
-        output_data = f.read()
-    print(' - Are both files the same?')
-    print('   - Length:', len(input_data) == len(output_data), len(input_data), len(output_data))
-    print('   - Content:', input_data == output_data)
-    assert input_data == output_data
 
 
 if __name__ == "__main__":

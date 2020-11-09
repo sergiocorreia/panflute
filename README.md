@@ -21,9 +21,6 @@ To install panflute, open the command line and type:
 
 ```bash
 pip install panflute
-```
-
-Python 3.6+ and PyPy3 are supported (Python 2.7 and Python 3.3-3.5 were supported up to version 1.11.4).
 
 ## Uninstall
 
@@ -39,6 +36,17 @@ After cloning the repo and opening the panflute folder:
 
 `python setup.py develop`: installs locally with a symlink so changes are automatically updated
 
+## Note on versions
+
+panflute 1.12 or above dropped support of Python 2. When using Python 3, depending on your setup, you may need to use `pip3`/`python3` explicitly. If you need to use panflute in Python 2, install panflute 1.11.x or below.
+
+Currently supported Python versions: [![Python version](https://img.shields.io/pypi/pyversions/panflute.svg)](https://pypi.python.org/pypi/panflute/). Check `setup.py` for details, which further indicates support of pypy on top of CPython.
+
+### Supported pandoc versions
+
+| panflute version  | supported pandoc versions |
+| ---   | ---   |
+| 1.12.x | 2.7-2.9 |
 
 ## Contributing
 
@@ -46,5 +54,4 @@ Feel free to submit push requests. For consistency, code should comply with [pep
 
 ## License
 
-BSD3 license (following  `pandocfilters` by @jgm).
-
+BSD3 license (following [`pandocfilters`](https://github.com/jgm/pandocfilters) by @jgm).
