@@ -15,6 +15,18 @@ from importlib import import_module
 # Functions
 # ---------------------------
 
+def decode_ica(lst):
+    return {'identifier': lst[0],
+            'classes': lst[1],
+            'attributes': lst[2]}
+
+def debug(*args, **kwargs):
+    """
+    Same as print, but prints to ``stderr``
+    (which is not intercepted by Pandoc).
+    """
+    print(file=sys.stderr, *args, **kwargs)
+
 
 def get_caller_name():
     '''Get the name of the calling Element
@@ -66,6 +78,23 @@ def check_group(value, group):
         raise TypeError(msg)
     else:
         return value
+
+
+def check_type_or_value(value, oktypes, okvalue):
+    # This allows 'Space' instead of 'Space()'
+    if callable(value):
+        value = value()
+    
+    if isinstance(value, oktypes) or (value == okvalue):
+        return value
+    
+    # Invalid type
+    caller = get_caller_name()
+    tag = type(value).__name__
+    #oktypes_names = [x.name for x in oktypes]
+    #print(oktypes, file=sys.stderr)
+    msg = '\n\nElement "{}" received "{}" but expected {} or {}\n'.format(caller, tag, oktypes, okvalue)
+    raise TypeError(msg)
 
 
 def encode_dict(tag, content):

@@ -13,8 +13,7 @@ import click
 from io import StringIO
 
 from .io import load, dump
-from .tools import debug
-from .utils import ContextImport
+from .utils import debug, ContextImport
 
 
 reduced_sys_path = [dir_ for dir_ in sys.path if (dir_ not in ('', '.')) and p.isdir(dir_)]
@@ -39,9 +38,9 @@ def get_filter_dirs(hardcoded=True):
         
         # Extract $DATADIR
         info = run_pandoc(args=['--version']).splitlines()
-        prefix = "Default user data directory: "
+        prefix = "User data directory: "
         info = [row for row in info if row.startswith(prefix)]
-        assert len(info) == 1
+        assert len(info) == 1, info
         data_dir = info[0][len(prefix):]
 
         # data_dir might contain multiple folders:

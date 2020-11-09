@@ -5,20 +5,26 @@ def add_table_without_header(options, data, element, doc):
     cells = ['', 'Quality', 'Age', 'Sex', 'Memo']
     cells = [TableCell(Plain(Str(cell))) for cell in cells]
     row = TableRow(*cells)
+    
+    body = TableBody(row)
+
     width = [0.16, 0.16, 0.16, 0.16, 0.16]
+    alignment = ['AlignDefault'] * len(width)
     caption = 'This table should not have a header'
-    caption = [Span(Str(caption))]
-    return Div(Table(row, width=width, caption=caption))
+    caption = Caption(Para(Str(caption)))
+    return Div(Table(body, colspec=zip(alignment, width), caption=caption))
 
 
 def add_table_with_only_header(options, data, element, doc):
     cells = ['', 'Quality', 'Age', 'Sex', 'Memo']
     cells = [TableCell(Plain(Str(cell))) for cell in cells]
     row = TableRow(*cells)
+    head = TableHead(row)
     width = [0.16, 0.16, 0.16, 0.16, 0.16]
+    alignment = ['AlignDefault'] * len(width)
     caption = 'This table should only have a header; and no rows'
-    caption = [Span(Str(caption))]
-    return Div(Table(header=row, width=width, caption=caption))
+    caption = Caption(Plain(Str(caption)))
+    return Div(Table(head=head, colspec=zip(alignment, width), caption=caption))
 
 
 def finalize(doc):
@@ -28,10 +34,10 @@ def finalize(doc):
 def view_table_info(e, doc):
     if isinstance(e, Table):
         debug('[TABLE]')
-        debug('Rows:  ', e.rows)
         debug('Cols:  ', e.cols)
-        debug('Header :', e.header is not None)
-        debug('Caption:', stringify(Span(*e.caption)))
+        debug('Head :', e.head is not None)
+        debug('Foot :', e.foot is not None)
+        debug('Caption:', stringify(e.caption))
         debug()
 
 

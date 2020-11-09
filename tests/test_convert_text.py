@@ -112,8 +112,8 @@ ipsum"""
     print("\nBack and forth conversions... gfm table (empty) -> json(standalone) -> gfm table (empty)")
     md = """lorem
 
-| x | y |
-| - | - |
+| x   | y   |
+|-----|-----|
 
 ipsum"""
     print("[MD]", repr(md))
