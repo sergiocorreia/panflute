@@ -6,7 +6,9 @@ Auxiliary functions that have no dependencies
 # Imports
 # ---------------------------
 
+import os
 import sys
+import json
 import os.path as p
 from importlib import import_module
 
@@ -46,7 +48,6 @@ def get_caller_name():
             callingframe = sys._getframe(pos)
         except ValueError:
             return 'Panflute'
-        #print(pos, callingframe.f_code.co_name, file=sys.stderr)
 
         if callingframe.f_code.co_name == '__init__':
             class_name = callingframe.f_locals['self'].__class__.__name__
@@ -65,8 +66,6 @@ def check_type(value, oktypes):
     # Invalid type
     caller = get_caller_name()
     tag = type(value).__name__
-    #oktypes_names = [x.name for x in oktypes]
-    #print(oktypes, file=sys.stderr)
     msg = '\n\nElement "{}" received "{}" but expected {}\n'.format(caller, tag, oktypes)
     raise TypeError(msg)
 
@@ -91,8 +90,6 @@ def check_type_or_value(value, oktypes, okvalue):
     # Invalid type
     caller = get_caller_name()
     tag = type(value).__name__
-    #oktypes_names = [x.name for x in oktypes]
-    #print(oktypes, file=sys.stderr)
     msg = '\n\nElement "{}" received "{}" but expected {} or {}\n'.format(caller, tag, oktypes, okvalue)
     raise TypeError(msg)
 
@@ -102,6 +99,33 @@ def encode_dict(tag, content):
         "t": tag,
         "c": content,
     }
+
+
+def load_pandoc_version():
+    """
+    Retrieve Pandoc version tuple from the environment
+    """
+
+    if 'PANDOC_VERSION' not in os.environ:
+        return None
+
+    if 'PANDOC_VERSION' in os.environ:
+        version = os.environ['PANDOC_VERSION']
+        version = tuple(int(_) for _ in version.split('.'))
+        return version
+
+
+def load_pandoc_reader_options():
+    """
+    Retrieve Pandoc Reader options from the environment
+    """
+    if 'PANDOC_READER_OPTIONS' not in os.environ:
+        return {}
+
+    # TODO? make option names pythonic ('readerIndentedCodeClasses' -> 'indented_code_classes')
+    # TODO? replace list with set (readerAbbreviations)
+    options = json.loads(os.environ['PANDOC_READER_OPTIONS'])
+    return options
 
 
 # ---------------------------

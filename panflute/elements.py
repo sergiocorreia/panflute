@@ -9,7 +9,8 @@ Notation:
 # Imports
 # ---------------------------
 
-from .utils import check_type, check_group, encode_dict, decode_ica
+from .utils import check_type, check_group, encode_dict, decode_ica, debug
+from .utils import load_pandoc_version, load_pandoc_reader_options
 from .containers import ListContainer, DictContainer
 from .base import Element, Block, Inline, MetaValue
 from .table_elements import Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption, TABLE_ALIGNMENT, TABLE_WIDTH, table_from_json
@@ -62,16 +63,21 @@ class Doc(Element):
         if len(self.api_version) > 4 or self.api_version[:2] < (1, 22):
             raise TypeError("invalid api version", api_version)
 
+        self.pandoc_version = load_pandoc_version()
+        self.pandoc_reader_options = load_pandoc_reader_options()
+
     @property
     def metadata(self):
         self._metadata.parent = self
         self._metadata.location = 'metadata'
         return self._metadata
 
+
     @metadata.setter
     def metadata(self, value):
         value = value.content if isinstance(value, MetaMap) else dict(value)
         self._metadata = MetaMap(*value.items())
+
 
     def to_json(self):
         # Overrides default method

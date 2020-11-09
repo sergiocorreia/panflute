@@ -54,6 +54,7 @@ def load(input_stream=None):
     if input_stream is None:
         input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 
+
     # Load JSON and validate it
     doc = json.load(input_stream, object_hook=from_json)
 
@@ -223,11 +224,3 @@ def run_filter(action, *args, **kwargs):
     """
     return run_filters([action], *args, **kwargs)
 
-
-def load_reader_options():
-    """
-    Retrieve Pandoc Reader options from the environment
-    """
-    options = os.environ['PANDOC_READER_OPTIONS']
-    options = json.loads(options)
-    return options

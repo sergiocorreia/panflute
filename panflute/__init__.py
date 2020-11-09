@@ -29,7 +29,6 @@ from .elements import (
 
 from .io import load, dump, run_filter, run_filters
 from .io import toJSONFilter, toJSONFilters  # Wrappers
-from .io import load_reader_options
 
 from .utils import debug
 
