@@ -26,15 +26,15 @@ jobs:
         # should test sparingly across API breaking boundaries
         pandoc-version:
           # panflute only support at or above this
-          - 2.7.3
+          #- 2.7.3
           # no major API change between 2.7 to 2.9
           # - 2.8.1
-          - 2.9.2.1
+          #- 2.9.2.1
           # as of writing, panflute only support pandoc<= 2.9. But GitHub workflow does not support "allow failure" yet. See https://github.com/actions/toolkit/issues/399
           # 2.10 has breaking change
-          - 2.10.1
+          #- 2.10.1
           # 2.11 has minor breaking change, fixing some quirks in 2.10
-          # - 2.11.1
+          - 2.11.1
           - latest
     steps:
     - uses: actions/checkout@v1
