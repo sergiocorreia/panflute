@@ -55,14 +55,12 @@ class Doc(Element):
         self.metadata = metadata
         self.format = format  # Output format
 
-        if api_version is None:
-            raise TypeError("invalid api version; using an older version of Pandoc?")
-        elif len(api_version) > 4:
-            raise TypeError("invalid api version", api_version)
-        elif tuple(api_version[:2]) < (1, 22):
-            raise TypeError("invalid api version", api_version)
-        else:
+        try:
             self.api_version = tuple(check_type(v, int) for v in api_version)
+        except TypeError:
+            raise TypeError("invalid api version; using an older version of Pandoc?")
+        if len(self.api_version) > 4 or self.api_version[:2] < (1, 22):
+            raise TypeError("invalid api version", api_version)
 
     @property
     def metadata(self):
@@ -77,17 +75,11 @@ class Doc(Element):
 
     def to_json(self):
         # Overrides default method
-        meta = self.metadata.content.to_json()
-        blocks = self.content.to_json()
-
-        if self.api_version is None:
-            return [{'unMeta': meta}, blocks]
-        else:
-            return {
-                'pandoc-api-version': self.api_version,
-                'meta': meta,
-                'blocks': blocks,
-            }
+        return {
+            'pandoc-api-version': self.api_version,
+            'meta': self.metadata.content.to_json(),
+            'blocks': self.content.to_json(),
+        }
 
 
 # ---------------------------
@@ -1341,7 +1333,6 @@ _res_func = {
 
 
 def from_json(data):
-
     # Metadata key (legacy)
     if 'unMeta' in data:
         assert len(data) == 1
