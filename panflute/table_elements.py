@@ -85,14 +85,14 @@ class Table(Block):
     def _set_table_width(self):
         self.cols = 0
         if self.content and self.content[0].content:
-            self.cols = len(self.content[0].content[0].content) # Table -> First TableBody -> IntermediateBody -> First Row
+            self.cols = count_columns_in_row(self.content[0].content[0].content) # Table -> First TableBody -> IntermediateBody -> First Row
 
 
     def _validate_cols(self, block):
         if not len(block.content):
             return
 
-        block_cols = len(block.content[0].content)
+        block_cols = count_columns_in_row(block.content[0].content)
 
         if not self.cols:
             self.cols = block_cols
@@ -337,7 +337,7 @@ class Caption(Element):
         self.short_caption = short_caption
 
     def to_json(self):
-        short_caption = None if self.short_caption is None else self.short_caption._slots_to_json()
+        short_caption = None if self.short_caption is None else self.short_caption.to_json()
         return [short_caption, self.content.to_json()]
 
     @property
@@ -361,9 +361,13 @@ class Caption(Element):
 TABLE_ALIGNMENT = {'AlignLeft', 'AlignRight', 'AlignCenter', 'AlignDefault'}
 TABLE_WIDTH = {'ColWidthDefault'}
 
+
 # ---------------------------
 # Functions
 # ---------------------------
+
+def count_columns_in_row(row):
+    return sum(cell.colspan for cell in row)
 
 def colspec_to_json(c):
     return {'t': c} if c == 'ColWidthDefault' else encode_dict('ColWidth', c) 
