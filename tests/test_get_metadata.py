@@ -1,5 +1,8 @@
 import panflute as pf
+import pytest
 
+
+@pytest.mark.skip(reason="cannot rely on json files; need to convert them as we do in test_basics.py")
 def test():
     # chcp 65001 --> might be required if running from cmd on Windows
 

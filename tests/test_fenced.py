@@ -2,6 +2,7 @@
 # pandoc --smart --parse-raw --to=json fenced/input.md > fenced/input.json
 
 import panflute as pf
+import pytest
 import pandocfilters, json
 
 
@@ -18,6 +19,7 @@ def empty_filter(element, doc):
     return
 
 
+@pytest.mark.skip(reason="cannot rely on json files; need to convert them as we do in test_basics.py")
 def test_all():
     input_fn = './tests/fenced/input.json'
     output_fn = './tests/fenced/output.json'

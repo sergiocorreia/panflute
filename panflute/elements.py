@@ -50,17 +50,16 @@ class Doc(Element):
 
     _children = ['metadata', 'content']
 
-    def __init__(self, *args, metadata={}, format='html', api_version=None):
+    def __init__(self, *args, metadata={}, format='html', api_version=(1,22)):
         self._set_content(args, Block)
         self.metadata = metadata
         self.format = format  # Output format
 
-        # Handle Pandoc Legacy
         if api_version is None:
-            self.api_version = None  # Pandoc Legacy
+            raise TypeError("invalid api version; using an older version of Pandoc?")
         elif len(api_version) > 4:
             raise TypeError("invalid api version", api_version)
-        elif tuple(api_version) <= (1, 17, 0):
+        elif tuple(api_version[:2]) < (1, 22):
             raise TypeError("invalid api version", api_version)
         else:
             self.api_version = tuple(check_type(v, int) for v in api_version)
