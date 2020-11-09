@@ -71,24 +71,21 @@ class Table(Block):
         self._set_content(args, TableBody)
         self.caption = caption
 
+        self._set_table_width()  # also fills in colspec if it's empty
+        self.head = head
+        self.foot = foot
         # Colspec is a list of (alignment, width) tuples
         # TODO: add validation to colspec
         self.colspec = [(check_group(a, TABLE_ALIGNMENT), \
                          check_type_or_value(w, (float, int), 'ColWidthDefault')) \
-                         for (a, w) in colspec] if colspec else None
-        self._set_table_width()  # also fills in colspec if it's empty
-        self.head = head
-        self.foot = foot
+                         for (a, w) in colspec] if colspec else [('AlignDefault', 'ColWidthDefault')] * self.cols
+        self._validate_colspec()
 
 
     def _set_table_width(self):
         self.cols = 0
-        if self.content:
+        if self.content and self.content[0].content:
             self.cols = len(self.content[0].content[0].content) # Table -> First TableBody -> IntermediateBody -> First Row
-        if self.colspec is None:
-            self.colspec = [('AlignDefault', 'ColWidthDefault')] * self.cols
-        else:
-            self._validate_colspec()
 
 
     def _validate_cols(self, block):
@@ -119,13 +116,10 @@ class Table(Block):
 
     @head.setter
     def head(self, value):
-        if value:
-            self._head = check_type(value, TableHead)
-            self._head.parent = self
-            self._head.location = 'head'
-            self._validate_cols(self.head)
-        else:
-            self._head = None
+        self._head = check_type(value, TableHead) if value else TableHead()
+        self._head.parent = self
+        self._head.location = 'head'
+        self._validate_cols(self.head)
 
 
     @property
@@ -135,13 +129,10 @@ class Table(Block):
 
     @foot.setter
     def foot(self, value):
-        if value:
-            self._foot = check_type(value, TableFoot)
-            self._foot.parent = self
-            self._foot.location = 'foot'
-            self._validate_cols(self.foot)
-        else:
-            self._foot = None
+        self._foot = check_type(value, TableFoot) if value else TableFoot()
+        self._foot.parent = self
+        self._foot.location = 'foot'
+        self._validate_cols(self.foot)
 
 
     @property
@@ -237,7 +228,7 @@ class TableBody(Block):
     __slots__ = ['_content', '_head', 'row_head_columns', 'identifier', 'classes', 'attributes']
     _children = ['content', 'head']
 
-    def __init__(self, *args, head, row_head_columns=0, identifier='', classes=[], attributes={}):
+    def __init__(self, *args, head=None, row_head_columns=0, identifier='', classes=[], attributes={}):
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, TableRow)
         self.head = head
@@ -249,12 +240,13 @@ class TableBody(Block):
 
     @head.setter
     def head(self, value):
-        if value or True:
+        if value:
             value = value.list if isinstance(value, ListContainer) else list(value)
-            self._head = ListContainer(*value, oktypes=TableRow, parent=self)
-            self._head.location = 'head'
         else:
-            self._head = None
+            value = []
+        self._head = ListContainer(*value, oktypes=TableRow, parent=self)
+        self._head.location = 'head'
+
 
     def _slots_to_json(self):
         #head = self.head.content.to_json() if self.head is not None else 

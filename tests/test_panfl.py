@@ -120,3 +120,9 @@ def test_pandoc_call():
                       '--metadata=panflute-path:./tests/test_panfl/bar',
                       stdin=md_contents)[0]
     assert stdout == expected_output
+
+
+if __name__ == "__main__":
+    test_get_filter_dirs()
+    test_metadata()
+    test_pandoc_call()

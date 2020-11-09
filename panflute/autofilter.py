@@ -38,9 +38,9 @@ def get_filter_dirs(hardcoded=True):
         
         # Extract $DATADIR
         info = run_pandoc(args=['--version']).splitlines()
-        prefix = "Default user data directory: "
+        prefix = "User data directory: "
         info = [row for row in info if row.startswith(prefix)]
-        assert len(info) == 1
+        assert len(info) == 1, info
         data_dir = info[0][len(prefix):]
 
         # data_dir might contain multiple folders:

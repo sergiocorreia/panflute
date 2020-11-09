@@ -12,7 +12,7 @@ from .base import Element, Block, Inline, MetaValue
 
 # These elements are not part of pandoc-types
 from .elements import (
-    Doc, Citation, TableRow, TableCell, ListItem,
+    Doc, Citation, ListItem,
     DefinitionItem, Definition, LineItem)
 
 from .elements import (
@@ -20,7 +20,9 @@ from .elements import (
     Code, BlockQuote, Note, Div, Plain, Para, Emph, Strong, Underline, Strikeout,
     Superscript, Subscript, SmallCaps, Span, RawBlock, RawInline, Math,
     CodeBlock, Link, Image, BulletList, OrderedList, DefinitionList,
-    LineBlock, Header, Quoted, Cite, Table)
+    LineBlock, Header, Quoted, Cite)
+
+from .table_elements import Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption
 
 from .elements import (
     MetaList, MetaMap, MetaString, MetaBool, MetaInlines, MetaBlocks)
