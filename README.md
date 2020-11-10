@@ -21,6 +21,7 @@ To install panflute, open the command line and type:
 
 ```bash
 pip install panflute
+```
 
 ## Uninstall
 
