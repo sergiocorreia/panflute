@@ -468,7 +468,34 @@ def _replace_keyword(self, keyword, replacement, count=0):
                 return replacement
 
     def replace_with_block(e, doc):
-        if hasattr(e, 'content') and len(e.content) == 1:
+        '''
+        It's difficult to replace a keyword with an entire Block element.
+
+        This is because the keyword is of type Str (an Inline) and the parent
+        object of a Str can only contain Inlines and not Blocks
+        (e.g. Para can contain Inlines, not Divs)
+
+        Implications:
+
+        1) If the Str that contains the keyword is inside another
+           Inline instead of a Block (e.g. Div -> Emph -> Str)
+           then we have to do a trick:
+           when .walk() touches an Emph that contains Str(keyword),
+           it replaces the Emph with Str(keyword).
+
+        2) If the element that contains the Str(keyword) has multiple children,
+           then we are in a bind as replacing it will destroy information.
+           Thus, we can't do do it
+
+        3) If the element that contains the Str(keyword) does so in a DictContainer
+           instead of a ListContainer, then we cannot retrieve the "first and only
+           element" easily, so we also abort (happens with metadata elements).
+        '''
+
+        # Here we can check that e.content is ListContainer (i.e. not DictContainer)
+        # or check that e is not a Metavalue ("not isinstance(e, MetaValue)")
+
+        if hasattr(e, 'content') and isinstance(e.content, ListContainer) and len(e.content) == 1:
             ee = e.content[0]
             if type(ee) == Str and ee.text == keyword:
                 if isinstance(e, Block):
@@ -477,6 +504,8 @@ def _replace_keyword(self, keyword, replacement, count=0):
                         return replacement
                 elif isinstance(e, Inline):
                     return Str(keyword)
+            else:
+                pass  # not implemented
 
     doc = self.doc
     if doc is None:
