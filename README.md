@@ -44,9 +44,17 @@ Currently supported Python versions: [![Python version](https://img.shields.io/p
 
 ### Supported pandoc versions
 
-| panflute version  | supported pandoc versions |
-| ---   | ---   |
-| 1.12.x | 2.7-2.9 |
+pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org) and panflute's is MAJOR.MINOR.PATCH. Below we shows matching versions of pandoc that panflute supports, in descending order. Only major version is shown as long as the minor versions doesn't matter.
+
+<!-- For pandoc API verion, check https://hackage.haskell.org/package/pandoc for pandoc-types, which is the same thing. -->
+
+| panflute version  | supported pandoc versions | supported pandoc API versions |
+| ---   | ---   |  ---  |
+| 2.0 | 2.11.0.4—2.11.x  | 1.22    |
+| not supported | 2.10  | 1.21  |
+| 1.12 | 2.7-2.9 | 1.17.5–1.20  |
+
+Note: pandoc 2.10 is short lived and 2.11 has minor API changes comparing to that, mainly for fixing its shortcomings. Please avoid using pandoc 2.10.
 
 ## Contributing
 
