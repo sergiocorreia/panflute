@@ -106,27 +106,28 @@ def load_pandoc_version():
     """
     Retrieve Pandoc version tuple from the environment
     """
-
-    if 'PANDOC_VERSION' not in os.environ:
-        return None
-
-    if 'PANDOC_VERSION' in os.environ:
-        version = os.environ['PANDOC_VERSION']
-        version = tuple(int(_) for _ in version.split('.'))
-        return version
+    try:
+        return tuple(int(i) for i in os.environ['PANDOC_VERSION'].split('.'))
+    except KeyError:
+        pass
+    except (AttributeError, ValueError):
+        debug(f'Environment variable PANDOC_VERSION is malformed, ignoring...')
 
 
 def load_pandoc_reader_options():
     """
     Retrieve Pandoc Reader options from the environment
     """
-    if 'PANDOC_READER_OPTIONS' not in os.environ:
-        return {}
-
-    # TODO? make option names pythonic ('readerIndentedCodeClasses' -> 'indented_code_classes')
-    # TODO? replace list with set (readerAbbreviations)
-    options = json.loads(os.environ['PANDOC_READER_OPTIONS'])
-    return options
+    try:
+        # TODO? make option names pythonic ('readerIndentedCodeClasses' -> 'indented_code_classes')
+        # TODO? replace list with set (readerAbbreviations)
+        options = json.loads(os.environ['PANDOC_READER_OPTIONS'])
+        return options
+    except KeyError:
+        pass
+    except json.JSONDecodeError:
+        debug(f'Environment variable PANDOC_READER_OPTIONS is malformed, ignoring...')
+    return dict()
 
 
 # ---------------------------
