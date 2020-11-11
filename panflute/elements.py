@@ -1375,20 +1375,20 @@ def from_json(data):
         raise NotImplementedError(f'Unknown tag: {tag}')
 
 
-# similar idea to _res_func above
-# eat val
-_builtin_to_meta_func = {
-    Block: MetaBlocks,
-    Inline: MetaInlines,
-    bool: MetaBool,
-    str: MetaString,
-    float: lambda val: MetaString(str(val)),
-    int: lambda val: MetaString(str(val)),
-    list: lambda val: MetaList(*[builtin2meta(x) for x in val]),
-    dict: lambda val: MetaMap(*[(k, builtin2meta(v)) for k, v in val.items()]),
-}
-
-
 def builtin2meta(val):
-    type_ = type(val)
-    return _builtin_to_meta_func[type_](val) if type_ in _builtin_to_meta_func else val
+    if isinstance(val, bool):
+        return MetaBool(val)
+    elif isinstance(val, (float, int)):
+        return MetaString(str(val))
+    elif isinstance(val, str):
+        return MetaString(val)
+    elif isinstance(val, list):
+        return MetaList(*[builtin2meta(x) for x in val])
+    elif isinstance(val, dict):
+        return MetaMap(*[(k, builtin2meta(v)) for k, v in val.items()])
+    elif isinstance(val, Block):
+        return MetaBlocks(val)
+    elif isinstance(val, Inline):
+        return MetaInlines(val)
+    else:
+        return val
