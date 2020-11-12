@@ -320,7 +320,7 @@ def convert_text(text,
                  output_format='panflute',
                  standalone=False,
                  extra_args=None):
-    """
+    r"""
     Convert formatted text (usually markdown) by calling Pandoc internally
 
     The default output format ('panflute') will return a tree
