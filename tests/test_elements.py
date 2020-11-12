@@ -13,18 +13,28 @@ class My_Dict(dict):
     pass
 
 
+class Not_Builtin:
+    pass
+
+
 @pytest.mark.parametrize(
-    "value,expected",
+    "value,expect_type",
     [
-        ([], MetaList()),
-        ({}, MetaMap()),
-        (My_List(), MetaList()),
-        (My_Dict(), MetaMap()),
-        (1, MetaString('1')),
-        ('a', MetaString('a')),
-        ([1], MetaList(MetaString('1'))),
-        ({'a': My_List()}, MetaMap(a=MetaList())),
+        ([], MetaList),
+        ({}, MetaMap),
+        (My_List(), MetaList),
+        (My_Dict(), MetaMap),
+        (1, MetaString),
+        ('a', MetaString),
+        ([1], MetaList),
+        ({'a': My_List()}, MetaMap),
+        (Not_Builtin(), Not_Builtin)
     ]
 )
-def test_builtin2meta(value, expected):
-    assert builtin2meta(value) == expected
+def test_builtin2meta(value, expect_type):
+    """
+    test output types of builtin2meta.
+    Comparison of output value would be preferable,
+    but does not work since __eq__ methods are not defined for MetaValue classes.
+    """
+    assert type(builtin2meta(value)) == expect_type
