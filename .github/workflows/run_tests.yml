@@ -52,7 +52,7 @@ jobs:
         sudo dpkg -i "${downloadUrl##*/}"
         pandoc --version
     - name: Test with pytest
-      run: pytest
+      run: pytest --color=yes
     - name: Test by running existing filters
       run: |
        mkdir -p $HOME/.pandoc/filters
