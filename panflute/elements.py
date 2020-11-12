@@ -1393,7 +1393,7 @@ def builtin2meta(val):
     type_ = type(val)
     if type_ in _builtin_to_meta_func:
         return _builtin_to_meta_func[type_](val)
-    # support subclassed builtins. see https://github.com/sergiocorreia/panflute/pull/167
+    # support subclassed builtins. see https://github.com/sergiocorreia/panflute/issues/166
     for builtin_type, meta_func in _builtin_to_meta_func.items():
         if isinstance(val, builtin_type):
             return meta_func(val)

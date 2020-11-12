@@ -106,6 +106,7 @@ setup(
             'flake8',
             'pandocfilters',
             'pytest-cov',
+            'pytest',
             'requests',
         ],
         'pypi': [
