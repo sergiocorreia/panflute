@@ -170,7 +170,7 @@ def test_standalone():
 
 	# CONVERT TEXT (MD, ETC)
 	md = 'Some *markdown* **text** ~xyz~'
-	tex = 'Some $x^y$ or $x_n = \sqrt{a + b}$ \textit{a}'
+	tex = r'Some $x^y$ or $x_n = \sqrt{a + b}$ \textit{a}'
 	print(convert_text(md))
 	print(convert_text(tex))
 
