@@ -200,12 +200,14 @@ class TableFoot(Block):
 
 class TableBody(Block):
     """
-    Body of a table, containing a list of intermediate head rows, a list of table body rows, row_head_columns(?), plus optional attributes
+    Body of a table, containing a list of intermediate head rows, a list of table body rows, row_head_columns, plus optional attributes
 
     :param row: head rows
     :type row: :class:`str`
     :param head: Intermediate head (list of table rows)
     :type head: :class:`list` of :class:`TableRow`
+    :param row_head_columns: number of columns on the left that are considered column headers (default: 0)
+    :type row_head_columns: class:`int`
     :param identifier: element identifier (usually unique)
     :type identifier: :class:`str`
     :param classes: class names of the element
