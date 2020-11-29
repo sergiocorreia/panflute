@@ -26,9 +26,12 @@ class Table(Block):
         >>> x = [Para(Str('Something')), Para(Space, Str('else'))]
         >>> c1 = TableCell(*x)
         >>> c2 = TableCell(Header(Str('Title')))
+        >>> row = TableRow(c1, c2)
         >>>
-        >>> rows = [TableRow(c1, c2)]
-        >>> table = Table(*rows, header=TableRow(c2,c1))
+        >>> body = TableBody(row)
+        >>> head = TableHead(row)
+        >>> caption = Caption(Para(Str('Title')))
+        >>> table = Table(body, head=head, caption=caption)
 
     TODO: UPDATE EXAMPLE
     TODO: OFFER A SIMPLE WAY TO BUILD A TABLE, with e.g. .alignments and .widths
