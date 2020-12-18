@@ -292,16 +292,14 @@ def shell(args, wait=True, msg=None):
         proc = Popen(args, creationflags=DETACHED_PROCESS)
 
 
-def run_pandoc(text='', args=None):
+def run_pandoc(text='', args=None, pandoc_path=which('pandoc')):
     """
     Low level function that calls Pandoc with (optionally)
     some input text and/or arguments
     """
-
     if args is None:
         args = []
 
-    pandoc_path = which('pandoc')
     if pandoc_path is None or not os.path.exists(pandoc_path):
         raise OSError("Path to pandoc executable does not exists")
 
@@ -319,7 +317,8 @@ def convert_text(text,
                  input_format='markdown',
                  output_format='panflute',
                  standalone=False,
-                 extra_args=None):
+                 extra_args=None,
+                 pandoc_path=which('pandoc')):
     r"""
     Convert formatted text (usually markdown) by calling Pandoc internally
 
@@ -387,7 +386,7 @@ def convert_text(text,
     if standalone:
         extra_args.append('--standalone')
 
-    out = inner_convert_text(text, in_fmt, out_fmt, extra_args)
+    out = inner_convert_text(text, in_fmt, out_fmt, extra_args, pandoc_path=pandoc_path)
 
     if output_format == 'panflute':
         out = json.loads(out, object_hook=from_json)
@@ -405,12 +404,12 @@ def convert_text(text,
     return out
 
 
-def inner_convert_text(text, input_format, output_format, extra_args):
+def inner_convert_text(text, input_format, output_format, extra_args, pandoc_path=which('pandoc')):
     # like convert_text(), but does not support 'panflute' input/output
     from_arg = '--from={}'.format(input_format)
     to_arg = '--to={}'.format(output_format)
     args = [from_arg, to_arg] + extra_args
-    out = run_pandoc(text, args)
+    out = run_pandoc(text, args, pandoc_path=pandoc_path)
     out = "\n".join(out.splitlines())  # Replace \r\n with \n
     return out
 
