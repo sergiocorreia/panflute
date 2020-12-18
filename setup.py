@@ -85,14 +85,14 @@ setup(
     # simple. Or you can use find_packages().
     packages=find_packages(exclude=['contrib', 'docs', 'tests', 'examples']),
 
-    python_requires='>=3.6',
+    python_requires='>=3.6,<4',
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'click',
-        'pyyaml',
+        'click >=7,<8',
+        'pyyaml >=5,<6',
     ],
 
     # List additional groups of dependencies here (e.g. development
