@@ -15,45 +15,37 @@ If you want to contribute, head [here](/CONTRIBUTING.md).
 You might also find useful [this presentation](https://github.com/BPLIM/Workshops/raw/master/BPLIM2019/D2_S1_Sergio_Correia_Markdown.pdf) on how I use markdown+pandoc+panflute to write research papers (at the Banco de Portugal 2019 Workshop on Reproductible Research).
 
 
-## Install
+## Installation
 
-To install panflute, open the command line and type:
+### Pip
 
-```bash
-pip install panflute
-```
+To manage panflute using pip, open the command line and run
 
-## Upgrade
+- `pip install panflute` to install
+- `pip install -U panflute` to upgrade
+- `pip uninstall panflute` to remove
 
-To upgrade panflute, open the command line and type:
+You need a matching pandoc version for panflute to work flawlessly. See [Supported pandoc versions] for details. Or, use the [Conda] method to install below to have the pandoc version automatically managed for you.
 
-```bash
-pip install panflute -U
-```
+### Conda
 
-## Uninstall
+To manage panflute with a matching pandoc version, open the command line and run
 
-To uninstall panflute, open the command line and type:
+- `conda install -c conda-forge pandoc 'panflute>=2.0.5'` to install both
+- `conda update pandoc panflute` to upgrade both
+- `conda remove pandoc panflute` to remove both
 
-```bash
-pip uninstall panflute
-```
+You may also replace `conda` by `mamba`, which is basically a drop-in replacement of the conda package manager. See [mamba-org/mamba: The Fast Cross-Platform Package Manager](https://github.com/mamba-org/mamba) for details.
 
-## Dev Install
+### Note on versions
 
-After cloning the repo and opening the panflute folder:
-
-`python setup.py install`: installs the package locally
-
-`python setup.py develop`: installs locally with a symlink so changes are automatically updated
-
-## Note on versions
+#### Supported Python versions
 
 panflute 1.12 or above dropped support of Python 2. When using Python 3, depending on your setup, you may need to use `pip3`/`python3` explicitly. If you need to use panflute in Python 2, install panflute 1.11.x or below.
 
 Currently supported Python versions: [![Python version](https://img.shields.io/pypi/pyversions/panflute.svg)](https://pypi.python.org/pypi/panflute/). Check `setup.py` for details, which further indicates support of pypy on top of CPython.
 
-### Supported pandoc versions
+#### Supported pandoc versions
 
 pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org) and panflute's is MAJOR.MINOR.PATCH. Below we shows matching versions of pandoc that panflute supports, in descending order. Only major version is shown as long as the minor versions doesn't matter.
 
@@ -66,6 +58,13 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 | 1.12 | 2.7-2.9 | 1.17.5–1.20  |
 
 Note: pandoc 2.10 is short lived and 2.11 has minor API changes comparing to that, mainly for fixing its shortcomings. Please avoid using pandoc 2.10.
+
+## Dev Install
+
+After cloning the repo and opening the panflute folder, run
+
+- `python setup.py install` to install the package locally
+- `python setup.py develop` to install locally with a symlink so changes are automatically updated
 
 ## Contributing
 
