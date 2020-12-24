@@ -91,8 +91,8 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'click >=7,<8',
-        'pyyaml >=5,<6',
+        'click >=6,<8',
+        'pyyaml >=3,<6',
     ],
 
     # List additional groups of dependencies here (e.g. development
