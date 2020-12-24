@@ -58,6 +58,8 @@ jobs:
        mkdir -p $HOME/.pandoc/filters
        find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} $HOME/.pandoc/filters/ \;
        find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
+    - name: Test panfl cli
+      run: panfl --help
 
 # put filters in $DATADIR for panflute's autofilter
 # running all available .md files through panflute
