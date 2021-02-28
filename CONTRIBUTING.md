@@ -65,7 +65,7 @@ flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 Panflute uses [Sphinx](http://www.sphinx-doc.org/) for its documentation.
 To install it, install Python 3.3+ and then run `pip install sphinx` (or see [here](http://www.sphinx-doc.org/en/1.4.8/install.html)).
 
-To build the documentation, navigate to the `/docs` folder and type `make html`. The build files will then be placed in `/docs/build/html`, an can be copied into a [website](scorreia.com/software/panflute/)
+To build the documentation, navigate to the `/docs` folder and type `make html`. The build files will then be placed in `/docs/build/html`, and can be copied into a [website](scorreia.com/software/panflute/)
 
 The guides are written in [REST](http://www.sphinx-doc.org/en/stable/rest.html) and located in the [/docs/source](https://github.com/sergiocorreia/panflute/tree/master/docs/source) folder.
 
