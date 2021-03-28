@@ -63,8 +63,8 @@ jobs:
       run: pytest --color=yes
     - name: Test by running existing filters
       run: |
-       mkdir -p $HOME/.pandoc/filters
-       find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} $HOME/.pandoc/filters/ \;
+       mkdir -p $HOME/.local/share/pandoc/filters
+       find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} $HOME/.local/share/pandoc/filters \;
        find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
 
 # put filters in $DATADIR for panflute's autofilter
