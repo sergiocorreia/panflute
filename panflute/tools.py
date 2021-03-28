@@ -13,11 +13,13 @@ from .io import dump
 
 import io
 import os
+import os.path as p
 import re
 import sys
 import json
 import yaml
 import shlex
+from typing import Tuple
 
 from shutil import which
 from subprocess import Popen, PIPE
@@ -31,6 +33,55 @@ from functools import partial
 HorizontalSpaces = (Space, LineBreak, SoftBreak)
 
 VerticalSpaces = (Para, )
+
+
+# ---------------------------
+# Convenience classes
+# ---------------------------
+
+
+class PandocVersion:
+    '''get runtime pandoc verison
+
+    use PandocVersion().version for comparing versions
+    '''
+
+    def __init__(self):
+        pass
+
+    def __str__(self) -> str:
+        return self._repr.splitlines()[0].split(' ')[1]
+
+    def __repr__(self) -> str:
+        return self._repr
+
+    @property
+    def _repr(self):
+        # lazily call pandoc only once
+        if not hasattr(self, '__repr'):
+            self.__repr: str = run_pandoc(args=['--version'])
+        return self.__repr
+
+    @property
+    def version(self) -> Tuple[int, ...]:
+        return tuple(int(i) for i in str(self).split('.'))
+
+    @property
+    def data_dir(self):
+        info = self._repr.splitlines()
+        prefix = "User data directory: "
+        info = [row for row in info if row.startswith(prefix)]
+        assert len(info) == 1, info
+        data_dir = info[0][len(prefix):]
+
+        # data_dir might contain multiple folders:
+        # Default user data directory: /home/runner/.local/share/pandoc or /home/runner/.pandoc/filters
+        data_dir = data_dir.split(' or ')
+        data_dir = [p.normpath(p.expanduser(p.expandvars(p.join(d, 'filters')))) for d in data_dir]
+        return data_dir
+
+
+pandoc_version = PandocVersion()
 
 
 # ---------------------------
