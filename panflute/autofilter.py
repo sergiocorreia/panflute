@@ -32,25 +32,23 @@ def get_filter_dirs(hardcoded=True):
             d1 = base / 'pandoc' / 'filters'
             return [str(d1)]
         else:
+            from .tools import pandoc_version
+
+            version = pandoc_version.version
             base = Path(os.environ['HOME'])
-            d1 = base / '.pandoc' / 'filters'
-            d2 = base / '.local' / 'share' / 'pandoc' / 'filters'
-            return [str(d1), str(d2)]
+            res = []
+            # str below to convert from Path to str is necessary
+            # for test_panfl.test_get_filter_dirs
+            # and also for consistencies of the return types in the 
+            # pandoc 2.12 dropped this historical convention
+            if version[:2] < (2, 12):
+                res.append(str(base / '.pandoc' / 'filters'))
+            res.append(str(base / '.local' / 'share' / 'pandoc' / 'filters'))
+            return res
     else:
-        from .tools import run_pandoc
+        from .tools import pandoc_version
 
-        # Extract $DATADIR
-        info = run_pandoc(args=['--version']).splitlines()
-        prefix = "User data directory: "
-        info = [row for row in info if row.startswith(prefix)]
-        assert len(info) == 1, info
-        data_dir = info[0][len(prefix):]
-
-        # data_dir might contain multiple folders:
-        # Default user data directory: /home/runner/.local/share/pandoc or /home/runner/.pandoc/filters
-        data_dir = data_dir.split(' or ')
-        data_dir = [p.normpath(p.expanduser(p.expandvars(p.join(d, 'filters')))) for d in data_dir]
-        return data_dir
+        return pandoc_version.data_dir
 
 
 def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True,

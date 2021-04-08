@@ -13,15 +13,20 @@ from .io import dump
 
 import io
 import os
+import os.path as p
 import re
 import sys
 import json
 import yaml
 import shlex
+from typing import Tuple
 
 from shutil import which
 from subprocess import Popen, PIPE
 from functools import partial
+
+# to be filled when the first time which('pandoc') is called
+PANDOC_PATH = None
 
 
 # ---------------------------
@@ -31,6 +36,55 @@ from functools import partial
 HorizontalSpaces = (Space, LineBreak, SoftBreak)
 
 VerticalSpaces = (Para, )
+
+
+# ---------------------------
+# Convenience classes
+# ---------------------------
+
+
+class PandocVersion:
+    '''get runtime pandoc verison
+
+    use PandocVersion().version for comparing versions
+    '''
+
+    def __init__(self):
+        pass
+
+    def __str__(self) -> str:
+        return self._repr.splitlines()[0].split(' ')[1]
+
+    def __repr__(self) -> str:
+        return self._repr
+
+    @property
+    def _repr(self):
+        # lazily call pandoc only once
+        if not hasattr(self, '__repr'):
+            self.__repr: str = run_pandoc(args=['--version'])
+        return self.__repr
+
+    @property
+    def version(self) -> Tuple[int, ...]:
+        return tuple(int(i) for i in str(self).split('.'))
+
+    @property
+    def data_dir(self):
+        info = self._repr.splitlines()
+        prefix = "User data directory: "
+        info = [row for row in info if row.startswith(prefix)]
+        assert len(info) == 1, info
+        data_dir = info[0][len(prefix):]
+
+        # data_dir might contain multiple folders:
+        # Default user data directory: /home/runner/.local/share/pandoc or /home/runner/.pandoc/filters
+        data_dir = data_dir.split(' or ')
+        data_dir = [p.normpath(p.expanduser(p.expandvars(p.join(d, 'filters')))) for d in data_dir]
+        return data_dir
+
+
+pandoc_version = PandocVersion()
 
 
 # ---------------------------
@@ -292,20 +346,29 @@ def shell(args, wait=True, msg=None):
         proc = Popen(args, creationflags=DETACHED_PROCESS)
 
 
-def run_pandoc(text='', args=None):
+def run_pandoc(text='', args=None, pandoc_path=None):
     """
     Low level function that calls Pandoc with (optionally)
     some input text and/or arguments
-    """
 
+    :param str pandoc_path: If specified, use the pandoc at this path.
+        If None, default to that from PATH.
+    """
     if args is None:
         args = []
+    if pandoc_path is None:
+        # initialize the global PANDOC_PATH
+        if PANDOC_PATH is None:
+            temp = which('pandoc')
+            if temp is None:
+                raise OSError("Path to pandoc executable does not exists")
+            sys.modules[__name__].PANDOC_PATH = temp
+        pandoc_path = PANDOC_PATH
 
-    pandoc_path = which('pandoc')
-    if pandoc_path is None or not os.path.exists(pandoc_path):
-        raise OSError("Path to pandoc executable does not exists")
-
-    proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    try:
+        proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    except FileNotFoundError:
+        raise OSError(f"Given pandoc_path {pandoc_path} is invalid")
     out, err = proc.communicate(input=text.encode('utf-8'))
     exitcode = proc.returncode
     if err:
@@ -319,7 +382,8 @@ def convert_text(text,
                  input_format='markdown',
                  output_format='panflute',
                  standalone=False,
-                 extra_args=None):
+                 extra_args=None,
+                 pandoc_path=None):
     r"""
     Convert formatted text (usually markdown) by calling Pandoc internally
 
@@ -352,6 +416,8 @@ def convert_text(text,
     :type standalone: :class:`bool`
     :param extra_args: extra arguments passed to Pandoc
     :type extra_args: :class:`list`
+    :param str pandoc_path: If specified, use the pandoc at this path.
+        If None, default to that from PATH.
     :rtype: :class:`list` | :class:`.Doc` | :class:`str`
 
     Note: for a more general solution,
@@ -387,7 +453,7 @@ def convert_text(text,
     if standalone:
         extra_args.append('--standalone')
 
-    out = inner_convert_text(text, in_fmt, out_fmt, extra_args)
+    out = inner_convert_text(text, in_fmt, out_fmt, extra_args, pandoc_path=pandoc_path)
 
     if output_format == 'panflute':
         out = json.loads(out, object_hook=from_json)
@@ -405,12 +471,12 @@ def convert_text(text,
     return out
 
 
-def inner_convert_text(text, input_format, output_format, extra_args):
+def inner_convert_text(text, input_format, output_format, extra_args, pandoc_path=None):
     # like convert_text(), but does not support 'panflute' input/output
     from_arg = '--from={}'.format(input_format)
     to_arg = '--to={}'.format(output_format)
     args = [from_arg, to_arg] + extra_args
-    out = run_pandoc(text, args)
+    out = run_pandoc(text, args, pandoc_path=pandoc_path)
     out = "\n".join(out.splitlines())  # Replace \r\n with \n
     return out
 

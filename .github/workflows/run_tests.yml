@@ -27,7 +27,22 @@ jobs:
         pandoc-version:
           # earliest supported pandoc version
           - 2.11.0.4
+          # - 2.11.1
+          # - 2.11.1.1
+          # - 2.11.2
+          # - 2.11.3
+          # - 2.11.3.1
+          # - 2.11.3.2
+          # - 2.11.4
+          # - 2.12
           - latest
+        # tests multiple versions of `install_requires` when we want to expand the support matrix
+        click-version:
+          # - 'click>=6,<7'
+          - 'click>=7,<8'
+        pyyaml-version:
+          # - 'pyyaml>=3,<4'
+          - 'pyyaml>=5,<6'
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -37,7 +52,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ".[dev]"
+        python -m pip install "${{ matrix.click-version }}" "${{ matrix.pyyaml-version }}"
+        python -m pip install ".[dev]"
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -55,9 +71,11 @@ jobs:
       run: pytest --color=yes
     - name: Test by running existing filters
       run: |
-       mkdir -p $HOME/.pandoc/filters
-       find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} $HOME/.pandoc/filters/ \;
+       mkdir -p $HOME/.local/share/pandoc/filters
+       find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} $HOME/.local/share/pandoc/filters \;
        find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
+    - name: Test panfl cli
+      run: panfl --help
 
 # put filters in $DATADIR for panflute's autofilter
 # running all available .md files through panflute
