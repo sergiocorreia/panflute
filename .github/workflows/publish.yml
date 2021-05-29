@@ -4,6 +4,7 @@ on:
   release:
     types: [published]
     # published, unpublished, created, edited, deleted, or prereleased
+  workflow_dispatch:
 
 jobs:
   publish:
