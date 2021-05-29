@@ -113,6 +113,7 @@ setup(
             'docutils',
             'Pygments',
             'twine',
+            'wheel',
         ]
     },
 
