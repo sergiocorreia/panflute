@@ -4,6 +4,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/panflute.svg)](https://pypi.python.org/pypi/panflute/)
 [![Development Status](https://img.shields.io/pypi/status/panflute.svg)](https://pypi.python.org/pypi/panflute/)
 [![Build Status](https://github.com/sergiocorreia/panflute/workflows/CI%20Tests/badge.svg)](https://github.com/sergiocorreia/panflute/actions?query=workflow%3A%22CI+Tests%22)
+[![DOI](https://zenodo.org/badge/55024750.svg)](https://zenodo.org/badge/latestdoi/55024750)
 
 [panflute](http://scorreia.com/software/panflute/) is a Python package that makes creating Pandoc filters fun.
 
