@@ -299,22 +299,6 @@ def _get_metadata(self, key='', default=None, builtin=True):
     return meta2builtin(meta) if builtin else meta
 
 
-def meta2builtin(meta):
-    if isinstance(meta, MetaBool):
-        return meta.boolean
-    elif isinstance(meta, MetaString):
-        return meta.text
-    elif isinstance(meta, MetaList):
-        return [meta2builtin(v) for v in meta.content.list]
-    elif isinstance(meta, MetaMap):
-        return {k: meta2builtin(v) for k, v in meta.content.dict.items()}
-    elif isinstance(meta, (MetaInlines, MetaBlocks)):
-        return stringify(meta)
-    else:
-        debug("MISSING", type(meta))
-        return meta
-
-
 # Bind the method
 Doc.get_metadata = _get_metadata
 
@@ -369,12 +353,18 @@ def run_pandoc(text='', args=None, pandoc_path=None):
         proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     except FileNotFoundError:
         raise OSError(f"Given pandoc_path {pandoc_path} is invalid")
+
     out, err = proc.communicate(input=text.encode('utf-8'))
     exitcode = proc.returncode
+
     if err:
-        debug(err.decode('utf-8'))
+        err = err.decode('utf-8')
+        err = '\n'.join(err.splitlines())  # remove trailing line, convert win \r\n to \n
+        debug(err)
+    
     if exitcode != 0:
-        raise IOError('')
+        raise IOError(err)
+    
     return out.decode('utf-8')
 
 

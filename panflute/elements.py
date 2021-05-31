@@ -9,6 +9,8 @@ Notation:
 # Imports
 # ---------------------------
 
+from collections.abc import MutableMapping
+
 from .utils import check_type, check_group, encode_dict, decode_ica, debug
 from .utils import load_pandoc_version, load_pandoc_reader_options
 from .containers import ListContainer, DictContainer
@@ -1028,7 +1030,7 @@ class MetaList(MetaValue):
         self.content.append(i)
 
 
-class MetaMap(MetaValue):
+class MetaMap(MetaValue, MutableMapping):
     """Metadata container for ordered dicts
 
     :param args: (key, value) tuples
@@ -1063,13 +1065,22 @@ class MetaMap(MetaValue):
             value = value.dict.items()
         self._content = DictContainer(*value, oktypes=MetaValue, parent=self)
 
-    # These two are convenience functions, not sure if really needed...
-    # (they save typing the .content and converting to metavalues)
-    def __getitem__(self, i):
-        return self.content[i]
+    # These functions are required in order to be a MutableMapping
 
-    def __setitem__(self, i, v):
-        self.content[i] = builtin2meta(v)
+    def __getitem__(self, k):
+        return meta2builtin(self.content[k])
+
+    def __setitem__(self, k, v):
+        self.content[k] = builtin2meta(v)
+
+    def __delitem__(self, k):
+        del self.content[k]
+
+    def __iter__():
+        return iter(self.content)
+
+    def __len__(self):
+        return len(self.content)
 
     def __contains__(self, i):
         return i in self.content
@@ -1152,6 +1163,10 @@ class MetaBool(MetaValue):
 
     def __repr__(self):
         return 'MetaBool({})'.format(self.boolean)
+
+    def __bool__(self):
+        '''without this, MetaBool(False) would be True'''
+        return self.boolean
 
     def _slots_to_json(self):
         return self.boolean
@@ -1398,3 +1413,19 @@ def builtin2meta(val):
         if isinstance(val, builtin_type):
             return meta_func(val)
     return val
+
+
+def meta2builtin(meta):
+    if isinstance(meta, MetaBool):
+        return meta.boolean
+    elif isinstance(meta, MetaString):
+        return meta.text
+    elif isinstance(meta, MetaList):
+        return [meta2builtin(v) for v in meta.content.list]
+    elif isinstance(meta, MetaMap):
+        return {k: meta2builtin(v) for k, v in meta.content.dict.items()}
+    elif isinstance(meta, (MetaInlines, MetaBlocks)):
+        return stringify(meta)
+    else:
+        debug("MISSING", type(meta))
+        return meta
