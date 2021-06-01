@@ -1076,7 +1076,7 @@ class MetaMap(MetaValue, MutableMapping):
     def __delitem__(self, k):
         del self.content[k]
 
-    def __iter__():
+    def __iter__(self):
         return iter(self.content)
 
     def __len__(self):
