@@ -35,7 +35,6 @@ jobs:
           # - 2.11.3.2
           # - 2.11.4
           # - 2.12
-          - 2.14
           - latest
         # tests multiple versions of `install_requires` when we want to expand the support matrix
         click-version:
