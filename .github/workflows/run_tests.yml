@@ -40,6 +40,7 @@ jobs:
         click-version:
           # - 'click>=6,<7'
           - 'click>=7,<8'
+          - 'click>=8,<9'
         pyyaml-version:
           # - 'pyyaml>=3,<4'
           - 'pyyaml>=5,<6'
