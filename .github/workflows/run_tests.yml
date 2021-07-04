@@ -39,7 +39,7 @@ jobs:
         # tests multiple versions of `install_requires` when we want to expand the support matrix
         click-version:
           # - 'click>=6,<7'
-          - 'click>=7,<8'
+          # - 'click>=7,<8'
           - 'click>=8,<9'
         pyyaml-version:
           # - 'pyyaml>=3,<4'

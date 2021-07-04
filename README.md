@@ -1,10 +1,15 @@
 # Panflute: Pythonic Pandoc Filters
 
-[![Python version](https://img.shields.io/pypi/pyversions/panflute.svg)](https://pypi.python.org/pypi/panflute/)
-[![PyPI version](https://img.shields.io/pypi/v/panflute.svg)](https://pypi.python.org/pypi/panflute/)
 [![Development Status](https://img.shields.io/pypi/status/panflute.svg)](https://pypi.python.org/pypi/panflute/)
 [![Build Status](https://github.com/sergiocorreia/panflute/workflows/CI%20Tests/badge.svg)](https://github.com/sergiocorreia/panflute/actions?query=workflow%3A%22CI+Tests%22)
+![License](https://img.shields.io/pypi/l/panflute.svg)
 [![DOI](https://zenodo.org/badge/55024750.svg)](https://zenodo.org/badge/latestdoi/55024750)
+
+[![GitHub Releases](https://img.shields.io/github/tag/sergiocorreia/panflute.svg?label=github+release)](https://github.com/sergiocorreia/panflute/releases)
+[![PyPI version](https://img.shields.io/pypi/v/panflute.svg)](https://pypi.python.org/pypi/panflute/)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/panflute.svg)](https://anaconda.org/conda-forge/panflute)
+[![Python version](https://img.shields.io/pypi/pyversions/panflute.svg)](https://pypi.python.org/pypi/panflute/)
+[![Supported implementations](https://img.shields.io/pypi/implementation/panflute.svg)](https://pypi.org/project/panflute)
 
 [panflute](http://scorreia.com/software/panflute/) is a Python package that makes creating Pandoc filters fun.
 
@@ -54,7 +59,7 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 
 | panflute version  | supported pandoc versions | supported pandoc API versions |
 | ---   | ---   |  ---  |
-| 2.1 | 2.11.0.4—2.13.x  | 1.22    |
+| 2.1 | 2.11.0.4—2.14.x  | 1.22    |
 | 2.0 | 2.11.0.4—2.11.x  | 1.22    |
 | not supported | 2.10  | 1.21  |
 | 1.12 | 2.7-2.9 | 1.17.5–1.20  |
