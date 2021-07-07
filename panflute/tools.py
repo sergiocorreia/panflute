@@ -296,7 +296,7 @@ def _get_metadata(self, key='', default=None, builtin=True):
                 return default
 
     # Stringify contents
-    return meta2builtin(meta) if builtin else meta
+    return meta2builtin(meta) if builtin and isinstance(meta, Element) else meta
 
 
 # Bind the method
