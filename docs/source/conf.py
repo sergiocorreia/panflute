@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'panflute'
-copyright = ' 2020, Sergio Correia'
+copyright = ' 2021, Sergio Correia'
 author = 'Sergio Correia'
 
 # The version info for the project you're documenting, acts as replacement for
