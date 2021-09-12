@@ -14,10 +14,12 @@ pylint-report.txt
 # C extensions
 *.so
 
+# Sphinx build
+/docs/build/
+
 # Distribution / packaging
 .Python
 env/
-build/
 develop-eggs/
 dist/
 downloads/
@@ -62,8 +64,6 @@ coverage.xml
 # Django stuff:
 *.log
 
-# Sphinx documentation
-#docs/_build/
 
 # PyBuilder
 target/
