@@ -80,7 +80,7 @@ Low-level classes
 
 
 Standard elements
-*****************
+********************************************
 
 These are the standard Pandoc elements, as described `here <https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html>`_. Consult the `repo <https://github.com/jgm/pandoc-types/commits/master/Text/Pandoc/Definition.hs>`_ for the latest updates.
 
@@ -109,6 +109,12 @@ These are the standard Pandoc elements, as described `here <https://hackage.hask
 .. automodule:: panflute.elements
    :members:
    :exclude-members: Doc
+
+Table-specific elements
+********************************************
+
+.. automodule:: panflute.table_elements
+   :members:
 
 
 Standard functions

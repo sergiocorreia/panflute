@@ -1,0 +1,21 @@
+@import url("theme.css");
+
+
+.xfunction {
+    border-bottom: 30px solid #ff0000;
+    padding-bottom: 100px;
+    padding-top: 10px;
+}
+
+.class {
+    padding-bottom: 20px;
+}
+
+.wy-nav-content {
+    max-width: 90%;
+}
+
+div.body
+{
+    max-width: 1200px;
+}

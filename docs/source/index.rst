@@ -5,6 +5,8 @@
 
 .. automodule:: panflute
 
+*(Documentation last updated for panflute |version|)*
+
 It is a pythonic alternative to John MacFarlane's
 `pandocfilters <https://github.com/jgm/pandocfilters>`_,
 from which it is heavily inspired.
