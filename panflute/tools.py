@@ -44,7 +44,8 @@ VerticalSpaces = (Para, )
 
 
 class PandocVersion:
-    '''get runtime pandoc verison
+    '''
+    Get runtime Pandoc version
 
     use PandocVersion().version for comparing versions
     '''
@@ -214,7 +215,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
 
 def stringify(element, newlines=True):
     """
-    Return the raw text version of an elements (and its children element).
+    Return the raw text version of an element (and its children elements).
 
     Example:
 
@@ -351,7 +352,7 @@ def run_pandoc(text='', args=None, pandoc_path=None):
     Low level function that calls Pandoc with (optionally)
     some input text and/or arguments
 
-    :param str pandoc_path: If specified, use the pandoc at this path.
+    :param str pandoc_path: If specified, use the Pandoc at this path.
         If None, default to that from PATH.
     """
     if args is None:
@@ -416,7 +417,7 @@ def convert_text(text,
     :type standalone: :class:`bool`
     :param extra_args: extra arguments passed to Pandoc
     :type extra_args: :class:`list`
-    :param str pandoc_path: If specified, use the pandoc at this path.
+    :param str pandoc_path: If specified, use the Pandoc at this path.
         If None, default to that from PATH.
     :rtype: :class:`list` | :class:`.Doc` | :class:`str`
 
@@ -605,7 +606,7 @@ def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=Non
     although if a local or document tag returns None, then the next level down is used.
     Also, if error_on_none=True and the final variable is None, then a ValueError will be raised
 
-    In this manner you can set global variables, which can be optionally overriden at a local level.
+    In this manner you can set global variables, which can be optionally overridden at a local level.
     For example, the two files below show how to apply different styles to docx text:
 
     **main.md:**
