@@ -496,7 +496,7 @@ class Citation(Element):
     """
     A single citation to a single work
 
-    :param id: citation key (e.g. the bibtex keyword)
+    :param id: citation key (e.g. the BibTeX keyword)
     :type id: ``str``
     :param mode: how will the citation appear ('NormalCitation' for the
         default style, 'AuthorInText' to exclude parenthesis,

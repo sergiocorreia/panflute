@@ -146,10 +146,10 @@ Standard functions
 
    - They are called as ``action(element, doc)`` so they must accept at
      least two arguments.
-   - Additional arguments can be passed through the ``**kwargs** of
+   - Additional arguments can be passed through the ``**kwargs**`` of
      ``toJSONFilter`` and ``toJSONFilters``.
-   - They can return either an element, ``None``, or ``[]``.
-   - If they return ``None``, the document will keep the same document
+   - They can return either an element, a list, or ``None``.
+   - If they return ``None``, the document will keep the same element
      as before (although it might have been modified).
    - If they return another element, it will take the place of the
      received element.
@@ -157,6 +157,9 @@ Standard functions
      document. Note that you can delete a row from a table or an item from
      a list, but you cannot delete the caption from a table (you can
      make it empty though).
+   - If the received element is a block or inline element, they may return
+     a list of elements of the same base class, which will take the place
+     of the received element.
 
 "Batteries included" functions
 ******************************
