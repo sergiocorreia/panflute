@@ -92,7 +92,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         'click >=6,<9',
-        'pyyaml >=3,<6',
+        'pyyaml >=3,<7',
     ],
 
     # List additional groups of dependencies here (e.g. development
