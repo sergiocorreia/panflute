@@ -22,7 +22,7 @@ jobs:
       max-parallel: 5
       matrix:
         # see setup.py for supported versions
-        # here instead of having a matrix to test against 7 * 7 * 3 * 4 combinations
+        # here instead of having a matrix to test against 7 * 7 * 3 * 3 combinations
         # we only test 7 combinations in a round-robin fashion
         include:
           - python-version: "3.6"
@@ -32,27 +32,27 @@ jobs:
           - python-version: "pypy-3.6"
             pandoc-version: "2.12"
             click-version: "click>=7,<8"
-            pyyaml-version: "pyyaml>=4,<5"
+            pyyaml-version: "pyyaml>=5,<6"
           - python-version: "3.7"
             pandoc-version: "2.13"
             click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=5,<6"
+            pyyaml-version: "pyyaml>=6,<7"
           - python-version: "pypy-3.7"
             pandoc-version: "2.14.2"
             click-version: "click>=6,<7"
-            pyyaml-version: "pyyaml>=6,<7"
+            pyyaml-version: "pyyaml>=3,<4"
           - python-version: "3.8"
             pandoc-version: "2.15"
             click-version: "click>=7,<8"
-            pyyaml-version: "pyyaml>=3,<4"
+            pyyaml-version: "pyyaml>=5,<6"
           - python-version: "3.9"
             pandoc-version: "2.16.2"
             click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=4,<5"
+            pyyaml-version: "pyyaml>=6,<7"
           - python-version: "3.10"
             pandoc-version: "latest"
             click-version: "click>=6,<7"
-            pyyaml-version: "pyyaml>=5,<6"
+            pyyaml-version: "pyyaml>=3,<4"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
