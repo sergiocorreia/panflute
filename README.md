@@ -57,12 +57,13 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 
 <!-- For pandoc API verion, check https://hackage.haskell.org/package/pandoc for pandoc-types, which is the same thing. -->
 
-| panflute version  | supported pandoc versions | supported pandoc API versions |
-| ---   | ---   |  ---  |
-| 2.1 | 2.11.0.4—2.14.x  | 1.22    |
-| 2.0 | 2.11.0.4—2.11.x  | 1.22    |
-| not supported | 2.10  | 1.21  |
-| 1.12 | 2.7-2.9 | 1.17.5–1.20  |
+| panflute version | supported pandoc versions | supported pandoc API versions |
+| ---------------- | ------------------------- | ----------------------------- |
+| 2.1.3            | 2.11.0.4–2.16.x           | 1.22–1.22.1                   |
+| 2.1              | 2.11.0.4—2.14.x           | 1.22                          |
+| 2.0              | 2.11.0.4—2.11.x           | 1.22                          |
+| not supported    | 2.10                      | 1.21                          |
+| 1.12             | 2.7-2.9                   | 1.17.5–1.20                   |
 
 Note: pandoc 2.10 is short lived and 2.11 has minor API changes comparing to that, mainly for fixing its shortcomings. Please avoid using pandoc 2.10.
 
