@@ -12,7 +12,8 @@ def prepare(doc):
         pf.debug(f'    {k}={v}')
 
     assert doc.pandoc_version >= (2, 11, 0)
-    assert doc.pandoc_reader_options['readerStandalone'] is False
+    standalone_key = 'readerStandalone' if doc.pandoc_version < (2, 16, 0) else "standalone"
+    assert doc.pandoc_reader_options[standalone_key] is False
 
 
 def action(elem, doc):

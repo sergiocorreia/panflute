@@ -74,6 +74,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
@@ -92,7 +93,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         'click >=6,<9',
-        'pyyaml >=3,<6',
+        'pyyaml >=3,<7',
     ],
 
     # List additional groups of dependencies here (e.g. development

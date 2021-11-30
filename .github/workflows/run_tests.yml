@@ -22,28 +22,39 @@ jobs:
       max-parallel: 5
       matrix:
         # see setup.py for supported versions
-        python-version: [3.6, 3.7, 3.8, 3.9, pypy3]
-        # should test sparingly across API breaking boundaries
-        pandoc-version:
-          # earliest supported pandoc version
-          - 2.11.0.4
-          # - 2.11.1
-          # - 2.11.1.1
-          # - 2.11.2
-          # - 2.11.3
-          # - 2.11.3.1
-          # - 2.11.3.2
-          # - 2.11.4
-          # - 2.12
-          - latest
-        # tests multiple versions of `install_requires` when we want to expand the support matrix
-        click-version:
-          # - 'click>=6,<7'
-          # - 'click>=7,<8'
-          - 'click>=8,<9'
-        pyyaml-version:
-          # - 'pyyaml>=3,<4'
-          - 'pyyaml>=5,<6'
+        # here instead of having a matrix to test against 7 * 7 * 3 * 3 combinations
+        # we only test 7 combinations in a round-robin fashion
+        # make sure the versions are monotmonic increasing w.r.t. each other
+        # other wise e.g. an older version of a dependency may not work well with a newer version of Python
+        include:
+          - python-version: "3.6"
+            pandoc-version: "2.11.0.4"
+            click-version: "click>=6,<7"
+            pyyaml-version: "pyyaml>=3,<4"
+          - python-version: "pypy-3.6"
+            pandoc-version: "2.12"
+            click-version: "click>=6,<7"
+            pyyaml-version: "pyyaml>=3,<4"
+          - python-version: "3.7"
+            pandoc-version: "2.13"
+            click-version: "click>=7,<8"
+            pyyaml-version: "pyyaml>=5,<6"
+          - python-version: "pypy-3.7"
+            pandoc-version: "2.14.2"
+            click-version: "click>=7,<8"
+            pyyaml-version: "pyyaml>=5,<6"
+          - python-version: "3.8"
+            pandoc-version: "2.15"
+            click-version: "click>=8,<9"
+            pyyaml-version: "pyyaml>=6,<7"
+          - python-version: "3.9"
+            pandoc-version: "2.16.2"
+            click-version: "click>=8,<9"
+            pyyaml-version: "pyyaml>=6,<7"
+          - python-version: "3.10"
+            pandoc-version: "latest"
+            click-version: "click>=8,<9"
+            pyyaml-version: "pyyaml>=6,<7"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
