@@ -25,6 +25,22 @@ from shutil import which
 from subprocess import Popen, PIPE
 from functools import partial
 
+# yamlloader keeps dict ordering in yaml
+try:
+    import yamlloader
+except ImportError:
+    yamlloader = None
+
+if yamlloader is None:
+    # property of pyyaml:
+    # C*Loader when compiled with C, else fallback to pure Python loader
+    try:
+        from yaml import CSafeLoader as Loader
+    except ImportError:
+        from yaml import SafeLoader as Loader
+else:
+    from yamlloader.ordereddict import CSafeLoader as Loader
+
 # to be filled when the first time which('pandoc') is called
 PANDOC_PATH = None
 
@@ -169,7 +185,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                     data = data.lstrip('\n')
                     raw = raw[0]
                     try:
-                        options = yaml.safe_load(raw)
+                        options = yaml.load(raw, Loader=Loader)  # nosec  # already using SafeLoader
                     except yaml.scanner.ScannerError:
                         debug("panflute: malformed YAML block")
                         return
@@ -198,7 +214,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                                 rawmode = True
                             else:
                                 try:
-                                    options.update(yaml.safe_load(chunk))
+                                    options.update(yaml.load(chunk, Loader=Loader))  # nosec  # already using SafeLoader
                                 except yaml.scanner.ScannerError:
                                     debug("panflute: malformed YAML block")
                                     return
