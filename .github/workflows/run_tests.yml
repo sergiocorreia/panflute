@@ -55,6 +55,7 @@ jobs:
             pandoc-version: "latest"
             click-version: "click>=8,<9"
             pyyaml-version: "pyyaml>=6,<7"
+            yamlloader-version: "yamlloader>=1,<2"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -66,6 +67,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install "${{ matrix.click-version }}" "${{ matrix.pyyaml-version }}"
         python -m pip install ".[dev]"
+    - name: Install yamlloader
+      if: ${{ matrix.yamlloader-version }}
+      run: python -m pip install "${{ matrix.yamlloader-version }}"
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
