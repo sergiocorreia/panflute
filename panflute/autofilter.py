@@ -144,13 +144,13 @@ help_str = """Allows Panflute to be run as a command line executable:
 
 * to be used in Pandoctools shell scripts as Pandoc filter with
 multiple arguments (should have -t/--to option in this case):
-`pandoc -t json | panfl -t markdown foo.bar | pandoc -f json`
+`pandoc example.md -t json | panfl foo.bar -t markdown | pandoc -f json`
 
 * to be used as a Pandoc filter (in this case only one positional
 argument is allowed of all options): `pandoc --filter panfl`
 
 Filters may be set with or without .py extension.
-It can be relative or absolutele paths to files or modules specs
+It can be relative or absolute paths to files or modules specs
 like `foo.bar`.
 
 MIND THAT Panflute temporarily prepends folder of the filter
