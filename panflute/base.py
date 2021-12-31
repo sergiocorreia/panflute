@@ -218,7 +218,7 @@ class Element(object):
             guess = guess.parent  # If no parent, this will be None
         return guess  # Returns either Doc or None
 
-    def walk(self, action, doc=None):
+    def walk(self, action, doc=None, walk_inlines=True):
         """
         Walk through the element and all its children (sub-elements),
         applying the provided function ``action``.
@@ -253,23 +253,26 @@ class Element(object):
         # First iterate over children
         for child in self._children:
             obj = getattr(self, child)
+
             if isinstance(obj, Element):
-                ans = obj.walk(action, doc)
+                obj = obj.walk(action, doc)
             elif isinstance(obj, ListContainer):
-                ans = (item.walk(action, doc) for item in obj)
+                #if not walk_inlines and isinstance(obj.oktypes, Block):
+                #    continue
+                obj = (item.walk(action, doc) for item in obj)
                 # We need to convert single elements to iterables, so that they
                 # can be flattened later
-                ans = ((item,) if type(item) != list else item for item in ans)
+                obj = ((item,) if type(item) is not list else item for item in obj)
                 # Flatten the list, by expanding any sublists
-                ans = list(chain.from_iterable(ans))
+                obj = list(chain.from_iterable(obj))
             elif isinstance(obj, DictContainer):
-                ans = [(k, v.walk(action, doc)) for k, v in obj.items()]
-                ans = [(k, v) for k, v in ans if v != []]
+                obj = [(k, v.walk(action, doc)) for k, v in obj.items()]
+                obj = [(k, v) for k, v in obj if v != []]
             elif obj is None:
-                ans = None  # Empty table headers or captions
+                obj = None  # Empty table headers or captions
             else:
                 raise TypeError(type(obj))
-            setattr(self, child, ans)
+            setattr(self, child, obj)
 
         # Then apply the action to the root element
         altered = action(self, doc)

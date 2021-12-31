@@ -152,6 +152,7 @@ def run_filters(actions,
                 prepare=None, finalize=None,
                 input_stream=None, output_stream=None,
                 doc=None,
+                walk_inlines=True,
                 **kwargs):
     r"""
     Receive a Pandoc document from the input stream (default is stdin),
@@ -202,7 +203,7 @@ def run_filters(actions,
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
-        doc = doc.walk(action, doc)
+        doc = doc.walk(action, doc=doc, walk_inlines=walk_inlines)
 
     if finalize is not None:
         finalize(doc)

@@ -356,7 +356,10 @@ def shell(args, wait=True, msg=None):
         out, err = proc.communicate(input=msg)
         exitcode = proc.returncode
         if exitcode != 0:
-            raise IOError(err)
+            debug('<<<< shell call failed; error message below >>>>')
+            debug(err.decode('utf-8'))
+            debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            raise IOError()
         return out
     else:
         DETACHED_PROCESS = 0x00000008
