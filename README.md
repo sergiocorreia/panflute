@@ -28,6 +28,7 @@ You might also find useful [this presentation](https://github.com/BPLIM/Workshop
 To manage panflute using pip, open the command line and run
 
 - `pip install panflute` to install
+    - `pip install "panflute[extras]"` to include extra dependencies (`yamlloader`)
 - `pip install -U panflute` to upgrade
 - `pip uninstall panflute` to remove
 
@@ -38,6 +39,7 @@ You need a matching pandoc version for panflute to work flawlessly. See [Support
 To manage panflute with a matching pandoc version, open the command line and run
 
 - `conda install -c conda-forge pandoc 'panflute>=2.0.5'` to install both
+    `conda install -c conda-forge pandoc 'panflute>=2.0.5' yamlloader` to include extra dependencies
 - `conda update pandoc panflute` to upgrade both
 - `conda remove pandoc panflute` to remove both
 
@@ -59,7 +61,7 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 
 | panflute version | supported pandoc versions | supported pandoc API versions |
 | ---------------- | ------------------------- | ----------------------------- |
-| 2.1.3            | 2.11.0.4–2.16.x           | 1.22–1.22.1                   |
+| 2.1.3            | 2.11.0.4–2.17.x           | 1.22–1.22.1                   |
 | 2.1              | 2.11.0.4—2.14.x           | 1.22                          |
 | 2.0              | 2.11.0.4—2.11.x           | 1.22                          |
 | not supported    | 2.10                      | 1.21                          |
