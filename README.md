@@ -28,6 +28,7 @@ You might also find useful [this presentation](https://github.com/BPLIM/Workshop
 To manage panflute using pip, open the command line and run
 
 - `pip install panflute` to install
+    - `pip install "panflute[extras]"` to include extra dependencies (`yamlloader`)
 - `pip install -U panflute` to upgrade
 - `pip uninstall panflute` to remove
 
@@ -38,6 +39,7 @@ You need a matching pandoc version for panflute to work flawlessly. See [Support
 To manage panflute with a matching pandoc version, open the command line and run
 
 - `conda install -c conda-forge pandoc 'panflute>=2.0.5'` to install both
+    `conda install -c conda-forge pandoc 'panflute>=2.0.5' yamlloader` to include extra dependencies
 - `conda update pandoc panflute` to upgrade both
 - `conda remove pandoc panflute` to remove both
 

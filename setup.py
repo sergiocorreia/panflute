@@ -115,7 +115,10 @@ setup(
             'Pygments',
             'twine',
             'wheel',
-        ]
+        ],
+        'extras': [
+            "yamlloader>=1,<2",
+        ],
     },
 
     # If there are data files included in your packages that need to be
