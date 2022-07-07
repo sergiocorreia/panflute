@@ -23,17 +23,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 5
+      max-parallel: 7
       matrix:
         # see setup.py for supported versions
         # here instead of having a matrix to test against 7 * 7 * 3 * 3 combinations
         # we only test 7 combinations in a round-robin fashion
-        # make sure the versions are monotmonic increasing w.r.t. each other
+        # make sure the versions are monotonic increasing w.r.t. each other
         # other wise e.g. an older version of a dependency may not work well with a newer version of Python
         include:
-          - python-version: "3.6"
-            pandoc-version: "2.11.0.4"
-            click-version: "click>=6,<7"
             pyyaml-version: "pyyaml>=3,<4"
           - python-version: "pypy-3.6"
             pandoc-version: "2.12"
@@ -56,6 +53,11 @@ jobs:
             click-version: "click>=8,<9"
             pyyaml-version: "pyyaml>=6,<7"
           - python-version: "3.10"
+            pandoc-version: "latest"
+            click-version: "click>=8,<9"
+            pyyaml-version: "pyyaml>=6,<7"
+            yamlloader-version: "yamlloader>=1,<2"
+          - python-version: "3.11.x"
             pandoc-version: "latest"
             click-version: "click>=8,<9"
             pyyaml-version: "pyyaml>=6,<7"
