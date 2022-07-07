@@ -31,7 +31,6 @@ jobs:
         # make sure the versions are monotonic increasing w.r.t. each other
         # other wise e.g. an older version of a dependency may not work well with a newer version of Python
         include:
-            pyyaml-version: "pyyaml>=3,<4"
           - python-version: "pypy-3.6"
             pandoc-version: "2.12"
             click-version: "click>=6,<7"
