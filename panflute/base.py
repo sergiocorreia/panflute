@@ -250,29 +250,30 @@ class Element(object):
         if doc is None:
             doc = self.doc
 
-        # First iterate over children
-        for child in self._children:
-            obj = getattr(self, child)
+        # self._children has property *names* so we need a bit of getattr/setattr magic to modify the objects themselves
+        children = ((child_name, getattr(self, child_name)) for child_name in self._children)
 
-            if isinstance(obj, Element):
-                obj = obj.walk(action, doc)
-            elif isinstance(obj, ListContainer):
-                #if not walk_inlines and isinstance(obj.oktypes, Block):
+        # First iterate over children
+        for child_name, child in children:
+            if isinstance(child, Element):
+                child = child.walk(action, doc)
+            elif isinstance(child, ListContainer):
+                #if not walk_inlines and isinstance(child.oktypes, Block):
                 #    continue
-                obj = (item.walk(action, doc) for item in obj)
+                child = (item.walk(action, doc) for item in child)
                 # We need to convert single elements to iterables, so that they
                 # can be flattened later
-                obj = ((item,) if type(item) is not list else item for item in obj)
+                child = ((item,) if type(item) is not list else item for item in child)
                 # Flatten the list, by expanding any sublists
-                obj = list(chain.from_iterable(obj))
-            elif isinstance(obj, DictContainer):
-                obj = [(k, v.walk(action, doc)) for k, v in obj.items()]
-                obj = [(k, v) for k, v in obj if v != []]
-            elif obj is None:
-                obj = None  # Empty table headers or captions
+                child = list(chain.from_iterable(child))
+            elif isinstance(child, DictContainer):
+                child = [(k, v.walk(action, doc)) for k, v in child.items()]
+                child = [(k, v) for k, v in child if v != []]
+            elif child is None:
+                child = None  # Empty table headers or captions
             else:
                 raise TypeError(type(obj))
-            setattr(self, child, obj)
+            setattr(self, child_name, child)
 
         # Then apply the action to the root element
         altered = action(self, doc)
