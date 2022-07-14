@@ -97,7 +97,7 @@ class ListContainer(MutableSequence):
             return False
         if len(self.list) != len(other.list):
             return False
-        for x, y in zip(self.list, other.list, strict=True):
+        for x, y in zip(self.list, other.list):  # , strict=True
             if x != y:
                 return False
         return True
