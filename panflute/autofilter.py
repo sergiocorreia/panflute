@@ -39,8 +39,8 @@ def get_filter_dirs(hardcoded=True):
             res = []
             # str below to convert from Path to str is necessary
             # for test_panfl.test_get_filter_dirs
-            # and also for consistencies of the return types in the 
-            # pandoc 2.12 dropped this historical convention
+            # and also for consistencies of the return types
+            # Pandoc 2.12 dropped this historical convention
             if version[:2] < (2, 12):
                 res.append(str(base / '.pandoc' / 'filters'))
             res.append(str(base / '.local' / 'share' / 'pandoc' / 'filters'))
@@ -89,7 +89,8 @@ def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True,
 
     if verbose:
         debug('panflute: data_dir={} sys_path={}'.format(data_dir, sys_path))
-    search_dirs = [p.normpath(p.expanduser(p.expandvars(dir_))) for dir_ in search_dirs]
+    search_dirs = [p.normpath(p.expanduser(p.expandvars(d)))
+                   for d in search_dirs]
 
     if not panfl_:
         # default panflute behaviour:
@@ -165,7 +166,7 @@ Search preserves directories order (except for --data-dir and
 @click.command(help=help_str)
 @click.argument('filters', nargs=-1)
 @click.option('-w', '-t', '--write', '--to', 'to', type=str, default=None,
-              help='Derivative of Pandoc writer option that Pandoc passes to filters.')
+              help='Output format passed to Pandoc (and filters).')
 @click.option('--dir', '-d', 'search_dirs', multiple=True,
               help="Search filters in provided directories: `-d dir1 -d dir2`.")
 @click.option('--data-dir', is_flag=True, default=False,
