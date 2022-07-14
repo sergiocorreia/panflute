@@ -8,6 +8,7 @@ object, and the attribute of the parent object that they correspond to.
 # ---------------------------
 
 from collections.abc import MutableSequence, MutableMapping
+from itertools import chain
 from .utils import check_type, encode_dict, debug
 
 
@@ -76,6 +77,14 @@ class ListContainer(MutableSequence):
         v = check_type(v, self.oktypes)
         self.list.insert(i, v)
 
+    def walk(self, action, doc):
+        ans = (item.walk(action, doc) for item in self)
+        # We need to convert single elements to iterables that can be flattened later
+        ans = ((item,) if type(item) is not list else item for item in ans)
+        # Flatten the list, by expanding any sublists
+        ans = list(chain.from_iterable(ans))
+        return ans
+
     def __str__(self):
         return self.__repr__()
 
@@ -125,6 +134,11 @@ class DictContainer(MutableMapping):
     def __setitem__(self, k, v):
         v = check_type(v, self.oktypes)
         self.dict[k] = v
+
+    def walk(self, action, doc):
+        ans = ((k, v.walk(action, doc)) for k, v in self.items())
+        ans = [(k, v) for k, v in ans if v != []]
+        return ans
 
     def __str__(self):
         return self.__repr__()

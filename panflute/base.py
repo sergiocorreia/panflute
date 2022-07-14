@@ -8,7 +8,6 @@ Base classes and methods of all Pandoc elements
 
 from operator import attrgetter
 from collections.abc import MutableSequence, MutableMapping
-from itertools import chain
 
 from .containers import ListContainer, DictContainer
 from .utils import check_type, encode_dict  # check_group
@@ -255,20 +254,8 @@ class Element(object):
 
         # First iterate over children
         for child_name, child in children:
-            if isinstance(child, Element):
+            if isinstance(child, (Element, ListContainer, DictContainer)):
                 child = child.walk(action, doc)
-            elif isinstance(child, ListContainer):
-                #if not walk_inlines and isinstance(child.oktypes, Block):
-                #    continue
-                child = (item.walk(action, doc) for item in child)
-                # We need to convert single elements to iterables, so that they
-                # can be flattened later
-                child = ((item,) if type(item) is not list else item for item in child)
-                # Flatten the list, by expanding any sublists
-                child = list(chain.from_iterable(child))
-            elif isinstance(child, DictContainer):
-                child = [(k, v.walk(action, doc)) for k, v in child.items()]
-                child = [(k, v) for k, v in child if v != []]
             elif child is None:
                 child = None  # Empty table headers or captions
             else:
