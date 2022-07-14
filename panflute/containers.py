@@ -91,6 +91,17 @@ class ListContainer(MutableSequence):
     def __repr__(self):
         return 'ListContainer({})'.format(' '.join(repr(x) for x in self.list))
 
+    def __eq__(self, other):
+        # We can't compare on .parent b/c then we would get a circular reference
+        if (self.oktypes != other.oktypes) or (self.location != other.location):
+            return False
+        if len(self.list) != len(other.list):
+            return False
+        for x, y in zip(self.list, other.list, strict=True):
+            if x != y:
+                return False
+        return True
+
     def to_json(self):
         return [to_json_wrapper(item) for item in self.list]
 

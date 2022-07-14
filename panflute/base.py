@@ -37,6 +37,18 @@ class Element(object):
         tag = type(self).__name__
         return tag
 
+    def __eq__(self, other):
+        # Doc has a different method b/c it uses __dict__ instead of slots
+        if type(self) != type(other):
+            return False
+
+        for key in self.__slots__:
+            if getattr(self, key) != getattr(other, key):
+                return False
+
+        return True
+
+
     # ---------------------------
     # Base methods
     # ---------------------------

@@ -68,6 +68,15 @@ class Doc(Element):
         self.pandoc_version = load_pandoc_version()
         self.pandoc_reader_options = load_pandoc_reader_options()
 
+    def __eq__(self, other):
+        if not isinstance(other, Doc):
+            return False
+        if self.metadata != other.metadata:
+            return False
+        if self.content != other.content:
+            return False
+        return True
+
     @property
     def metadata(self):
         self._metadata.parent = self
