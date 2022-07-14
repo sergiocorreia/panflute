@@ -152,7 +152,7 @@ def run_filters(actions,
                 prepare=None, finalize=None,
                 input_stream=None, output_stream=None,
                 doc=None,
-                walk_inlines=True,
+                stop_if=None,
                 **kwargs):
     r"""
     Receive a Pandoc document from the input stream (default is stdin),
@@ -187,6 +187,8 @@ def run_filters(actions,
         (default is :data:`sys.stdout`)
     :param doc: ``None`` unless running panflute as a filter, in which case this will be a :class:`.Doc` element
     :type doc: ``None`` | :class:`.Doc`
+    :param stop_if: function that takes (element) as argument.
+    :type stop_if: :class:`function`, optional
     :param \*kwargs: keyword arguments will be passed through to the *action*
      functions (so they can actually receive more than just two arguments
      (*element* and *doc*)
@@ -203,7 +205,7 @@ def run_filters(actions,
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
-        doc = doc.walk(action, doc=doc, walk_inlines=walk_inlines)
+        doc = doc.walk(action, doc=doc, stop_if=stop_if)
 
     if finalize is not None:
         finalize(doc)

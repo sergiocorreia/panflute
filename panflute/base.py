@@ -217,7 +217,7 @@ class Element(object):
             guess = guess.parent  # If no parent, this will be None
         return guess  # Returns either Doc or None
 
-    def walk(self, action, doc=None, walk_inlines=True):
+    def walk(self, action, doc=None, stop_if=None):
         """
         Walk through the element and all its children (sub-elements),
         applying the provided function ``action``.
@@ -242,6 +242,8 @@ class Element(object):
             other variables). Only use this variable if for some reason
             you don't want to use the current document of an element.
         :type doc: :class:`.Doc`
+        :param stop_if: function that takes (element) as argument.
+        :type stop_if: :class:`function`, optional
         :rtype: :class:`Element` | ``[]`` | ``None``
         """
 
@@ -249,20 +251,22 @@ class Element(object):
         if doc is None:
             doc = self.doc
 
-        # self._children has property *names* so we need a bit of getattr/setattr magic to modify the objects themselves
-        children = ((child_name, getattr(self, child_name)) for child_name in self._children)
+        # First iterate over children; unless the stop condition is met
+        if stop_if is None or not stop_if(self):
 
-        # First iterate over children
-        for child_name, child in children:
-            if isinstance(child, (Element, ListContainer, DictContainer)):
-                child = child.walk(action, doc)
-            elif child is None:
-                child = None  # Empty table headers or captions
-            else:
-                raise TypeError(type(obj))
-            setattr(self, child_name, child)
+            # self._children has property *names* so we need a bit of getattr/setattr magic to modify the objects themselves
+            children = ((child_name, getattr(self, child_name)) for child_name in self._children)
 
-        # Then apply the action to the root element
+            for child_name, child in children:
+                if isinstance(child, (Element, ListContainer, DictContainer)):
+                    child = child.walk(action, doc, stop_if)
+                elif child is None:
+                    child = None  # Empty table headers or captions
+                else:
+                    raise TypeError(type(child))
+                setattr(self, child_name, child)
+
+        # Then apply the action() to the root element
         altered = action(self, doc)
         return self if altered is None else altered
 
