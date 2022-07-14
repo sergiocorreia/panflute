@@ -1,15 +1,27 @@
 import panflute as pf
 
 
-def validate(markdown_text, expected_text):
+def validate(markdown_text, expected_text, verbose=False):
 	doc = pf.convert_text(markdown_text, input_format='markdown', output_format='panflute', standalone=True)
 	output_text = pf.stringify(doc)
+	if verbose:
+		print('<<<< EXPECTED <<<<')
+		print(expected_text)
+		print('<<<< OUTPUT <<<<')
+		print(output_text)
+		print('>>>>>>>>>>>>>>>>')
 	assert expected_text == output_text
 
 
 def test_simple():
 	markdown_text = '''Hello **world**! *How* are ~you~ doing?'''
 	expected_text = '''Hello world! How are you doing?\n\n'''
+	validate(markdown_text, expected_text)
+
+
+def test_cite():
+	markdown_text = '[@abc, p.23]'
+	expected_text = '[@abc, p.23]\n\n'
 	validate(markdown_text, expected_text)
 
 
@@ -27,5 +39,6 @@ def test_definition_list_complex():
 
 if __name__ == "__main__":
     test_simple()
+    test_cite()
     test_definition_list()
     test_definition_list_complex()

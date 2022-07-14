@@ -77,7 +77,7 @@ class ListContainer(MutableSequence):
         v = check_type(v, self.oktypes)
         self.list.insert(i, v)
 
-    def walk(self, action, doc, stop_if):
+    def walk(self, action, doc=None, stop_if=None):
         ans = (item.walk(action, doc, stop_if) for item in self)
         # We need to convert single elements to iterables that can be flattened later
         ans = ((item,) if type(item) is not list else item for item in ans)
@@ -135,7 +135,7 @@ class DictContainer(MutableMapping):
         v = check_type(v, self.oktypes)
         self.dict[k] = v
 
-    def walk(self, action, doc, stop_if):
+    def walk(self, action, doc=None, stop_if=None):
         ans = ((k, v.walk(action, doc, stop_if)) for k, v in self.items())
         ans = [(k, v) for k, v in ans if v != []]
         return ans

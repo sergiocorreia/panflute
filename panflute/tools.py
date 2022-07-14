@@ -248,7 +248,7 @@ def stringify(element, newlines=True):
     """
 
     def stop_if(e):
-        return isinstance(e, DefinitionList)
+        return isinstance(e, (DefinitionList, Cite))
 
     def attach_str(e, doc, answer):
         if hasattr(e, 'text'):
@@ -264,8 +264,8 @@ def stringify(element, newlines=True):
                 definitions = '; '.join(stringify(defn) for defn in item.definitions)
                 ans.append(f'- {term}: {definitions}')
             ans = '\n'.join(ans)
-        elif type(e) == Citation:
-            ans = ''
+        elif type(e) == Cite:
+            ans = stringify(e.content)
         else:
             ans = ''
 
