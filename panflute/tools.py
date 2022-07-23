@@ -186,8 +186,9 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                     raw = raw[0]
                     try:
                         options = yaml.load(raw, Loader=Loader)  # nosec  # already using SafeLoader
-                    except yaml.scanner.ScannerError:
-                        debug("panflute: malformed YAML block")
+                    except (yaml.scanner.ScannerError, yaml.parser.ParserError):
+                        debug("panflute: malformed YAML block:")
+                        debug(repr(raw))
                         return
                     if options is None:
                         options = {}
