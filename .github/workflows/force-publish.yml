@@ -1,9 +1,6 @@
-name: Publish on PyPI
+name: Manually publish on PyPI (experimental)
 
 on:
-  release:
-    types: [published]
-    # published, unpublished, created, edited, deleted, or prereleased
   workflow_dispatch:
 
 jobs:
@@ -38,7 +35,6 @@ jobs:
         continue-on-error: true
 
       - name: Publish distribution to PyPI
-        if: github.event.action == 'published' && !github.event.release.prerelease
         uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.pypi_password }}
