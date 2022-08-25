@@ -10,7 +10,7 @@ To install panflute from PyPI, open the command line and type::
 
 To install the latest Github version of panflute, type::
 
-    pip install git+git://github.com/sergiocorreia/panflute.git
+    pip install git+https://github.com/sergiocorreia/panflute.git
 
 
 Dev Install
