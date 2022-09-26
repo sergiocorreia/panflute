@@ -84,6 +84,7 @@ jobs:
     - name: Download Pandoc
       run: |
         [[ ${{ matrix.pandoc-version }} == "latest" ]] && url="https://github.com/jgm/pandoc/releases/latest" || url="https://github.com/jgm/pandoc/releases/tag/${{ matrix.pandoc-version }}"
+        url=$(curl -L $url | grep -o 'https://[a-zA-Z/.]*expanded_assets/[0-9.]*')
         downloadUrl="https://github.com$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')"
         wget --no-verbose "$downloadUrl"
         sudo dpkg -i "${downloadUrl##*/}"
