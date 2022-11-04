@@ -18,7 +18,8 @@ from .utils import check_type, encode_dict, debug
 # These are list and dict containers that
 #  (a) track the identity of their parents, and
 #  (b) track the parent's property where they are stored
-# They attach these two to the elements requested through __getattr__
+#  (c) track the index in the parent in case of list
+# They attach these three to the elements requested through __getattr__
 
 class ListContainer(MutableSequence):
     """
@@ -55,7 +56,7 @@ class ListContainer(MutableSequence):
 
     def __getitem__(self, i):
         if isinstance(i, int):
-            return attach(self.list[i], self.parent, self.location)
+            return attach(self.list[i], self.parent, self.location, i)
         else:
             newlist = self.list.__getitem__(i)
             obj = ListContainer(*newlist,
@@ -168,10 +169,11 @@ class DictContainer(MutableMapping):
 # Functions
 # ---------------------------
 
-def attach(element, parent, location):
+def attach(element, parent, location, index=None):
     if not isinstance(element, (int, str, bool)):
         element.parent = parent
         element.location = location
+        element.index = index
     else:
         debug(f'Warning: element "{type(element)}" has no parent')
     return element

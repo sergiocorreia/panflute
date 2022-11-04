@@ -22,7 +22,7 @@ class Element(object):
     """
     Base class of all Pandoc elements
     """
-    __slots__ = ['parent', 'location']
+    __slots__ = ['parent', 'location', 'index']
     _children = []
 
     def __new__(cls, *args, **kwargs):
@@ -30,6 +30,7 @@ class Element(object):
         element = object.__new__(cls)
         element.parent = None
         element.location = None
+        element.index = None
         return element
 
     @property
@@ -133,17 +134,6 @@ class Element(object):
     # ---------------------------
     # Navigation
     # ---------------------------
-
-    @property
-    def index(self):
-        """
-        Return position of element inside the parent.
-
-        :rtype: ``int`` | ``None``
-        """
-        container = self.container
-        if container is not None:
-            return container.index(self)
 
     @property
     def container(self):
