@@ -61,7 +61,8 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 
 | panflute version | supported pandoc versions | supported pandoc API versions |
 | ---------------- | ------------------------- | ----------------------------- |
-| 2.1.3            | 2.11.0.4–2.17.x           | 1.22–1.22.1                   |
+| 2.2              | 2.11.0.4-2.19.x           | 1.22                          |
+| 2.1.3            | 2.11.0.4–2.19.x           | 1.22                          |
 | 2.1              | 2.11.0.4—2.14.x           | 1.22                          |
 | 2.0              | 2.11.0.4—2.11.x           | 1.22                          |
 | not supported    | 2.10                      | 1.21                          |
