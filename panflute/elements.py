@@ -9,7 +9,7 @@ Notation:
 # Imports
 # ---------------------------
 
-from .utils import check_type, check_group, encode_dict, decode_ica, debug
+from .utils import check_type, check_group, encode_dict, decode_ica, debug, check_type_or_value
 from .utils import load_pandoc_version, load_pandoc_reader_options
 from .containers import ListContainer, DictContainer
 from .base import Element, Block, Inline, MetaValue
@@ -53,7 +53,7 @@ class Doc(Element):
 
     _children = ['metadata', 'content']
 
-    def __init__(self, *args, metadata={}, format='html', api_version=(1, 22)):
+    def __init__(self, *args, metadata={}, format='html', api_version=(1, 23)):
         self._set_content(args, Block)
         self.metadata = metadata
         self.format = format  # Output format
@@ -101,6 +101,7 @@ class Doc(Element):
 # Classes - Empty
 # ---------------------------
 
+# TODO: Remove
 class Null(Block):
     """Nothing
 
@@ -1006,6 +1007,55 @@ class LineBlock(Block):
         return self.content.to_json()
 
 
+
+# ---------------------------
+# Classes - Figures
+# ---------------------------
+
+class Figure(Block):
+    """Standalone figure, with attributes, caption, and arbitrary block content
+
+    :param args: contents of the figure block
+    :type args: :class:`Block`
+    :param identifier: element identifier (usually unique)
+    :type identifier: :class:`str`
+    :param classes: class names of the element
+    :type classes: :class:`list` of :class:`str`
+    :param attributes: additional attributes
+    :type attributes: :class:`dict`
+    :Base: :class:`Block`
+
+    :Example:
+
+        >>> image = Image(Str("Description"), title='The Title',
+                    url='example.png', attributes={'height':'256px'})
+        >>> caption = Caption(Plain(Str('The'), Space, Str('Caption')))
+        >>> figure = Figure(Plain(image), caption=caption, identifier='figure1')
+     """
+
+    __slots__ = ['_content', '_caption', 'identifier', 'classes', 'attributes']
+    _children = ['content', 'caption']
+
+    def __init__(self, *args, caption=None, identifier='', classes=[], attributes={}):
+        self._set_ica(identifier, classes, attributes)
+        self._set_content(args, Block)
+        self.caption = caption
+
+    @property
+    def caption(self):
+        return self._caption
+
+    @caption.setter
+    def caption(self, value):
+        self._caption = check_type_or_value(value, Caption, None)
+        if self._caption is not None:
+            self._caption.parent = self
+            self._caption.location = 'caption'
+
+    def _slots_to_json(self):
+        return [self._ica_to_json(), self.caption.to_json(), self.content.to_json()]
+
+
 # ---------------------------
 # Classes - Metadata
 # ---------------------------
@@ -1342,6 +1392,7 @@ _res_func = {
     'DefinitionList': lambda c: DefinitionList(*[_decode_definition_item(item) for item in c]),
     'LineBlock': lambda c: LineBlock(*[LineItem(*item) for item in c]),
     'ColWidth': lambda c: c,
+    'Figure': lambda c: Figure(*c[2], caption=Caption(*c[1][1], short_caption=c[1][0]), **decode_ica(c[0])),
     'Table': table_from_json,
     'MetaMap': lambda c: MetaMap(*c.items()),
 }

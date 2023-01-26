@@ -61,7 +61,8 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 
 | panflute version | supported pandoc versions | supported pandoc API versions |
 | ---------------- | ------------------------- | ----------------------------- |
-| 2.1.3            | 2.11.0.4–2.17.x           | 1.22–1.22.1                   |
+| 2.3.0            | 2.11.0.4–3.0.x            | 1.22–1.23                     |
+| 2.2.4            | 2.11.0.4–2.17.x           | 1.22–1.22.1                   |
 | 2.1              | 2.11.0.4—2.14.x           | 1.22                          |
 | 2.0              | 2.11.0.4—2.11.x           | 1.22                          |
 | not supported    | 2.10                      | 1.21                          |
@@ -83,3 +84,10 @@ Feel free to submit push requests. For consistency, code should comply with [pep
 ## License
 
 BSD3 license (following [`pandocfilters`](https://github.com/jgm/pandocfilters) by @jgm).
+
+
+## Changelog
+
+- `2.3.0` Update [Pandoc API](https://github.com/jgm/pandoc-types/blob/master/changelog) from 1.22 to 1.23 ([Pandoc 3.0](https://pandoc.org/releases.html#pandoc-3.0-2023-01-18)):
+    - Add `Figure` block object
+    - Remove `Null` block object (scheduled for removed)
