@@ -15,7 +15,7 @@
 
 For a detailed user guide, documentation, and installation instructions, see
 <http://scorreia.com/software/panflute/>.
-For examples that you can use as starting points, check the [examples repo](https://github.com/sergiocorreia/panflute-filters/tree/master/filters), the [sample template](https://raw.githubusercontent.com/sergiocorreia/panflute/master/docs/source/_static/template.py), or [this github search](https://github.com/search?o=desc&q=%22import+panflute%22+OR+%22from+panflute%22+created%3A%3E2016-01-01+language%3APython+extension%3Apy&s=indexed&type=Code&utf8=%E2%9C%93).
+For examples that you can use as starting points, check the [examples repo](https://github.com/sergiocorreia/panflute-filters/tree/master/filters), the [sample template](https://raw.githubusercontent.com/sergiocorreia/panflute/master/docs/source/_static/template.py), or [this github search](https://github.com/search?q=import+panflute+extension%3Apy&type=Code).
 If you want to contribute, head [here](/CONTRIBUTING.md).
 
 You might also find useful [this presentation](https://github.com/BPLIM/Workshops/raw/master/BPLIM2019/D2_S1_Sergio_Correia_Markdown.pdf) on how I use markdown+pandoc+panflute to write research papers (at the Banco de Portugal 2019 Workshop on Reproductible Research).
@@ -61,9 +61,9 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 
 | panflute version | supported pandoc versions | supported pandoc API versions |
 | ---------------- | ------------------------- | ----------------------------- |
-| 2.2              | 2.11.0.4-2.19.x           | 1.22                          |
-| 2.1.3            | 2.11.0.4–2.19.x           | 1.22                          |
-| 2.1              | 2.11.0.4—2.14.x           | 1.22                          |
+| 2.3.0            | 2.11.0.4–3.0.x            | 1.22–1.23                     |
+| 2.2.4            | 2.11.0.4–2.17.x           | 1.22–1.22.1                   |
+| 2.1.x            | 2.11.0.4—2.14.x           | 1.22                          |
 | 2.0              | 2.11.0.4—2.11.x           | 1.22                          |
 | not supported    | 2.10                      | 1.21                          |
 | 1.12             | 2.7-2.9                   | 1.17.5–1.20                   |
@@ -84,3 +84,10 @@ Feel free to submit push requests. For consistency, code should comply with [pep
 ## License
 
 BSD3 license (following [`pandocfilters`](https://github.com/jgm/pandocfilters) by @jgm).
+
+
+## Changelog
+
+- `2.3.0` Update [Pandoc API](https://github.com/jgm/pandoc-types/blob/master/changelog) from 1.22 to 1.23 ([Pandoc 3.0](https://pandoc.org/releases.html#pandoc-3.0-2023-01-18)):
+    - Add `Figure` block object
+    - Remove `Null` block object (scheduled for removed)
