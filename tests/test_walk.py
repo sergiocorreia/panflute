@@ -18,6 +18,17 @@ def compare_docs(doc_a, doc_b):
 
 
 """
+Find out the current Pandoc API version (else test fails)
+"""
+
+from panflute.tools import pandoc_version
+api_version = (1, 23)
+if pandoc_version.version < (3, 0, 0):
+    api_version = (1, 22)
+
+
+
+"""
 Action functions to use in testing
 """
 
@@ -63,39 +74,39 @@ Test functions for above action functions
 
 
 def test_none():
-    in_doc = expected_doc = pf.Doc(pf.Para(pf.Str("a")))
+    in_doc = expected_doc = pf.Doc(pf.Para(pf.Str("a")), api_version=api_version)
     in_doc.walk(do_nothing)
     assert compare_docs(in_doc, expected_doc)
 
 
 def test_empty_list():
-    in_doc = pf.Doc(pf.Para(pf.Str("a"), pf.Space))
+    in_doc = pf.Doc(pf.Para(pf.Str("a"), pf.Space), api_version=api_version)
     in_doc.walk(remove_elem)
-    expected_doc = pf.Doc(pf.Para(pf.Space))
+    expected_doc = pf.Doc(pf.Para(pf.Space), api_version=api_version)
     assert compare_docs(in_doc, expected_doc)
 
 def test_inline_elem():
-    in_doc = pf.Doc(pf.Para(pf.Str("a")))
+    in_doc = pf.Doc(pf.Para(pf.Str("a")), api_version=api_version)
     in_doc.walk(inline_replace_elem)
-    expected_doc = pf.Doc(pf.Para(pf.Str("b")))
+    expected_doc = pf.Doc(pf.Para(pf.Str("b")), api_version=api_version)
     assert compare_docs(in_doc, expected_doc)
 
 def test_inline_list():
-    in_doc = pf.Doc(pf.Para(pf.Str("a")))
+    in_doc = pf.Doc(pf.Para(pf.Str("a")), api_version=api_version)
     in_doc.walk(inline_replace_list)
-    expected_doc = pf.Doc(pf.Para(pf.Str("a"), pf.Space, pf.Str("b")))
+    expected_doc = pf.Doc(pf.Para(pf.Str("a"), pf.Space, pf.Str("b")), api_version=api_version)
     assert compare_docs(in_doc, expected_doc)
 
 
 def test_block_elem():
-    in_doc = pf.Doc(pf.Para(pf.Str("a")))
+    in_doc = pf.Doc(pf.Para(pf.Str("a")), api_version=api_version)
     in_doc.walk(block_replace_elem)
-    expected_doc = pf.Doc(pf.CodeBlock("b"))
+    expected_doc = pf.Doc(pf.CodeBlock("b"), api_version=api_version)
     assert compare_docs(in_doc, expected_doc)
 
 
 def test_block_list():
-    in_doc = pf.Doc(pf.Para(pf.Str("c")))
+    in_doc = pf.Doc(pf.Para(pf.Str("c")), api_version=api_version)
     in_doc.walk(block_replace_list)
-    expected_doc = pf.Doc(pf.Para(pf.Str("a")), pf.Para(pf.Str("b")))
+    expected_doc = pf.Doc(pf.Para(pf.Str("a")), pf.Para(pf.Str("b")), api_version=api_version)
     assert compare_docs(in_doc, expected_doc)
