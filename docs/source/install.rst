@@ -5,7 +5,7 @@ To install panflute from PyPI, open the command line and type::
 
     pip install panflute
 
-- Works with Python 3.6+, and PyPy
+- Works with Python 3.7+, and PyPy
 - On Windows, you might need to open the command line (``cmd``)  as administrator (`ctrl+shift+enter`).
 
 To install the latest Github version of panflute, type::
