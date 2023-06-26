@@ -11,7 +11,7 @@ Notation:
 
 from .utils import check_type, check_group, encode_dict, decode_ica, debug, check_type_or_value
 from .utils import load_pandoc_version, load_pandoc_reader_options
-from .containers import ListContainer, DictContainer
+from .containers import ListContainer, DictContainer, MutableSequence, MutableMapping
 from .base import Element, Block, Inline, MetaValue
 from .table_elements import (
     Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption,
@@ -1060,7 +1060,7 @@ class Figure(Block):
 # Classes - Metadata
 # ---------------------------
 
-class MetaList(MetaValue):
+class MetaList(MetaValue, MutableSequence):
     """Metadata list container
 
     :param args: contents of a metadata list
@@ -1082,12 +1082,15 @@ class MetaList(MetaValue):
 
     def __setitem__(self, i, v):
         self.content[i] = builtin2meta(v)
+        
+    def __len__(self):
+        return len(self.content)
 
-    def append(self, i):
-        self.content.append(i)
+    def insert(self, i, v):
+        self.content.insert(i, builtin2meta(v))
 
 
-class MetaMap(MetaValue):
+class MetaMap(MetaValue, MutableMapping):
     """Metadata container for ordered dicts
 
     :param args: (key, value) tuples
@@ -1122,16 +1125,20 @@ class MetaMap(MetaValue):
             value = value.dict.items()
         self._content = DictContainer(*value, oktypes=MetaValue, parent=self)
 
-    # These two are convenience functions, not sure if really needed...
-    # (they save typing the .content and converting to metavalues)
     def __getitem__(self, i):
         return self.content[i]
 
     def __setitem__(self, i, v):
         self.content[i] = builtin2meta(v)
-
-    def __contains__(self, i):
-        return i in self.content
+        
+    def __delitem__(self, i):
+        del self.content[i]
+        
+    def __iter__(self):
+        return iter(self.content)
+    
+    def __len__(self):
+        return len(self.content)
 
 
 class MetaInlines(MetaValue):
