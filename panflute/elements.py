@@ -1082,7 +1082,7 @@ class MetaList(MetaValue, MutableSequence):
 
     def __setitem__(self, i, v):
         self.content[i] = builtin2meta(v)
-        
+
     def __len__(self):
         return len(self.content)
 
