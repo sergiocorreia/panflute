@@ -1130,13 +1130,13 @@ class MetaMap(MetaValue, MutableMapping):
 
     def __setitem__(self, i, v):
         self.content[i] = builtin2meta(v)
-        
+
     def __delitem__(self, i):
         del self.content[i]
-        
+
     def __iter__(self):
         return iter(self.content)
-    
+
     def __len__(self):
         return len(self.content)
 
