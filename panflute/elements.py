@@ -1047,10 +1047,11 @@ class Figure(Block):
 
     @caption.setter
     def caption(self, value):
-        self._caption = check_type_or_value(value, Caption, None)
-        if self._caption is not None:
-            self._caption.parent = self
-            self._caption.location = 'caption'
+        if value is None:
+            value = Caption()
+        self._caption = check_type(value, Caption)
+        self._caption.parent = self
+        self._caption.location = 'caption'
 
     def _slots_to_json(self):
         return [self._ica_to_json(), self.caption.to_json(), self.content.to_json()]
