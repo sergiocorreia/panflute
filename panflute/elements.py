@@ -1284,6 +1284,7 @@ RAW_FORMATS = {'tex',
                'textile',
                'tikiwiki',
                'twiki',
+               'typst',
                'vimwiki'}
 
 SPECIAL_ELEMENTS = LIST_NUMBER_STYLES | LIST_NUMBER_DELIMITERS | \
