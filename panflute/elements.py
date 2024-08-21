@@ -1248,6 +1248,7 @@ MATH_FORMATS = {'DisplayMath', 'InlineMath'}
 
 RAW_FORMATS = {'tex',
                'latex',
+               'latex-merge',  # From Quarto output.
                'html',
                'context',
                'rtf',
