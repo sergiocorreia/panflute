@@ -51,7 +51,7 @@ You may also replace `conda` by `mamba`, which is basically a drop-in replacemen
 
 panflute 1.12 or above dropped support of Python 2. When using Python 3, depending on your setup, you may need to use `pip3`/`python3` explicitly. If you need to use panflute in Python 2, install panflute 1.11.x or below.
 
-Currently supported Python versions: [![Python version](https://img.shields.io/pypi/pyversions/panflute.svg)](https://pypi.python.org/pypi/panflute/). Check `setup.py` for details, which further indicates support of pypy on top of CPython.
+Currently supported Python versions: [![Python version](https://img.shields.io/pypi/pyversions/panflute.svg)](https://pypi.python.org/pypi/panflute/). Check `pyproject.toml` for details, which further indicates support of pypy on top of CPython.
 
 #### Supported pandoc versions
 
@@ -74,8 +74,8 @@ Note: pandoc 2.10 is short lived and 2.11 has minor API changes comparing to tha
 
 After cloning the repo and opening the panflute folder, run
 
-- `python setup.py install` to install the package locally
-- `python setup.py develop` to install locally with a symlink so changes are automatically updated
+- `python -m pip install .` to install the package locally
+- `python -m pip install -e .` to install locally with a symlink so changes are automatically updated
 
 ## Contributing
 
