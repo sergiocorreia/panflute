@@ -6,8 +6,11 @@ Base classes and methods of all Pandoc elements
 # Imports
 # ---------------------------
 
+from panflute.containers import DictContainer, ListContainer
+from typing import Any, Self
+
 from operator import attrgetter
-from collections.abc import MutableSequence, MutableMapping
+from collections.abc import MutableSequence, MutableMapping, Callable
 
 from .containers import ListContainer, DictContainer
 from .utils import check_type, encode_dict  # check_group
@@ -25,7 +28,7 @@ class Element(object):
     __slots__ = ['parent', 'location', 'index']
     _children = []
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> Self:
         # This is just to initialize self.parent to None
         element = object.__new__(cls)
         element.parent = None
@@ -34,7 +37,7 @@ class Element(object):
         return element
 
     @property
-    def tag(self):
+    def tag(self) -> str:
         tag = type(self).__name__
         return tag
 
@@ -119,9 +122,9 @@ class Element(object):
 
     @content.setter
     def content(self, value):
-        oktypes = self._content.oktypes
+        oktypes: type | tuple[type] = self._content.oktypes
         value = value.list if isinstance(value, ListContainer) else list(value)
-        self._content = ListContainer(*value, oktypes=oktypes, parent=self)
+        self._content: ListContainer = ListContainer(*value, oktypes=oktypes, parent=self)
 
     def _set_content(self, value, oktypes):
         """
@@ -136,7 +139,7 @@ class Element(object):
     # ---------------------------
 
     @property
-    def container(self):
+    def container(self) -> ListContainer | DictContainer | None:
         """
         Rarely used attribute that returns the ``ListContainer`` or
         ``DictContainer`` that contains the element
@@ -155,7 +158,7 @@ class Element(object):
             else:
                 assert self is container  # id(self) == id(container)
 
-    def offset(self, n):
+    def offset(self, n: int) -> Self | None:
         """
         Return a sibling element offset by n
 
@@ -170,7 +173,7 @@ class Element(object):
                 return container[sibling]
 
     @property
-    def next(self):
+    def next(self) -> Self | None:
         """
         Return the next sibling.
         Note that ``elem.offset(1) == elem.next``
@@ -181,7 +184,7 @@ class Element(object):
         return self.offset(1)
 
     @property
-    def prev(self):
+    def prev(self) -> Self | None:
         """
         Return the previous sibling.
         Note that ``elem.offset(-1) == elem.prev``
@@ -190,7 +193,7 @@ class Element(object):
         """
         return self.offset(-1)
 
-    def ancestor(self, n):
+    def ancestor(self, n: int) -> Self | None:
         """
         Return the n-th ancestor.
         Note that ``elem.ancestor(1) == elem.parent``
@@ -219,7 +222,7 @@ class Element(object):
             guess = guess.parent  # If no parent, this will be None
         return guess  # Returns either Doc or None
 
-    def walk(self, action, doc=None, stop_if=None):
+    def walk(self, action: Callable[[Self, Self], Any], doc: Self | None=None, stop_if=None) -> Self | None:
         """
         Walk through the element and all its children (sub-elements),
         applying the provided function ``action``.
