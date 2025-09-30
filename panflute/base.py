@@ -5,16 +5,16 @@ Base classes and methods of all Pandoc elements
 # ---------------------------
 # Imports
 # ---------------------------
+from __future__ import annotations
 
 from panflute.containers import DictContainer, ListContainer
-from typing import Any, Self
+from typing import Any
 
 from operator import attrgetter
 from collections.abc import MutableSequence, MutableMapping, Callable
 
 from .containers import ListContainer, DictContainer
 from .utils import check_type, encode_dict  # check_group
-
 
 # ---------------------------
 # Meta Classes
@@ -28,7 +28,7 @@ class Element(object):
     __slots__ = ['parent', 'location', 'index']
     _children = []
 
-    def __new__(cls, *args, **kwargs) -> Self:
+    def __new__(cls, *args, **kwargs) -> Element:
         # This is just to initialize self.parent to None
         element = object.__new__(cls)
         element.parent = None
@@ -158,7 +158,7 @@ class Element(object):
             else:
                 assert self is container  # id(self) == id(container)
 
-    def offset(self, n: int) -> Self | None:
+    def offset(self, n: int) -> Element | None:
         """
         Return a sibling element offset by n
 
@@ -173,7 +173,7 @@ class Element(object):
                 return container[sibling]
 
     @property
-    def next(self) -> Self | None:
+    def next(self) -> Element | None:
         """
         Return the next sibling.
         Note that ``elem.offset(1) == elem.next``
@@ -184,7 +184,7 @@ class Element(object):
         return self.offset(1)
 
     @property
-    def prev(self) -> Self | None:
+    def prev(self) -> Element | None:
         """
         Return the previous sibling.
         Note that ``elem.offset(-1) == elem.prev``
@@ -193,7 +193,7 @@ class Element(object):
         """
         return self.offset(-1)
 
-    def ancestor(self, n: int) -> Self | None:
+    def ancestor(self, n: int) -> Element | None:
         """
         Return the n-th ancestor.
         Note that ``elem.ancestor(1) == elem.parent``
@@ -213,7 +213,7 @@ class Element(object):
     # ---------------------------
 
     @property
-    def doc(self):
+    def doc(self) -> Any | Element:
         """
         Return the root Doc element (if there is one)
         """
@@ -222,7 +222,7 @@ class Element(object):
             guess = guess.parent  # If no parent, this will be None
         return guess  # Returns either Doc or None
 
-    def walk(self, action: Callable[[Self, Self], Any], doc: Self | None=None, stop_if=None) -> Self | None:
+    def walk(self, action: Callable[[Element, Element], Any], doc: Element | None=None, stop_if=None) -> Element | None:
         """
         Walk through the element and all its children (sub-elements),
         applying the provided function ``action``.
