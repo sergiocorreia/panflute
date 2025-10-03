@@ -73,10 +73,12 @@ class ListContainer(MutableSequence[object]):
         else:
             v = check_type(v, self.oktypes)
         self.list[i] = v
+        attach(self.list[i], self.parent, self.location, i)
 
     def insert(self, i: int, v):
         v = check_type(v, self.oktypes)
         self.list.insert(i, v)
+        attach(self.list[i], self.parent, self.location, i)
 
     def walk(self, action, doc=None, stop_if=None):
         ans = (item.walk(action, doc, stop_if) for item in self)
@@ -146,6 +148,7 @@ class DictContainer(MutableMapping[str, object]):
     def __setitem__(self, k, v):
         v = check_type(v, self.oktypes)
         self.dict[k] = v
+        attach(self.dict[k], self.parent, self.location)
 
     def walk(self, action, doc=None, stop_if=None):
         ans = ((k, v.walk(action, doc, stop_if)) for k, v in self.items())
