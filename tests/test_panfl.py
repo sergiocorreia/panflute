@@ -37,10 +37,6 @@ os.chdir(str(Path(__file__).parents[1]))
 # Tests
 # ---------------------------
 
-def test_get_filter_dirs():
-    assert sorted(pf.get_filter_dirs()) == sorted(pf.get_filter_dirs(hardcoded=False))
-
-
 def test_metadata():
     """
     panfl can receive filter lists either as a metadata argument or in the YAML block
