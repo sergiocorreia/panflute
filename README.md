@@ -2,7 +2,7 @@
 
 [![Development Status](https://img.shields.io/pypi/status/panflute.svg)](https://pypi.python.org/pypi/panflute/)
 [![Build Status](https://github.com/sergiocorreia/panflute/workflows/CI%20Tests/badge.svg)](https://github.com/sergiocorreia/panflute/actions?query=workflow%3A%22CI+Tests%22)
-![License](https://img.shields.io/pypi/l/panflute.svg)
+[![License](https://img.shields.io/github/license/sergiocorreia/panflute)](https://github.com/sergiocorreia/panflute/blob/master/LICENSE)
 [![DOI](https://zenodo.org/badge/55024750.svg)](https://zenodo.org/badge/latestdoi/55024750)
 
 [![GitHub Releases](https://img.shields.io/github/tag/sergiocorreia/panflute.svg?label=github+release)](https://github.com/sergiocorreia/panflute/releases)
