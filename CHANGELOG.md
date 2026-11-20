@@ -6,7 +6,7 @@ Entries before 3.0.0 are brief; see the
 [commit history](https://github.com/sergiocorreia/panflute/commits/master) for details.
 
 
-## 3.0.0 (unreleased)
+## 3.0.0 (2026-11-20)
 
 The first release since 2.3.1 (March 2024). It requires Python 3.10 or later,
 ships type hints, accepts any raw format (such as `typst`, `comment` or
