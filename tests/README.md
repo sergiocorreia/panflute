@@ -46,6 +46,7 @@ The whole suite takes about 10 seconds.
 | `test_examples.py` | the example filters in `examples/panflute` run through pandoc |
 | `test_regressions.py` | regression tests for specific issues |
 | `type_checking/sample_filter.py` | not a test module: a sample filter that `mypy` checks (see `[tool.mypy]` in `pyproject.toml`), with `assert_type()` checks on the types users see |
+| `benchmark.py` | not a test module: performance benchmarks (see [Benchmarks](#benchmarks)) |
 
 ### Known bugs: strict `xfail` tests
 
@@ -99,3 +100,28 @@ change in behaviour is intended, and review the diff.
 To add a document to the corpus, put it in `fixtures/corpus/` (`.md` files are
 picked up automatically; other formats need an entry in `sources()` in
 `regenerate.py`), then regenerate both sets of fixtures.
+
+## Benchmarks
+
+`benchmark.py` (not collected by pytest) times what a filter process spends
+its time on: `import panflute`, `load`, a no-op and a transforming `walk`,
+`stringify`, `dump`, and a no-op filter run end to end (as pandoc runs it),
+on a small document and on the three documents in `fixtures/benchmarks/`.
+It reports the minimum over several runs, in milliseconds:
+
+```
+python tests/benchmark.py                 # takes about a minute
+python tests/benchmark.py --quick         # fewer runs
+```
+
+To measure a change, compare against another version of panflute, extracted
+to a directory outside the repository; the two are run in alternation, so
+that both see the same machine noise:
+
+```
+mkdir /tmp/panflute-master
+git archive master panflute | tar -x -C /tmp/panflute-master
+python tests/benchmark.py --compare /tmp/panflute-master
+```
+
+Differences of a few percent are within the noise.
