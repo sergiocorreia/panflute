@@ -37,7 +37,7 @@ The whole suite takes about 10 seconds.
 |------|----------------|
 | `conftest.py` | `requires_pandoc` skipping, `no_pandoc_environment` (autouse), `filter_env` and `clean_import_state` fixtures |
 | `helpers.py` | paths to the fixtures, JSON load/dump helpers |
-| `test_golden.py` | characterisation tests on the stored pandoc JSON fixtures (no pandoc needed): `load`→`dump` reproduces pandoc's JSON, no-op walks/filters change nothing, the walk order and the output of `stringify()` / `get_metadata()` are pinned |
+| `test_golden.py` | tests that pin what panflute does today, on the stored pandoc JSON fixtures (no pandoc needed): `load`→`dump` reproduces pandoc's JSON, no-op walks/filters change nothing, the walk order and the output of `stringify()` / `get_metadata()` are pinned |
 | `test_pandoc_roundtrip.py` | the same round trip through the *installed* pandoc (whatever its version): pandoc reads panflute's output back to the same document |
 | `test_elements.py` | every element class: construction, exact `to_json()` output, JSON round trip, equality, defaults, type checking of children |
 | `test_containers.py` | `ListContainer` / `DictContainer` |
@@ -56,7 +56,7 @@ The whole suite takes about 10 seconds.
 ### Known bugs: strict `xfail` tests
 
 Tests marked `@pytest.mark.xfail(strict=True, reason="...")` (kept in
-`test_regressions.py`; there are none at the moment) describe the **correct** behaviour for a known bug that
+`test_regressions.py`; there are none at the moment) describe the **correct** behavior for a known bug that
 is not fixed yet. When a fix makes one of them pass, pytest reports it as a
 failure (`XPASS(strict)`): remove the marker, and keep the test as a regression
 test.
@@ -71,7 +71,7 @@ fixtures/
   json/             pandoc's JSON output for all of the above (generated)
   benchmarks/       three large real-world documents (.md) and their JSON (generated);
                     see benchmarks/README.md
-  goldens/          outputs of panflute itself, pinning current behaviour (generated)
+  goldens/          outputs of panflute itself, pinning current behavior (generated)
   filters/          small filters run by pandoc in test_io.py
   panfl/            filters (a module and a package) used by test_autofilter.py
   dependency/       module imported by test_utils.py
@@ -100,7 +100,7 @@ python tests/fixtures/regenerate.py --panflute
 
 The goldens (`fixtures/goldens/`) record what *panflute* currently does (walk
 order, `stringify()` and `get_metadata()` output). Regenerate them only when a
-change in behaviour is intended, and review the diff.
+change in behavior is intended, and review the diff.
 
 To add a document to the corpus, put it in `fixtures/corpus/` (`.md` files are
 picked up automatically; other formats need an entry in `sources()` in

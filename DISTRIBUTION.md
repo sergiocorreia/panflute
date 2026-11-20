@@ -37,7 +37,7 @@ The version number lives in one place: [`panflute/version.py`](panflute/version.
    TestPyPI never accepts the same version twice, so a re-run of an
    already uploaded version is skipped rather than failing.
 
-5. Create a GitHub release whose tag is the version, e.g. `2.4.0` or `v2.4.0`
+5. Create a GitHub release whose tag is the version, e.g. `3.0.0` or `v3.0.0`
    (*Releases → Draft a new release*), and publish it. The workflow refuses to
    publish if the tag (minus a leading `v`) differs from `panflute.__version__`.
 
@@ -75,9 +75,9 @@ reviewer and restrict deployments to protected branches/tags.
 ### Old secrets
 
 The old workflows authenticated with the repository secrets `pypi_password`
-and `test_pypi_password`. They are no longer used and should be deleted
-(*Settings → Secrets and variables → Actions*), and the corresponding PyPI
-API tokens revoked.
+and `test_pypi_password`, which are no longer used. Delete them
+(*Settings → Secrets and variables → Actions*) and revoke the corresponding
+PyPI API tokens.
 
 
 ## Documentation
