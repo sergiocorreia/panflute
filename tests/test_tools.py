@@ -427,7 +427,11 @@ def test_convert_text_panflute_input_variants():
     para = pf.Para(pf.Emph(pf.Str('x')))
     assert pf.convert_text(para, input_format='panflute', output_format='markdown') == '*x*'
     assert pf.convert_text([para, para], input_format='panflute', output_format='markdown') == '*x*\n\n*x*'
-    assert pf.convert_text(pf.Doc(para), input_format='panflute', output_format='html') == '<p><em>x</em></p>'
+    # A Doc is passed to pandoc as is, so its api_version must be the one of
+    # the installed pandoc (lists and elements get it automatically)
+    api_version = pf.convert_text('', standalone=True).api_version
+    doc = pf.Doc(para, api_version=api_version)
+    assert pf.convert_text(doc, input_format='panflute', output_format='html') == '<p><em>x</em></p>'
     elems = pf.convert_text(para, input_format='panflute', output_format='panflute')
     assert elems == [para]
 

@@ -5,6 +5,7 @@ gregorio, graphviz, lilypond, LaTeX) are not run here; some of them are
 unit-tested in test_regressions.py.
 """
 
+import re
 import subprocess
 
 import pytest
@@ -15,6 +16,15 @@ pytestmark = pytest.mark.requires_pandoc
 
 FILTERS = EXAMPLES / 'panflute'
 INPUTS = EXAMPLES / 'input'
+
+
+def normalise_markers(markdown):
+    """
+    Collapse the spaces after list and definition markers ('-   x' -> '- x'):
+    their number depends on pandoc's version (3.1.13 writes '-   x', 3.6.4
+    writes '- x').
+    """
+    return re.sub(r'^([ \t]*(?:[-*+:~]|\d+[.)]))[ \t]+', r'\1 ', markdown, flags=re.MULTILINE)
 
 
 def run_example(name, env, cwd, to='markdown', input_name=None):
@@ -56,10 +66,11 @@ def test_deemph(run):
 
 
 def test_deflists(run, tmp_path):
-    out = run('deflists')
-    assert '-   **Term 1**' in out
-    assert ':   Definition 1' not in out
-    assert ':   Definition 1' in run_plain('deflists', tmp_path)
+    out = normalise_markers(run('deflists'))
+    assert '- **Term 1**' in out
+    assert 'Definition 1' in out
+    assert ': Definition 1' not in out
+    assert ': Definition 1' in normalise_markers(run_plain('deflists', tmp_path))
 
 
 def test_comments(run, tmp_path):

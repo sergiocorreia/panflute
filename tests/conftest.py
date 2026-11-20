@@ -39,6 +39,18 @@ def pytest_runtest_setup(item):
 # Fixtures
 # ---------------------------------------------------------------------------
 
+@pytest.fixture(autouse=True)
+def no_pandoc_environment(monkeypatch):
+    """
+    Remove the environment variables that pandoc sets when it runs a filter
+    (``Doc()`` reads them), so that no test inherits them from the caller.
+    For instance, the ``pandoc/actions/setup`` GitHub action exports
+    ``PANDOC_VERSION``. Filters run by pandoc still get them from pandoc.
+    """
+    monkeypatch.delenv('PANDOC_VERSION', raising=False)
+    monkeypatch.delenv('PANDOC_READER_OPTIONS', raising=False)
+
+
 @pytest.fixture
 def filter_env(monkeypatch):
     """

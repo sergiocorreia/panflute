@@ -185,12 +185,17 @@ def test_filter_run_by_pandoc_sees_environment(filter_env):
 
 
 @pytest.mark.requires_pandoc
-@pytest.mark.parametrize('filter_name,expected', [
-    ('do_nothing.py', 'Some *a* **b**'),
-    ('underline.py', 'Some *a* [b]{.underline}'),
+@pytest.mark.parametrize('filter_name,last_inline', [
+    ('do_nothing.py', pf.Strong),
+    ('underline.py', pf.Underline),
 ])
-def test_python_filters_run_by_pandoc(filter_env, filter_name, expected):
-    proc = subprocess.run([PANDOC, f'--filter={FILTERS / filter_name}', '--to=markdown'],
+def test_python_filters_run_by_pandoc(filter_env, filter_name, last_inline):
+    # Compare the resulting document rather than pandoc's Markdown, whose
+    # spelling varies across versions (e.g. pandoc 2.11 writes underlined text
+    # as [b]{.ul}, later versions as [b]{.underline})
+    proc = subprocess.run([PANDOC, f'--filter={FILTERS / filter_name}', '--to=json'],
                           input='Some *a* **b**', capture_output=True, text=True, env=filter_env)
     assert proc.returncode == 0, proc.stderr
-    assert proc.stdout.strip() == expected
+    doc = load_text(proc.stdout)
+    expected = pf.Para(pf.Str('Some'), pf.Space(), pf.Emph(pf.Str('a')), pf.Space(), last_inline(pf.Str('b')))
+    assert list(doc.content) == [expected]

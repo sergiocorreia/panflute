@@ -22,6 +22,10 @@ pytest --cov --cov-report=html           # with coverage (report in htmlcov/)
   directory of the running interpreter (`Path(sys.executable).parent`, where
   `python`, `panflute` and `panfl` are installed) first on the `PATH` of the
   subprocess. You do not need to activate the virtual environment.
+- The suite does not inherit `PANDOC_VERSION` or `PANDOC_READER_OPTIONS` from
+  the caller's environment: an autouse fixture (`no_pandoc_environment` in
+  `conftest.py`) removes them for every test. Filters run by pandoc still
+  receive them from pandoc.
 - Warnings: deprecation warnings raised from panflute's own code are errors
   (see `filterwarnings` in `pyproject.toml`).
 
@@ -31,7 +35,7 @@ The whole suite takes about 10 seconds.
 
 | File | What it covers |
 |------|----------------|
-| `conftest.py` | `requires_pandoc` skipping, `filter_env` and `clean_import_state` fixtures |
+| `conftest.py` | `requires_pandoc` skipping, `no_pandoc_environment` (autouse), `filter_env` and `clean_import_state` fixtures |
 | `helpers.py` | paths to the fixtures, JSON load/dump helpers |
 | `test_golden.py` | characterisation tests on the stored pandoc JSON fixtures (no pandoc needed): `load`→`dump` reproduces pandoc's JSON, no-op walks/filters change nothing, the walk order and the output of `stringify()` / `get_metadata()` are pinned |
 | `test_pandoc_roundtrip.py` | the same round trip through the *installed* pandoc (whatever its version): pandoc reads panflute's output back to the same document |
