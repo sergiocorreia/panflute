@@ -171,7 +171,10 @@ def metadata() -> None:
     ml = pf.MetaList('a', 1, True, pf.MetaString('b'))
     assert_type(ml[0], pf.MetaValue)
     assert_type(ml[1:], MutableSequence[pf.MetaValue])
-    assert_type(ml.index, int | None)  # The position of ml in its container (see #258)
+    assert_type(ml.position, int | None)  # The position of ml in its container
+    assert_type(ml.index(pf.MetaString('b')), int)  # The sequence method (see #258)
+    assert_type(ml.index(pf.MetaString('b'), 1, -1), int)
+    ml.remove(pf.MetaString('b'))
     ml.append('c')
     ml.extend([pf.MetaBool(False), 'd'])
     ml[0] = {'key': 'value'}

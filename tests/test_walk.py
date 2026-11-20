@@ -189,6 +189,16 @@ def test_index_is_an_alias_of_position():
     assert [ml[i].index for i in range(3)] == [0, 1, 2]
 
 
+def test_metalist_position_and_index_method():
+    outer = pf.MetaList('a', pf.MetaList('b', 'c'))
+    inner = outer[1]
+    assert inner.position == 1
+    assert callable(inner.index)
+    assert inner.index(pf.MetaString('c')) == 1
+    with pytest.raises(AttributeError):
+        inner.index = 0  # a method of the class, not the position
+
+
 def test_navigation_in_metalists():
     ml = pf.MetaList('a', pf.MetaList('b', 'c'), True)
     a, inner, last = ml[0], ml[1], ml[2]

@@ -174,6 +174,10 @@ class Element(object):
         list attribute of the parent), or ``None`` when it is not in one.
         It can also be assigned to.
 
+        **Not available on** :class:`.MetaList`, where ``index()`` is the
+        standard sequence method (``metalist.index(value)``, as in
+        ``list.index``); use ``metalist.position`` instead.
+
         :rtype: ``int`` | ``None``
         """
         return self.position

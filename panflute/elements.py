@@ -1154,6 +1154,12 @@ class Figure(Block):
 class MetaList(MetaValue, MutableSequence[MetaValue]):
     """Metadata list container
 
+    A :class:`MetaList` is a mutable sequence, like a ``list``:
+    ``metalist.index(value)`` is the sequence method (the position of
+    ``value`` in the list), not the position of the :class:`MetaList` in
+    its own container as on other elements; that is
+    :attr:`~.Element.position`.
+
     :param args: contents of a metadata list
         (built-in values such as ``str`` or ``dict`` are converted
         to :class:`MetaValue` elements)
@@ -1162,11 +1168,6 @@ class MetaList(MetaValue, MutableSequence[MetaValue]):
     """
     __slots__ = ['_content']
     _children = ['content']
-
-    # MetaList inherits both Element.index (the position of the element in
-    # its container, an attribute) and Sequence.index() (a method). At runtime
-    # the attribute wins (Element comes first in the MRO), see issue #258.
-    index: int | None  # type: ignore[assignment]
 
     if TYPE_CHECKING:
         # Typed signature; the implementation below (which rebinds its
@@ -1208,6 +1209,31 @@ class MetaList(MetaValue, MutableSequence[MetaValue]):
 
     def insert(self, i: int, v: _MetaInput) -> None:
         self.content.insert(i, builtin2meta(v))
+
+    # On every other element, .index is an alias of .position (the position of
+    # the element in its container). A MetaList is a sequence, so here it is the
+    # sequence method of MutableSequence (which remove() relies on), see issue
+    # #258; the position of a MetaList is available as .position.
+    def index(self, value: Any, start: int = 0, stop: int | None = None) -> int:  # type: ignore[override]  # a method replacing the Element.index property
+        """
+        Return the position of the first item equal to ``value``
+        (as ``list.index``), looking only at ``metalist[start:stop]``.
+
+        Raises ``ValueError`` if there is no such item.
+
+        Items are compared with ``==``, and the items of a metadata list are
+        :class:`MetaValue` elements (built-in values are converted when they
+        are added): ``MetaList('a').index(MetaString('a')) == 0``, but
+        ``MetaList('a').index('a')`` raises ``ValueError``.
+
+        Note: on all other elements, ``elem.index`` is the position of the
+        element in its container; the position of a :class:`MetaList` is
+        :attr:`~.Element.position`.
+        """
+        lst = self.content.list
+        if stop is None:
+            return lst.index(value, start)
+        return lst.index(value, start, stop)
 
     if TYPE_CHECKING:
         # Inherited from MutableSequence (which calls insert), so they also accept builtins

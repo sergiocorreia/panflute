@@ -588,6 +588,92 @@ def test_metalist_sequence_protocol():
     assert to_json_value(ml) == {'t': 'MetaList', 'c': [{'t': 'MetaString', 'c': 'only'}]}
 
 
+def test_metalist_index_method_258():
+    S = pf.MetaString
+    ml = pf.MetaList('a', 'b', True, 'a', {'k': 'v'}, ['x'])
+    assert ml.index(S('a')) == 0
+    assert ml.index(S('b')) == 1
+    assert ml.index(pf.MetaBool(True)) == 2
+    assert ml.index(pf.MetaMap(k='v')) == 4
+    assert ml.index(pf.MetaList('x')) == 5
+    item = ml[3]
+    assert ml.index(item) == 0  # (found by ==, as in list.index)
+    # start and stop, including negative values, as in list.index
+    assert ml.index(S('a'), 1) == 3
+    assert ml.index(S('a'), -3) == 3
+    assert ml.index(S('a'), 0, 1) == 0
+    assert ml.index(S('a'), 1, None) == 3
+    assert ml.index(S('a'), 1, -2) == 3
+    assert ml.index(S('a'), -100, 100) == 0
+    as_list = [S('a'), S('b'), pf.MetaBool(True), S('a')]
+    for args in [(S('a'), 1, 3), (S('a'), 4), (S('b'), 2), (S('a'), 1, -3), (S('zz'),), ('a',), (True,)]:
+        with pytest.raises(ValueError):
+            ml.index(*args)
+        if len(args) > 1:
+            with pytest.raises(ValueError):
+                as_list.index(*args)
+    with pytest.raises(TypeError):
+        ml.index(S('a'), 'x')
+    with pytest.raises(ValueError):
+        pf.MetaList().index(S('a'))
+    # It does not change the parent/position of the items
+    other = pf.MetaList()
+    other.content.list.append(item)
+    item.parent, item.position = other, 0
+    assert ml.index(S('b')) == 1
+    assert item.parent is other and item.position == 0
+
+
+def test_metalist_mutable_sequence_api_258():
+    from collections.abc import MutableSequence
+    S = pf.MetaString
+    ml = pf.MetaList('a', 'b', 'a')
+    assert isinstance(ml, MutableSequence)
+    assert S('a') in ml and S('z') not in ml and 'a' not in ml  # (items are MetaValues)
+    assert ml.count(S('a')) == 2 and ml.count(S('z')) == 0
+    assert list(reversed(ml)) == [S('a'), S('b'), S('a')]
+    ml.remove(S('a'))  # (calls index(); it used to raise TypeError)
+    assert list(ml) == [S('b'), S('a')]
+    with pytest.raises(ValueError):
+        ml.remove(S('z'))
+    ml.extend(['c', pf.MetaBool(False)])
+    assert list(ml) == [S('b'), S('a'), S('c'), pf.MetaBool(False)]
+    same = ml
+    ml += ['d']
+    assert ml is same and ml[-1] == S('d')
+    assert ml.pop() == S('d') and ml.pop(0) == S('b')
+    with pytest.raises(IndexError):
+        pf.MetaList().pop()
+    ml.append('e')
+    ml.reverse()
+    assert list(ml) == [S('e'), pf.MetaBool(False), S('c'), S('a')]
+    assert [e.position for e in ml.content.list] == [0, 1, 2, 3]
+    assert all(e.parent is ml for e in ml.content.list)
+    ml.clear()
+    assert len(ml) == 0 and not ml
+
+
+def test_element_copy_and_pickle_keep_position():
+    import copy
+    import pickle
+    para = pf.Para(pf.Str('a'), pf.Emph(pf.Str('b')))
+    doc = pf.Doc(para, metadata={'l': ['x', ['y']], 'm': {'k': 'v'}})
+    emph = para.content[1]
+    ml = doc.metadata['l']
+    inner = ml[1]
+    for clone in (copy.deepcopy, lambda x: pickle.loads(pickle.dumps(x))):
+        e = clone(emph)
+        assert e == emph and e.position == 1 and e.index == 1 and type(e.parent) is pf.Para
+        assert e.content[0].position == 0
+        m = clone(inner)
+        assert m == inner and m.position == 1 and m.index(pf.MetaString('y')) == 0
+        d = clone(doc)
+        assert d == doc and to_json_value(d) == to_json_value(doc)
+        assert d.metadata['l'][1].position == 1
+    s = copy.copy(emph)
+    assert s.position == 1
+
+
 def test_metamap_mapping_protocol():
     mm = pf.MetaMap(('a', 'x'), b=True)
     assert list(mm) == ['a', 'b']
