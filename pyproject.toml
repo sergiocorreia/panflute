@@ -16,7 +16,7 @@ name = "panflute"
 dynamic = ["version"]
 description = "Pythonic Pandoc filters"
 readme = "README.md"
-authors = [{name = "Sergio Correia", email = "serio.correia@gmail.com"}]
+authors = [{name = "Sergio Correia", email = "sergio.correia@gmail.com"}]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
