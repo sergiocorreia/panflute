@@ -64,7 +64,7 @@ If your change is visible to users (a new feature, a bug fix, a change in behavi
 
 ### Continuous integration
 
-[GitHub Actions](https://github.com/sergiocorreia/panflute/blob/master/.github/workflows/run_tests.yml) runs ruff and mypy, the test suite (on several Python and pandoc versions), the example filters, and a packaging check on every push and pull request.
+[GitHub Actions](https://github.com/sergiocorreia/panflute/blob/master/.github/workflows/run_tests.yml) runs ruff and mypy, the test suite (on several Python and pandoc versions), the example filters, and a packaging check on every push to `master` and on every pull request.
 
 ## Style Guide
 
@@ -117,7 +117,7 @@ python -m pip install -e ".[docs]"
 sphinx-build -W -b html docs/source docs/build/html
 ```
 
-The HTML files are then placed in `docs/build/html` (open `docs/build/html/index.html`), and can be copied into the [website](https://scorreia.com/software/panflute/). `-W` turns warnings into errors, as in CI, where the documentation is built on every push.
+The HTML files are then placed in `docs/build/html` (open `docs/build/html/index.html`), and can be copied into the [website](https://scorreia.com/software/panflute/). `-W` turns warnings into errors, as in CI, where the documentation is built on every push to `master` and on every pull request.
 
 The guides are written in [reST](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) and located in the [/docs/source](https://github.com/sergiocorreia/panflute/tree/master/docs/source) folder. The changelog page includes [CHANGELOG.md](CHANGELOG.md) (written in Markdown) from the root of the repository, so there is only one copy of it to update.
 

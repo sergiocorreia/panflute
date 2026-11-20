@@ -1,7 +1,10 @@
 name: CI Tests
 
 on:
+  # Pushes to master, and pull requests (from this repository or from forks);
+  # an unfiltered push trigger would run every job twice for a PR branch
   push:
+    branches: [master]
   pull_request:
   schedule:
     # Weekly run, to catch breakage from new pandoc/dependency releases
