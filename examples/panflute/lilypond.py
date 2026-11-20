@@ -85,6 +85,7 @@ def png(contents, staffsize):
 
 def lily(elem, doc):
     if type(elem) == Code and 'ly' in elem.classes:
+        contents = elem.text  # name of the Lilypond file
         staffsize = int(elem.attributes.get('staffsize', '20'))
         if doc.format == "latex":
             if elem.identifier == "":
@@ -99,11 +100,12 @@ def lily(elem, doc):
             infile = contents + (
                 '.ly' if '.ly' not in contents else ''
             )
-            with open(infile, 'r') as doc:
-                code = doc.read()
+            with open(infile, 'r') as f:
+                code = f.read()
             return Image(url=png(code, staffsize))
 
     if type(elem) == CodeBlock and 'ly' in elem.classes:
+        code = elem.text  # Lilypond notation
         staffsize = int(elem.attributes.get('staffsize', '20'))
         if doc.format == "latex":
             if elem.identifier == "":

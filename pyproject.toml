@@ -103,10 +103,6 @@ extend-exclude = ["docs/build"]
 # and redefined imports. Broaden gradually; avoid churn-only rules.
 select = ["E9", "F63", "F7", "F82", "F811"]
 
-[tool.ruff.lint.per-file-ignores]
-# Known-broken example (excluded from tests/test_examples_run.py); kept as-is for reference.
-"examples/panflute/lilypond.py" = ["F821"]
-
 [tool.mypy]
 # Checked in CI (lint job). Deliberately not strict: the public API is annotated,
 # while many private helpers are left untyped (and their bodies unchecked).

@@ -3,7 +3,7 @@ import panflute as pf
 
 """
 Pandoc filter that causes emphasis to be rendered using
-the custom macro '\myemph{...}' rather than '\emph{...}'
+the custom macro '\\myemph{...}' rather than '\\emph{...}'
 in latex.  Other output formats are unaffected.
 """
 
@@ -14,7 +14,7 @@ def latex(s):
 
 def myemph(e, doc):
     if type(e)==pf.Emph and doc.format=='latex':
-        return pf.Span(latex('\\myemph{'), *e.items, latex('}'))
+        return pf.Span(latex('\\myemph{'), *e.content, latex('}'))
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ value.
 from panflute import toJSONFilter, Span, Str, MetaInlines
 import re
 
-pattern = re.compile('%\{(.*)\}$')
+pattern = re.compile(r'%\{(.*)\}$')
 
 
 def metavars(elem, doc):

@@ -32,7 +32,7 @@ def load_example(name, monkeypatch):
     spec = importlib.util.spec_from_file_location(f'panflute_example_{name.replace("-", "_")}', path)
     module = importlib.util.module_from_spec(spec)
     with warnings.catch_warnings():
-        warnings.simplefilter('ignore', SyntaxWarning)  # invalid escapes in some examples
+        warnings.simplefilter('error', SyntaxWarning)  # e.g. invalid escape sequences
         spec.loader.exec_module(module)
     return module
 
@@ -482,8 +482,6 @@ def test_panflute_command_help_and_version(arg, monkeypatch, capsys):
 # Broken example filters (examples/panflute)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, raises=NameError,
-                   reason='examples/panflute/lilypond.py uses undefined names `contents` and `code`')
 @pytest.mark.parametrize('elem,expected', [
     (pf.Code('score.ly', classes=['ly']), pf.RawInline('\\includely[staffsize=20]{score.ly}', format='latex')),
     (pf.CodeBlock("{ c' }", classes=['ly']), pf.RawBlock("\\lily[staffsize=20]{{ c' }}", format='latex')),
@@ -493,25 +491,33 @@ def test_example_lilypond_latex(monkeypatch, elem, expected):
     assert module.lily(elem, pf.Doc(format='latex')) == expected
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError,
-                   reason='examples/panflute/myemph.py uses the removed Element.items attribute')
 def test_example_myemph_latex(monkeypatch):
     module = load_example('myemph', monkeypatch)
     span = module.myemph(pf.Emph(pf.Str('x')), pf.Doc(format='latex'))
     assert pf.stringify(span) == '\\myemph{x}'
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError,
-                   reason='examples/panflute/table.py uses the removed Element.items attribute')
 def test_example_table(monkeypatch):
     module = load_example('table', monkeypatch)
     table = pf.Table(pf.TableBody(pf.TableRow(pf.TableCell(pf.Plain(pf.Str('41'))))))
     module.add_one(table, pf.Doc())
     assert pf.stringify(table) == '42'
+    # all the rows: table head, intermediate heads, bodies and foot
+    row = lambda text: pf.TableRow(pf.TableCell(pf.Plain(pf.Str(text))))
+    table = pf.Table(pf.TableBody(row('1'), head=[row('2')]), head=pf.TableHead(row('3')),
+                     foot=pf.TableFoot(row('x')))
+    module.add_one(table, pf.Doc())
+    assert pf.stringify(table) == '423x'   # (stringify order: head, body rows, intermediate head, foot)
 
 
-@pytest.mark.xfail(strict=True, raises=NameError,
-                   reason='examples/panflute/table-better.py uses undefined names `cell` and `pf`')
+@pytest.mark.parametrize('name', ['metavars', 'myemph'])
+def test_examples_have_no_invalid_escapes(name):
+    path = EXAMPLES / 'panflute' / f'{name}.py'
+    with warnings.catch_warnings():
+        warnings.simplefilter('error', SyntaxWarning)
+        compile(path.read_text(encoding='utf-8'), str(path), 'exec')
+
+
 def test_example_table_better(monkeypatch):
     module = load_example('table-better', monkeypatch)
     cell = pf.TableCell(pf.Plain(pf.Str('41')))

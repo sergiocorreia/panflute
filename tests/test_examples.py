@@ -1,8 +1,8 @@
 """
 Run the example filters in examples/panflute/ through pandoc and check that
 they do what they claim. Examples that need external programs (abcm2ps,
-gregorio, graphviz, lilypond, LaTeX) are not run here; the broken examples
-are covered by test_regressions.py.
+gregorio, graphviz, lilypond, LaTeX) are not run here; some of them are
+unit-tested in test_regressions.py.
 """
 
 import subprocess
