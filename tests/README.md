@@ -49,8 +49,8 @@ The whole suite takes about 10 seconds.
 
 ### Known bugs: strict `xfail` tests
 
-Tests marked `@pytest.mark.xfail(strict=True, reason="...")` (all in
-`test_regressions.py`) describe the **correct** behaviour for a known bug that
+Tests marked `@pytest.mark.xfail(strict=True, reason="...")` (kept in
+`test_regressions.py`; there are none at the moment) describe the **correct** behaviour for a known bug that
 is not fixed yet. When a fix makes one of them pass, pytest reports it as a
 failure (`XPASS(strict)`): remove the marker, and keep the test as a regression
 test.

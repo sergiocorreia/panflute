@@ -111,7 +111,7 @@ def test_invalid_api_version_message_explains_the_problem_246(version, expected)
 
 
 # ---------------------------------------------------------------------------
-# Known bugs (strict xfail: remove the marker once fixed)
+# Bugs fixed in 3.0 (these tests were strict xfails before the fixes)
 # ---------------------------------------------------------------------------
 
 def test_convert_text_does_not_mutate_extra_args_262(monkeypatch):
@@ -492,7 +492,7 @@ def test_panflute_command_help_and_version(arg, monkeypatch, capsys):
 
 
 # ---------------------------------------------------------------------------
-# Broken example filters (examples/panflute)
+# Example filters (examples/panflute) that used to be broken
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize('elem,expected', [
