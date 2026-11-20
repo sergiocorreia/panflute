@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["panflute"]
 
+[tool.setuptools.package-data]
+panflute = ["py.typed"]
+
 [tool.setuptools.dynamic]
 version = {attr = "panflute.version.__version__"}
 
@@ -50,6 +53,8 @@ dev = [
     "pytest",
     "pytest-cov",
     "ruff",
+    "mypy",
+    "types-PyYAML",
 ]
 
 [project.urls]
@@ -105,3 +110,37 @@ select = ["E9", "F63", "F7", "F82", "F811"]
 [tool.ruff.lint.per-file-ignores]
 # Known-broken example (excluded from tests/test_examples_run.py); kept as-is for reference.
 "examples/panflute/lilypond.py" = ["F821"]
+
+[tool.mypy]
+# Checked in CI (lint job). Deliberately not strict: the public API is annotated,
+# while many private helpers are left untyped (and their bodies unchecked).
+python_version = "3.10"
+files = ["panflute", "tests/type_checking"]
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+enable_error_code = ["ignore-without-code", "truthy-bool"]
+# Several functions rely on an implicit `return None` at the end
+warn_no_return = false
+
+[[tool.mypy.overrides]]
+# Optional dependency without type information
+module = ["yamlloader", "yamlloader.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Names in panflute/__init__.py must be explicitly re-exported ("X as X"),
+# so that they are visible to users that type-check with --strict
+module = ["panflute"]
+implicit_reexport = false
+
+[[tool.mypy.overrides]]
+# The sample filter in tests/type_checking is checked as strictly as a user
+# could (e.g. calling an unannotated panflute function is an error)
+module = ["tests.type_checking.*"]
+strict_equality = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_any_generics = true
+warn_return_any = true

@@ -40,17 +40,27 @@ To also measure code coverage:
 pytest --cov --cov-report=html   # report in htmlcov/index.html
 ```
 
-### Linting
+### Linting and type checking
 
 ```bash
 ruff check .
+mypy
 ```
 
-The ruff rules are configured in `pyproject.toml`. Please don't reformat code you are not otherwise changing.
+Both are configured in `pyproject.toml`. Please don't reformat code you are not otherwise changing.
+
+Panflute ships inline type hints (and a `py.typed` marker). mypy checks the
+`panflute` package, at a non-strict level, and also
+`tests/type_checking/sample_filter.py`, a filter written the way a user would
+write one, with `assert_type()` checks on the types that users see. If you
+change a public signature, update that file too. Annotations are not evaluated
+at runtime (`from __future__ import annotations`; imports used only in
+annotations go under `if TYPE_CHECKING:`), so they must not affect the
+behavior or speed of panflute, and the code must keep working on Python 3.10.
 
 ### Continuous integration
 
-[GitHub Actions](https://github.com/sergiocorreia/panflute/blob/master/.github/workflows/run_tests.yml) runs ruff, the test suite (on several Python and pandoc versions), the example filters, and a packaging check on every push and pull request.
+[GitHub Actions](https://github.com/sergiocorreia/panflute/blob/master/.github/workflows/run_tests.yml) runs ruff and mypy, the test suite (on several Python and pandoc versions), the example filters, and a packaging check on every push and pull request.
 
 ## Style Guide
 
