@@ -31,12 +31,14 @@ class Element(object):
     """
     Base class of all Pandoc elements
     """
-    __slots__ = ['parent', 'location', 'index']
+    __slots__ = ['parent', 'location', 'position']
     _children: list[str] = []
 
     parent: Element | None
     location: str | None
-    index: int | None
+    # Position of the element in the ListContainer that holds it (None when
+    # it is not in one), set by the containers; see also the .index alias below
+    position: int | None
 
     # Only present on elements that take them (set by _set_ica)
     identifier: str
@@ -50,7 +52,7 @@ class Element(object):
         element = object.__new__(cls)
         element.parent = None
         element.location = None
-        element.index = None
+        element.position = None
         return element
 
     @property
@@ -162,6 +164,24 @@ class Element(object):
     # Navigation
     # ---------------------------
 
+    # (the position itself is the .position slot, read and written directly
+    # by the containers; .index is kept as an alias, see issue #258)
+    @property
+    def index(self) -> int | None:
+        """
+        Alias of :attr:`position`: the position of the element in the
+        list container that holds it (``elem.parent.content``, or another
+        list attribute of the parent), or ``None`` when it is not in one.
+        It can also be assigned to.
+
+        :rtype: ``int`` | ``None``
+        """
+        return self.position
+
+    @index.setter
+    def index(self, value: int | None) -> None:
+        self.position = value
+
     @property
     def container(self) -> ListContainer | DictContainer | None:
         """
@@ -192,10 +212,10 @@ class Element(object):
         :rtype: :class:`Element` | ``None``
         """
 
-        idx = self.index
+        idx = self.position
         if idx is not None:
             sibling = idx + n
-            # An element with an index always lives in a ListContainer
+            # An element with a position always lives in a ListContainer
             container: ListContainer = self.container  # type: ignore[assignment]
             if 0 <= sibling < len(container):
                 return container[sibling]

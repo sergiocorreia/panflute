@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 # These are list and dict containers that
 #  (a) track the identity of their parents, and
 #  (b) track the parent's property where they are stored
-#  (c) track the index in the parent in case of list
+#  (c) track the position in the parent in case of list
 # They attach these three to the elements requested through __getattr__
 
 class ListContainer(MutableSequence["Element"]):
@@ -155,7 +155,7 @@ class ListContainer(MutableSequence["Element"]):
 
     def _reindex(self, start: int) -> None:
         """
-        Update the ``index`` of the elements at positions ``start`` and
+        Update the ``position`` of the elements at positions ``start`` and
         later, after elements were inserted or removed before them.
 
         Elements that were last accessed through another container
@@ -166,7 +166,7 @@ class ListContainer(MutableSequence["Element"]):
         for j in range(start, len(lst)):
             element = lst[j]
             if getattr(element, 'parent', None) is parent and getattr(element, 'location', None) == location:
-                element.index = j
+                element.position = j
 
     def walk(self, action: _Action, doc: Doc | None = None,
              stop_if: Callable[[Element], bool] | None = None) -> list[Element]:
@@ -210,7 +210,7 @@ class _ListSlice(ListContainer):
     It is a new container that holds the same elements (a copy of the list,
     not a view): changing it does not change the original container.
     Neither reading nor changing it changes the ``parent``, ``location`` or
-    ``index`` of the elements, which keep describing their position in the
+    ``position`` of the elements, which keep describing their position in the
     original container.
     """
 
@@ -325,11 +325,11 @@ class DictContainer(MutableMapping[str, "MetaValue"]):
 # Functions
 # ---------------------------
 
-def attach(element: Any, parent: Element | None, location: str | None, index: int | None = None) -> Any:
+def attach(element: Any, parent: Element | None, location: str | None, position: int | None = None) -> Any:
     if not isinstance(element, (int, str, bool)):
         element.parent = parent
         element.location = location
-        element.index = index
+        element.position = position
     else:
         debug(f'Warning: element "{type(element)}" has no parent')
     return element

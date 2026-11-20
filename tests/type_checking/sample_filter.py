@@ -86,7 +86,9 @@ def finalize(doc: pf.Doc) -> None:
 def navigation(elem: pf.Element) -> None:
     assert_type(elem.tag, str)
     assert_type(elem.parent, pf.Element | None)
-    assert_type(elem.index, int | None)
+    assert_type(elem.position, int | None)
+    assert_type(elem.index, int | None)  # (alias of .position)
+    elem.index = 0
     assert_type(elem.location, str | None)
     assert_type(elem.next, pf.Element | None)
     assert_type(elem.prev, pf.Element | None)

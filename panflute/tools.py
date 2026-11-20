@@ -331,9 +331,9 @@ def stringify(element: Element | ListContainer, newlines: bool = True) -> str:
 
         # Add quotes around the contents of Quoted()
         if type(e.parent) == Quoted:
-            if e.index == 0:
+            if e.position == 0:
                 ans = '"' + ans
-            if e.index == len(e.container) - 1:
+            if e.position == len(e.container) - 1:
                 ans += '"'
 
         answer.append(ans)

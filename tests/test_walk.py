@@ -118,6 +118,94 @@ def test_index_after_access():
     assert items[1].prev is items[0]
 
 
+# .position (and its alias .index, except on MetaList: issue #258)
+
+def test_position_in_list_containers():
+    doc = build_doc()
+    para = doc.content[0]
+    assert [e.position for e in para.content] == [0, 1, 2, 3]
+    assert para.position == 0 and doc.content[2].position == 2
+    cite = pf.Cite(citations=[pf.Citation('a'), pf.Citation('b')])
+    assert [c.position for c in cite.citations] == [0, 1]
+    di = pf.DefinitionItem([pf.Str('t1'), pf.Str('t2')], [pf.Definition(), pf.Definition()])
+    assert [d.position for d in di.definitions] == [0, 1]
+    assert [t.position for t in di.term] == [0, 1]
+
+
+def test_position_none_outside_list_containers():
+    assert pf.Str('x').position is None                       # detached
+    assert pf.Doc().position is None                          # the root
+    fig = pf.Figure(caption=pf.Caption())
+    assert fig.caption.position is None                       # single child
+    doc = build_doc()
+    title = doc.metadata['title']
+    assert title.parent is doc.metadata and title.position is None  # value in a dict container
+    mm = pf.MetaMap(a='x')
+    assert mm['a'].position is None and mm['a'].next is None
+
+
+def test_position_after_insert_delete_and_slice_assignment():
+    para = pf.Para(*(pf.Str(c) for c in 'abcd'))
+    a, b, c, d = para.content.list
+    para.content.insert(1, pf.Str('new'))
+    assert [e.position for e in (a, b, c, d)] == [0, 2, 3, 4]
+    del para.content[0]
+    assert [e.position for e in (b, c, d)] == [1, 2, 3]
+    para.content[0:2] = [pf.Str('x')]
+    assert [e.position for e in (c, d)] == [1, 2]
+    assert [e.position for e in para.content] == [0, 1, 2]
+    removed = para.content.pop()
+    assert removed is d  # (still describes its last position)
+    para.content.append(pf.Str('z'))
+    assert para.content[-1].position == 2
+
+
+def test_position_of_slice_items():
+    para = pf.Para(*(pf.Str(c) for c in 'abcd'))
+    items = para.content[1:3]
+    assert [e.position for e in items] == [1, 2]   # positions in para.content
+    assert items[0].position == 1 and items[0].next.text == 'c'
+
+
+def test_index_is_an_alias_of_position():
+    para = pf.Para(pf.Str('a'), pf.Str('b'))
+    b = para.content[1]
+    assert b.index == b.position == 1
+    b.index = 0
+    assert b.position == 0 and b.index == 0
+    b.position = 1
+    assert b.index == 1
+    s = pf.Str('x')
+    assert s.index is None
+    s.index = 3
+    assert s.position == 3
+    doc = pf.Doc(pf.Para())
+    assert doc.content[0].index == 0  # (Doc has a __dict__: the property still wins)
+    doc.index = 5
+    assert doc.position == 5 and 'index' not in vars(doc)
+    # Every other metadata element keeps .index
+    mm = pf.MetaMap(a='x')
+    ml = pf.MetaList(mm, pf.MetaInlines(pf.Str('s')), pf.MetaBlocks(pf.Para()))
+    assert [ml[i].index for i in range(3)] == [0, 1, 2]
+
+
+def test_navigation_in_metalists():
+    ml = pf.MetaList('a', pf.MetaList('b', 'c'), True)
+    a, inner, last = ml[0], ml[1], ml[2]
+    assert a.next is inner and inner.next is last and last.next is None
+    assert inner.prev is a and a.prev is None
+    assert a.offset(2) is last and last.offset(-2) is a
+    assert inner.container is ml.content and inner.parent is ml
+    b, c = inner[0], inner[1]
+    assert b.next is c and c.prev is b and b.prev is None
+    assert b.ancestor(2) is ml
+    meta = pf.Doc(metadata={'list': ['x', ['y', 'z']]}).metadata
+    nested = meta['list'][1]
+    assert isinstance(nested, pf.MetaList) and nested.position == 1
+    assert nested.prev == pf.MetaString('x') and nested.next is None
+    assert nested[1].prev == pf.MetaString('y')
+
+
 # ---------------------------------------------------------------------------
 # walk
 # ---------------------------------------------------------------------------
