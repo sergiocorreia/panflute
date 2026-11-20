@@ -340,8 +340,8 @@ class TableCell(Element):
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Block)
         self.alignment = check_group(alignment, TABLE_ALIGNMENT)
-        self.rowspan = rowspan
-        self.colspan = colspan
+        self.rowspan = check_type(rowspan, int)
+        self.colspan = check_type(colspan, int)
         if (self.rowspan <= 0):
             raise TypeError('Cell rowspan must be positive')
         if (self.colspan <= 0):

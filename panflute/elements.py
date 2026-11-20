@@ -569,8 +569,7 @@ class Citation(Element):
 
     def __init__(self, id: str,
                  mode: Literal['AuthorInText', 'SuppressAuthor', 'NormalCitation'] = 'NormalCitation',
-                 # TODO(bug-fix step): the '' defaults (an empty iterable) should be ()
-                 prefix: Iterable[Inline] = '', suffix: Iterable[Inline] = '',  # type: ignore[assignment]
+                 prefix: Iterable[Inline] = (), suffix: Iterable[Inline] = (),
                  hash: int = 0, note_num: int = 0) -> None:
         self.id = check_type(id, str)
         self.mode = check_group(mode, CITATION_MODE)

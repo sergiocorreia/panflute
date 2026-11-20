@@ -177,7 +177,10 @@ class Element(object):
             if isinstance(container, (ListContainer, DictContainer)):
                 return container
             else:
+                # The element is the value of a single-element attribute
+                # (e.g. Table.caption), so it is not in a container
                 assert self is container  # id(self) == id(container)
+                return None
 
     def offset(self, n: int) -> Element | None:
         """
