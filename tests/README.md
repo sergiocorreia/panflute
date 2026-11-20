@@ -43,6 +43,7 @@ The whole suite takes about 10 seconds.
 | `test_tools.py` | `stringify`, `yaml_filter`, metadata helpers, `get_option`, `convert_text`, `run_pandoc`, `shell`, `PandocVersion` |
 | `test_autofilter.py` | the `panflute`/`panfl` CLIs, `stdio()`, filter search |
 | `test_utils.py` | `panflute.utils`, and the list of public names |
+| `test_lazy_imports.py` | `click` and `yaml` are imported on first use, invisibly: attributes, `dir()`, star imports, console scripts, pickling (in fresh interpreters) |
 | `test_examples.py` | the example filters in `examples/panflute` run through pandoc |
 | `test_regressions.py` | regression tests for specific issues |
 | `type_checking/sample_filter.py` | not a test module: a sample filter that `mypy` checks (see `[tool.mypy]` in `pyproject.toml`), with `assert_type()` checks on the types users see |

@@ -10,6 +10,10 @@ import panflute as pf
 from .helpers import to_json_value
 
 
+def stringify_inline(elem):
+    return elem.text if isinstance(elem, pf.Str) else ' '
+
+
 def build_doc():
     """
     Doc
@@ -220,6 +224,105 @@ def test_walk_mutating_in_place():
             elem.level += 1
     doc.walk(action)
     assert doc.content[0].level == 2
+
+
+def test_walk_leaves_new_containers_with_the_same_elements():
+    # After a walk, each parent holds a new container (the items are the
+    # same objects, attached to it)
+    doc = build_doc()
+    para = doc.content[0]
+    old_content, old_metadata = para.content, doc.metadata
+    items = list(old_content)
+    doc.walk(lambda e, d: None)
+    assert para.content is not old_content and doc.metadata is not old_metadata
+    assert all(x is y for x, y in zip(para.content.list, items))
+    assert [(e.parent, e.location, e.index) for e in para.content.list] == [(para, None, i) for i in range(4)]
+
+
+def test_walk_what_the_action_sees():
+    # The action sees each element as part of the container being walked:
+    # siblings after a replaced element keep their index until the walk of
+    # the container is over
+    para = pf.Para(pf.Emph(pf.Str('a')), pf.Str('b'), pf.Str('c'))
+    cite = pf.Cite(pf.Str('x'), citations=[pf.Citation('id', prefix=[pf.Str('p')])])
+    doc = pf.Doc(para, pf.Plain(cite))
+    seen = []
+
+    def action(elem, d):
+        if isinstance(elem, pf.Str):
+            seen.append((elem.text, type(elem.parent).__name__, elem.location, elem.index,
+                         elem.prev.tag if elem.prev else None, elem.next.tag if elem.next else None))
+        if isinstance(elem, pf.Emph):
+            return [pf.Str('a1'), pf.Str('a2')]
+    doc.walk(action)
+    assert seen == [
+        ('a', 'Emph', None, 0, None, None),
+        ('b', 'Para', None, 1, 'Emph', 'Str'),
+        ('c', 'Para', None, 2, 'Str', None),
+        ('x', 'Cite', None, 0, None, None),
+        ('p', 'Citation', 'prefix', 0, None, None),
+    ]
+    assert [(e.text, e.index) for e in para.content] == [('a1', 0), ('a2', 1), ('b', 2), ('c', 3)]
+
+
+def test_walk_sees_changes_made_to_the_container_being_walked():
+    # Filters can insert or delete siblings of the element they receive:
+    # inserted elements after it are walked, deleted ones are not
+    para = pf.Para(*[pf.Str(t) for t in ('a', 'b', 'c', 'd')])
+    seen = []
+
+    def action(elem, d):
+        if isinstance(elem, pf.Str):
+            seen.append((elem.text, elem.index))
+            if elem.text == 'a':
+                elem.parent.content.insert(elem.index + 1, pf.Str('new'))
+            elif elem.text == 'b':
+                del elem.parent.content[elem.index + 1]  # c
+    pf.Doc(para).walk(action)
+    assert seen == [('a', 0), ('new', 1), ('b', 2), ('d', 3)]
+    assert [e.text for e in para.content] == ['a', 'new', 'b', 'd']
+
+
+def test_walk_deemph_pattern():
+    # As in examples/panflute/deemph.py: move the contents of an element
+    # after it in its parent, and delete it
+    para = pf.Para(pf.Str('x'), pf.Emph(pf.Str('a'), pf.Space, pf.Str('b')), pf.Str('y'))
+    seen = []
+
+    def action(elem, d):
+        seen.append(elem.tag)
+        if isinstance(elem, pf.Emph):
+            for i, item in enumerate(elem.content, elem.index + 1):
+                elem.parent.content.insert(i, item)
+            return []
+    pf.Doc(para).walk(action)
+    assert [stringify_inline(e) for e in para.content] == ['x', 'a', ' ', 'b', 'y']
+    # the moved elements are walked again, in their new place
+    assert seen == ['MetaMap', 'Str', 'Str', 'Space', 'Str', 'Emph', 'Str', 'Space', 'Str', 'Str',
+                    'Para', 'Doc']
+
+
+def test_walk_wrong_replacement_type_raises_after_walking_the_siblings():
+    para = pf.Para(pf.Str('a'), pf.Str('b'))
+    seen = []
+
+    def action(elem, d):
+        seen.append(elem.tag)
+        if isinstance(elem, pf.Str) and elem.text == 'a':
+            return pf.Para()
+    with pytest.raises(TypeError, match='Element "Panflute" received "Para"'):
+        pf.Doc(para).walk(action)
+    assert seen == ['MetaMap', 'Str', 'Str']
+    assert [e.text for e in para.content] == ['a', 'b']  # unchanged
+
+
+def test_walk_slice_does_not_attach():
+    para = pf.Para(*[pf.Str(t) for t in ('a', 'b', 'c')])
+    sl = para.content[1:]
+    seen = []
+    result = sl.walk(lambda e, d: seen.append((e.text, e.parent is para, e.index)))
+    assert seen == [('b', True, 1), ('c', True, 2)]
+    assert [e.text for e in result] == ['b', 'c']
 
 
 def test_walk_stop_if():
