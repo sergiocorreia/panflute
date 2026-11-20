@@ -11,6 +11,12 @@ Suppose we want to create a filter that sets all headers to level 1. For this, w
 
 .. note:: a more complete template is `located here <https://github.com/sergiocorreia/panflute/tree/master/docs/source/_static/template.py>`_
 
+.. tip:: ``import panflute as pf`` (as in the template) makes a filter start
+   faster than ``from panflute import *``: since panflute 3.0, the first one
+   does not import the modules used by panflute's command line tools (such as
+   ``click``), while the star import still imports all of them. This saves a few
+   tens of milliseconds every time pandoc runs the filter.
+
 More complex filters
 ********************
 
@@ -81,11 +87,11 @@ that contain YAML metadata. For instance:
     More text
 
 Note that fenced code blocks use three or more
-`tildes <http://pandoc.org/README.html#extension-fenced_code_blocks>`_
-or 
-`backticks <http://pandoc.org/README.html#extension-backtick_code_blocks>`_
+`tildes <https://pandoc.org/MANUAL.html#extension-fenced_code_blocks>`_
+or
+`backticks <https://pandoc.org/MANUAL.html#extension-backtick_code_blocks>`_
 as separators.
-Within a code block, use `three hyphens or three dots <http://pandoc.org/README.html#extension-yaml_metadata_block>`_
+Within a code block, use `three hyphens or three dots <https://pandoc.org/MANUAL.html#extension-yaml_metadata_block>`_
 to separate the YAML options from the rest of the block.
 
 
@@ -99,6 +105,7 @@ useful `yaml_filter <code.html#panflute.tools.yaml_filter>`_ function:
 .. note:: a more complete template is `here <https://github.com/sergiocorreia/panflute/tree/master/docs/source/_static/fenced-template.py>`_ , a fully developed filter for CSVs is `also available <https://github.com/ickc/pantable>`_.
 
 .. note:: `yaml_filter` now allows a `strict_yaml=True` option, which allows multiple YAML blocks, but with the caveat that all YAML blocks must start with `---` and end with `---` or `...`.
+   In this mode, a YAML block that cannot be parsed, or that is not a mapping of ``key: value`` pairs, is reported on stderr and the code block is left unchanged.
 
 
 Calling external programs
@@ -117,6 +124,8 @@ Alternatively, we might want to run other programs through the shell.
 For this, explore the `shell <code.html#panflute.tools.shell>`_
 function.
 
+.. _navigation:
+
 Navigating through the document tree
 ************************************
 
@@ -128,6 +137,79 @@ For example, the code below will emphasize all text in the last row of every tab
 
 .. literalinclude:: _static/emph-last-row.py
 
+These attributes are:
+
+- ``.parent``: the element that contains this one (``None`` for the
+  :class:`.Doc`, and for an element that is not part of another one).
+- ``.location``: ``None`` when the element is in the ``.content`` of its
+  parent; otherwise, the name of the attribute of the parent that holds it,
+  such as ``'caption'`` or ``'head'`` for a table, or ``'citations'``
+  for a :class:`.Cite`.
+- ``.position``: the position of the element in the list that holds it,
+  so that ``elem.container[elem.position] is elem``; ``None`` when the
+  element is not in a list (e.g. the ``.caption`` of a table, or a value
+  of a :class:`.MetaMap`). ``.index`` is the older name of this attribute,
+  and still works on every element except :class:`.MetaList` (see below).
+- ``.next``, ``.prev`` and ``.offset(n)``: the sibling elements in the same
+  list (or ``None``), and ``.ancestor(n)``: the parent of the parent, etc.
+- ``.container``: the list (or dict) that holds the element, and ``.doc``:
+  the root :class:`.Doc`, if there is one.
+
+.. code-block:: python
+
+    >>> para = Para(Str('a'), Space(), Str('b'))
+    >>> b = para.content[2]
+    >>> b.parent is para, b.position, b.prev, b.offset(-2)
+    (True, 2, Space, Str(a))
+
+These attributes are set as soon as an element is added to another one
+(when building it, or with ``append()``, ``insert()``, ``elem.content[i] = ...``,
+``elem.content = [...]``, etc.), and the positions are kept up to date when
+elements are inserted or deleted. An element that is removed from its parent
+keeps its old ``.parent`` and ``.position``.
+
+.. note:: :class:`.MetaList` is a list-like object, so ``metalist.index(value)``
+   is the standard list method (the position of ``value`` in the list), as is
+   ``metalist.remove(value)``. The position of a :class:`.MetaList` in its own
+   container is ``metalist.position``. (In panflute 2.x, ``metalist.index``
+   was that position.)
+
+Lists of elements and slices
+****************************
+
+The ``.content`` of an element (and other lists of elements, such as the
+``.citations`` of a :class:`.Cite`) is a :class:`.ListContainer`: a
+list-like object that only accepts elements of the right type, and that
+sets their ``.parent`` and ``.position``. It supports the usual list
+operations (``append``, ``insert``, ``del``, ``elem.content[i:j] = [...]``, etc.).
+
+A slice such as ``para.content[1:3]`` is a new container that holds the same
+elements; changing the slice does not change ``para.content``, and reading
+it does not change the ``.parent`` or ``.position`` of the elements. A slice is an
+instance of a (private) subclass of :class:`.ListContainer`, so check its type
+with ``isinstance(s, ListContainer)``, or use ``list(s)`` to get a plain list.
+
+Raw formats
+***********
+
+:class:`.RawBlock` and :class:`.RawInline` hold text in a given output format,
+which pandoc copies as-is into documents of that format. Any format name is
+accepted, as in pandoc, for instance ``'html'``, ``'latex'``, ``'typst'``, or
+``'comment'`` (which pandoc drops from every output), or the name of a custom writer:
+
+.. code-block:: python
+
+    def action(elem, doc):
+        if isinstance(elem, RawBlock) and elem.format == 'comment':
+            return []  # Delete comments, whatever the output format
+
+    page_break = RawBlock('#pagebreak()', format='typst')
+
+(Before panflute 3.0, only a fixed list of formats was accepted, so documents
+with other raw formats could not be loaded.)
+
+
+.. _running-filters-automatically:
 
 Running filters automatically
 ******************************
@@ -148,3 +230,69 @@ structure, with a `main()` function of the following form:
 .. note:: To be able to run filters automatically, the main function needs to be exactly as shown, with an optional argument ``doc``, that gets passed to ``run_filter``, and which is ``return`` ed back.
 
 .. note:: You can add ``panflute-verbose: true`` to the metadata to display debugging information, including the folders searched and the filters executed.
+
+Command line tools
+******************
+
+Installing panflute also installs two command line programs:
+
+- ``panflute`` is the filter used above (``pandoc -F panflute``): it runs the
+  filters listed in the metadata. ``panflute --help`` describes it, and
+  ``panflute --version`` prints panflute's version.
+- ``panfl`` can do the same (``pandoc -F panfl``), and can also run filters
+  given on the command line, in a pipeline of pandoc commands. With the
+  ``-t``/``--to`` option it runs several filters at once, searching for them
+  in the directories given with ``-d`` (``--dir``), in pandoc's data directory
+  (``--data-dir``), and in Python's ``sys.path`` (unless ``--no-sys-path``):
+
+  .. code-block:: none
+
+      pandoc example.md -t json | panfl foo.bar -t markdown | pandoc -f json
+
+  Run ``panfl --help`` for all the options.
+
+
+.. _type-hints:
+
+Type hints
+**********
+
+Panflute comes with type hints, so a type checker (mypy, pyright, ...) or
+an IDE can check your filters and complete the attributes of each element.
+Annotate an action like this:
+
+.. code-block:: python
+
+    import panflute as pf
+
+    def action(elem: pf.Element, doc: pf.Doc) -> pf.Element | list[pf.Element] | None:
+        if isinstance(elem, pf.Str):
+            return pf.Str(elem.text.upper())  # replace the element
+        if isinstance(elem, pf.Emph):
+            return []  # delete the element
+        return None  # keep the element
+
+    def prepare(doc: pf.Doc) -> None:
+        doc.count = 0  # filters can store their own attributes in the Doc
+
+    def main(doc: pf.Doc | None = None) -> pf.Doc | None:
+        return pf.run_filter(action, prepare=prepare, doc=doc)
+
+``isinstance()`` checks narrow the type of ``elem``, so that e.g. ``elem.text``
+is known to be a ``str`` after ``isinstance(elem, pf.Str)``.
+Arguments that only take a few values have ``Literal`` types (for instance
+``Quoted(quote_type='SingleQuote')`` or ``OrderedList(style='LowerRoman')``),
+so a typo is reported by the type checker.
+
+The types are simplified in a few places, deliberately:
+
+- The ``doc`` passed to an action is typed :class:`.Doc`, although it is
+  ``None`` when ``walk()`` is called on an element that is not part of a
+  document.
+- ``.identifier``, ``.classes`` and ``.attributes`` are declared on every
+  element, although only the elements that have attributes (such as
+  :class:`.Div`, :class:`.Header` or :class:`.Code`) have them.
+- Panflute accepts an element class where an element is expected
+  (``Para(Str('a'), Space)`` instead of ``Para(Str('a'), Space())``), but the
+  type hints only accept instances.
+

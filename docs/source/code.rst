@@ -55,10 +55,11 @@ Base elements
    .. autoattribute:: panflute.base.Element.next
    .. automethod:: panflute.base.Element.replace_keyword
    .. autoattribute:: panflute.base.Element.container
+   .. autoattribute:: panflute.base.Element.doc
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following elements inherit from :class:`Element`:
+The following elements inherit from :class:`.Element`:
 
 .. automodule:: panflute.base
    :members: Block, Inline, MetaValue
@@ -73,38 +74,43 @@ Low-level classes
    :members:
 
 .. note::
-   To keep track of every element's parent we do some 
+   To keep track of every element's parent we do some
    class magic. Namely, ``Element.content`` is not a list attribute
    but a property accessed via getter and setters. Why?
-   
-       >>> e = Para(Str(Hello), Space, Str(World!))
-   
+
+       >>> e = Para(Str('Hello'), Space(), Str('World!'))
+
    This creates a ``Para`` element, which stores the three
    inline elements (Str, Space and Str) inside an ``.content`` attribute.
    If we add ``.parent`` attributes to these elements,
-   there are three ways they can be made obsolete:
-   
-   1. By replacing specific elements: ``e.content[0] = Str('Bye')``
-   2. By replacing the entire list: ``e.contents = other_items``
-   
-   We deal with the first problem with wrapping the list of items
-   with a ListContainer class of type :class:`collections.MutableSequence`.
-   This class updates the ``.parent`` attribute to elements returned
-   through ``__getitem__`` calls.
-   
+   there are two ways they can be made obsolete:
+
+   1. By replacing or inserting specific elements: ``e.content[0] = Str('Bye')``
+   2. By replacing the entire list: ``e.content = other_items``
+
+   We deal with the first problem by wrapping the list of items
+   with a ListContainer class of type :class:`collections.abc.MutableSequence`.
+   This class sets the ``.parent``, ``.location`` and ``.position`` attributes
+   of the elements added to it, and updates the ``.position`` of the
+   elements that move when others are inserted or deleted.
+
    For the second problem, we use setters and getters which update the
    ``.parent`` attribute.
+
+   A slice of a ListContainer (``e.content[0:2]``) is a new container,
+   an instance of a private subclass of ListContainer, which holds the same
+   elements but does not change their ``.parent`` or ``.position``.
 
 
 Standard elements
 ********************************************
 
-These are the standard Pandoc elements, as described `here <https://hackage.haskell.org/package/pandoc-types-1.16.1/docs/Text-Pandoc-Definition.html>`_. Consult the `repo <https://github.com/jgm/pandoc-types/commits/master/Text/Pandoc/Definition.hs>`_ for the latest updates.
+These are the standard Pandoc elements, as described `here <https://hackage.haskell.org/package/pandoc-types/docs/Text-Pandoc-Definition.html>`_. Consult the `repo <https://github.com/jgm/pandoc-types/commits/master/src/Text/Pandoc/Definition.hs>`_ for the latest updates.
 
 .. note::
    The attributes of every element object will be
    i) the parameters listed below, plus
-   ii) the attributes of :class:`Element`.
+   ii) the attributes of :class:`.Element`.
    Example:
 
        >>> h = Str(text='something')
@@ -117,9 +123,8 @@ These are the standard Pandoc elements, as described `here <https://hackage.hask
    in elements that take ``*args``
    (so we can do ``Para().content`` but not ``Str().content``).
 
-.. automodule:: panflute.elements
-   :noindex:
-   :members: Doc
+.. autoclass:: panflute.elements.Doc
+   :members:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -153,7 +158,7 @@ Standard functions
 .. seealso::
    The ``walk()`` function has been replaced by the :meth:`.Element.walk`
    method of each element. To walk through the entire document,
-   do ``altered = doc.walk()``.
+   do ``altered = doc.walk(action)``.
 
 .. automodule:: panflute.io
    :members:
@@ -162,7 +167,8 @@ Standard functions
    The *action* functions have a few rules:
 
    - They are called as ``action(element, doc)`` so they must accept at
-     least two arguments.
+     least two arguments. (With type hints, annotate them as
+     ``def action(elem: Element, doc: Doc) -> Element | list[Element] | None``.)
    - Additional arguments can be passed through the ``**kwargs**`` of
      ``toJSONFilter`` and ``toJSONFilters``.
    - They can return either an element, a list, or ``None``.
@@ -190,11 +196,34 @@ These are functions commonly used when writing more complex filters
    stringify
    convert_text
    yaml_filter
-   debug
    shell
+   run_pandoc
+   get_option
 
+.. currentmodule:: panflute.utils
 
-See also ``Doc.get_metadata`` and ``Element.replace_keyword``
+.. autosummary::
+
+   debug
+
+See also :meth:`.Doc.get_metadata` and :meth:`.Element.replace_keyword`
 
 .. automodule:: panflute.tools
    :members:
+
+.. autofunction:: panflute.utils.debug
+
+
+Command line interfaces
+******************************
+
+Installing panflute installs two programs, ``panflute`` and ``panfl``,
+which run the filters listed in a document's metadata, or given on the
+command line (see :ref:`the guide <running-filters-automatically>`).
+``panflute --help`` and ``panfl --help`` describe them.
+They are implemented in ``panflute.autofilter``, which is only imported
+when one of these functions is first used.
+
+.. autofunction:: panflute.autofilter.main
+.. autofunction:: panflute.autofilter.stdio
+.. autofunction:: panflute.autofilter.get_filter_dirs

@@ -36,8 +36,13 @@ extensions = [
     'sphinx.ext.viewcode',  # Allow click to view code
     'sphinx.ext.autosummary',  # Allow autosummary tables
     'sphinx.ext.githubpages',  # Add .nojekyll file (not used b/c symlink)
-    'sphinx.ext.intersphinx'
+    'sphinx.ext.intersphinx',
+    'myst_parser',  # Only used to include ../../CHANGELOG.md in changelog.rst
 ]
+
+# Markdown is only parsed where changelog.rst includes CHANGELOG.md:
+# keep .rst as the only source suffix (so _static/*.md are not pages)
+source_suffix = {'.rst': 'restructuredtext'}
 
 # See http://www.sphinx-doc.org/en/stable/ext/intersphinx.html
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
@@ -46,10 +51,7 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-# The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+# The suffix(es) of source filenames: see source_suffix above
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'

@@ -5,7 +5,7 @@
 
 .. automodule:: panflute
 
-*(Documentation last updated for panflute |version|)*
+(*Documentation last updated for panflute* |release|\ *. New in 3.0: see* :doc:`whatsnew`\ *.*)
 
 It is a pythonic alternative to John MacFarlane's
 `pandocfilters <https://github.com/jgm/pandocfilters>`_,
@@ -43,7 +43,7 @@ Our goal is to make writing pandoc filters *as simple and clear as possible*. St
   To change the identifier, do ``header.identifier = 'spam'`` instead of
   ``header['c'][1][1] = 'spam'``
 - Elements are easier to create. Thus, to create a header you can do
-  ``Header(Str(The), Space, Str(Title), level=1, identifier=foo)``
+  ``Header(Str('The'), Space(), Str('Title'), level=1, identifier='foo')``
   instead of ``Header([1,["foo",[],[]],[{"t":"Str","c":"The"},{"t":"Space","c":[]},{"t":"Str","c":"Title"}])``
 - You can navigate across elements. Thus, you can check if ``isinstance(elem.parent, Inline)`` or if ``type(elem.next) == Space``
 
@@ -51,9 +51,11 @@ Our goal is to make writing pandoc filters *as simple and clear as possible*. St
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Check that the elements contain the correct types. Trying to create
-  `Para('text')` will give you the error "Para() element must contain Inlines
-  but received a str()", instead of just failing silently when running the
-  filter.
+  ``Para('text')`` will give you the error 'Element "Para" received "str" but
+  expected <class 'panflute.base.Inline'>', instead of just failing silently
+  when running the filter.
+- Type hints let type checkers and IDEs find mistakes before the filter
+  runs (see :ref:`type-hints`).
 
 3. Comes with batteries included
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,7 +90,7 @@ Alternative: filters based on pandocfilters
 
 - For a guide to pandocfilters, see the
   `repository <https://github.com/jgm/pandocfilters>`_
-  and the `tutorial <http://pandoc.org/scripting.html>`_.
+  and the `tutorial <https://pandoc.org/filters.html>`_.
 - The repo includes `sample filters
   <https://github.com/jgm/pandocfilters/tree/master/examples>`_.
 - The wiki lists useful `third party filters
@@ -102,7 +104,9 @@ Contents:
 
    guide
    install
+   whatsnew
    code
+   changelog
    about
 
 
