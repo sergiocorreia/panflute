@@ -1,9 +1,12 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["panflute"]
+
+[tool.setuptools.dynamic]
+version = {attr = "panflute.version.__version__"}
 
 [project]
 name = "panflute"
@@ -11,8 +14,9 @@ dynamic = ["version"]
 description = "Pythonic Pandoc filters"
 readme = "README.md"
 authors = [{name = "Sergio Correia", email = "serio.correia@gmail.com"}]
-license = {text = "BDS3"}
-requires-python = ">=3.7"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
 keywords = ["pandoc", "pandocfilters", "markdown", "latex"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -20,49 +24,71 @@ classifiers = [
     "Intended Audience :: End Users/Desktop",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Topic :: Text Processing :: Filters",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy"
+    "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
     "click>=6,<9",
-    "pyyaml>=3,<7"
+    "pyyaml>=3,<7",
+]
+
+[project.optional-dependencies]
+extras = [
+    "yamlloader>=1,<2",
+]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
 ]
 
 [project.urls]
-homepage = "https://github.com/sergiocorreia/panflute"
-
-[project.optional-dependencies]
-dev = [
-    "configparser",
-    "coverage",
-    "flake8",
-    "pandocfilters",
-    "pytest-cov",
-    "pytest",
-    "requests"
-]
-pypi = [
-    "build",
-    "docutils",
-    "Pygments",
-    "twine",
-    "wheel"
-]
-extras = [
-    "yamlloader>=1,<2"
-]
+Homepage = "https://scorreia.com/software/panflute/"
+Documentation = "https://scorreia.com/software/panflute/"
+Repository = "https://github.com/sergiocorreia/panflute"
+Issues = "https://github.com/sergiocorreia/panflute/issues"
+Changelog = "https://github.com/sergiocorreia/panflute/releases"
 
 [project.scripts]
 panflute = "panflute:main"
 panfl = "panflute:panfl"
 
-[tool.setuptools.dynamic]
-version = {attr = "panflute.version.__version__"}
+# ---------------------------------------------------------------------------
+# Tool configuration
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+# Several tests use paths relative to the repository root, so run pytest from there.
+testpaths = ["tests"]
+addopts = ["-ra"]
+
+[tool.coverage.run]
+source = ["panflute"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+target-version = "py310"
+extend-exclude = ["docs/build"]
+
+[tool.ruff.lint]
+# Deliberately conservative: syntax errors, undefined names, invalid comparisons,
+# and redefined imports. Broaden gradually; avoid churn-only rules.
+select = ["E9", "F63", "F7", "F82", "F811"]
+
+[tool.ruff.lint.per-file-ignores]
+# Known-broken example (excluded from tests/test_examples_run.py); kept as-is for reference.
+"examples/panflute/lilypond.py" = ["F821"]

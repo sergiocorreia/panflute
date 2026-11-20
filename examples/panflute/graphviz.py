@@ -36,7 +36,7 @@ def graphviz(elem, doc):
                 pass
             G.draw(src)
             sys.stderr.write('Created image ' + src + '\n')
-        return Para(Image(alt, url=source, title=''))
+        return Para(Image(alt, url=src, title=''))
 
 
 if __name__ == "__main__":

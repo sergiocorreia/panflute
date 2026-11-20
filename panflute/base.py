@@ -7,7 +7,6 @@ Base classes and methods of all Pandoc elements
 # ---------------------------
 from __future__ import annotations
 
-from panflute.containers import DictContainer, ListContainer
 from typing import Any
 
 from operator import attrgetter

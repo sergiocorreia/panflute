@@ -1,1 +1,0 @@
-A table without header121212121231231231231111A table with captionAdd-onsCategoryDetailsAmountCategory1Hourly$20Category2Hourly$25Category3Fixed$30Another table with captionDemonstration of simple table syntax.RightLeftCenterDefault121212121231231231231111
