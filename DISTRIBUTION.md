@@ -86,11 +86,13 @@ The documentation at <https://scorreia.com/software/panflute/> is built with
 Sphinx from [`docs/source`](docs/source):
 
 ```bash
-python -m pip install sphinx
-sphinx-build -b html docs/source docs/build/html
+python -m pip install -e ".[docs]"
+sphinx-build -W -b html docs/source docs/build/html
 ```
 
-Then upload `docs/build/html` to the website.
+Then upload `docs/build/html` to the website. Do this after each release, so
+that the website shows the new version and its changelog (the changelog page
+includes `CHANGELOG.md`, and the version comes from `panflute/version.py`).
 
 To build the PDF version, install a LaTeX distribution and run
 `sphinx-build -M latexpdf docs/source docs/build`.

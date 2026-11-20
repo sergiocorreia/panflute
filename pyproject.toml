@@ -56,6 +56,11 @@ dev = [
     "mypy",
     "types-PyYAML",
 ]
+# To build the documentation (docs/source); see CONTRIBUTING.md
+docs = [
+    "sphinx>=7",
+    "myst-parser>=3",  # includes CHANGELOG.md in the docs
+]
 
 [project.urls]
 Homepage = "https://scorreia.com/software/panflute/"
