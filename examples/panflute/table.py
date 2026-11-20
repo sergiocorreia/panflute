@@ -1,20 +1,26 @@
 import panflute as pf
 
+
+def rows(table):
+    """All the rows of a table: head, bodies (with their intermediate heads) and foot"""
+    yield from table.head.content
+    for body in table.content:
+        yield from body.head
+        yield from body.content
+    yield from table.foot.content
+
+
 def add_one(e, doc):
-    if type(e)==pf.Table:
-        for row in e.items:
-            for cell in row:
-                if len(cell) == 1 and len(cell[0].items)==1:
-                    text = cell[0].items[0].text
-                    if text.isdigit():
-                        cell[0].items[0].text = str(int(text)+1)
+    """Add one to every table cell that only contains a number"""
+    if type(e) == pf.Table:
+        for row in rows(e):
+            for cell in row.content:
+                if len(cell.content) == 1 and len(cell.content[0].content) == 1:
+                    item = cell.content[0].content[0]
+                    if isinstance(item, pf.Str) and item.text.isdigit():
+                        item.text = str(int(item.text) + 1)
         return e
 
-def idea(e, doc):
-    selector = 'Table Items Rows Cells'
-
-    if any(type(a)==pf.Table for a in e.ancestors()):
-        pass
 
 if __name__ == '__main__':
     pf.toJSONFilter(add_one)

@@ -7,6 +7,10 @@ I/O related functions
 # Imports
 # ---------------------------
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .elements import Element, Doc, from_json, ListContainer
 
 # These will get modified if using Pandoc legacy (<1.8)
@@ -17,15 +21,19 @@ import io
 import os
 import sys
 import json
-import codecs  # Used in sys.stdout writer
 from functools import partial
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+    from typing import Any
+    from _typeshed import SupportsRead, SupportsWrite
 
 
 # ---------------------------
 # Functions
 # ---------------------------
 
-def load(input_stream=None):
+def load(input_stream: SupportsRead[str] | None = None) -> Doc:
     """
     Load JSON-encoded document and return a :class:`.Doc` element.
 
@@ -51,11 +59,19 @@ def load(input_stream=None):
     :rtype: :class:`.Doc`
     """
 
-    if input_stream is None:
-        input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-
     # Load JSON and validate it
-    doc = json.load(input_stream, object_hook=from_json)
+    if input_stream is None:
+        # Pandoc sends UTF-8, whatever the locale: read the bytes of stdin
+        # (without wrapping sys.stdin.buffer in a TextIOWrapper, which would
+        # close it when garbage collected)
+        buffer = getattr(sys.stdin, 'buffer', None)
+        if buffer is not None:
+            text = buffer.read().decode('utf-8')
+        else:  # sys.stdin was replaced by a text stream (e.g. io.StringIO)
+            text = sys.stdin.read()
+        doc = json.loads(text, object_hook=from_json)
+    else:
+        doc = json.load(input_stream, object_hook=from_json)
 
     # Notes:
     # - The hook gets called for dicts (not lists), and the deepest dicts
@@ -79,7 +95,7 @@ def load(input_stream=None):
     return doc
 
 
-def dump(doc, output_stream=None):
+def dump(doc: Doc, output_stream: SupportsWrite[str] | None = None) -> None:
     """
     Dump a :class:`.Doc` object into a JSON-encoded text string.
 
@@ -114,29 +130,41 @@ def dump(doc, output_stream=None):
         msg = f'panflute.dump needs input of type "panflute.Doc" but received one of type "{type(doc).__name__}"'
         raise TypeError(msg)
 
-    if output_stream is None:
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
-        output_stream = sys.stdout
-
     json_serializer = lambda elem: elem.to_json()
 
-    output_stream.write(json.dumps(
+    text = json.dumps(
         obj=doc,
         default=json_serializer,  # Serializer
         check_circular=False,
         separators=(',', ':'),  # Compact separators, like Pandoc
         ensure_ascii=False  # For Pandoc compat
-    ))
+    )
+
+    if output_stream is not None:
+        output_stream.write(text)
+        return
+
+    # Pandoc expects UTF-8, whatever the locale (and the encoding of
+    # sys.stdout): write the bytes to the binary buffer underneath sys.stdout
+    # (without newline translation; the JSON text has no line breaks anyway)
+    stdout = sys.stdout
+    buffer = getattr(stdout, 'buffer', None)
+    if buffer is not None:
+        stdout.flush()  # Keep the order of anything written to stdout before
+        buffer.write(text.encode('utf-8'))
+        buffer.flush()
+    else:  # sys.stdout was replaced by a text stream (e.g. io.StringIO)
+        stdout.write(text)
 
 
-def toJSONFilters(*args, **kwargs):
+def toJSONFilters(*args: Any, **kwargs: Any) -> Doc | None:
     """
     Wrapper for :func:`.run_filters`
     """
     return run_filters(*args, **kwargs)
 
 
-def toJSONFilter(*args, **kwargs):
+def toJSONFilter(*args: Any, **kwargs: Any) -> Doc | None:
     """
     Wrapper for :func:`.run_filter`, which calls :func:`.run_filters`
 
@@ -148,12 +176,14 @@ def toJSONFilter(*args, **kwargs):
     return run_filter(*args, **kwargs)
 
 
-def run_filters(actions,
-                prepare=None, finalize=None,
-                input_stream=None, output_stream=None,
-                doc=None,
-                stop_if=None,
-                **kwargs):
+def run_filters(actions: Iterable[Callable[..., Element | list[Element] | None]],
+                prepare: Callable[[Doc], object] | None = None,
+                finalize: Callable[[Doc], object] | None = None,
+                input_stream: SupportsRead[str] | None = None,
+                output_stream: SupportsWrite[str] | None = None,
+                doc: Doc | None = None,
+                stop_if: Callable[[Element], bool] | None = None,
+                **kwargs: Any) -> Doc | None:
     r"""
     Receive a Pandoc document from the input stream (default is stdin),
     walk through it applying the functions in *actions* to each element,
@@ -199,24 +229,27 @@ def run_filters(actions,
     if load_and_dump:
         doc = load(input_stream=input_stream)
 
+    # In what follows doc is a Doc (mypy can't infer it from load_and_dump),
+    # unless an action replaced the Doc itself
     if prepare is not None:
-        prepare(doc)
+        prepare(doc)  # type: ignore[arg-type]
 
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
-        doc = doc.walk(action, doc=doc, stop_if=stop_if)
+        doc = doc.walk(action, doc=doc, stop_if=stop_if)  # type: ignore[union-attr, assignment]
 
     if finalize is not None:
-        finalize(doc)
+        finalize(doc)  # type: ignore[arg-type]
 
     if load_and_dump:
-        dump(doc, output_stream=output_stream)
+        dump(doc, output_stream=output_stream)  # type: ignore[arg-type]
     else:
         return(doc)
 
 
-def run_filter(action, *args, **kwargs):
+def run_filter(action: Callable[..., Element | list[Element] | None],
+               *args: Any, **kwargs: Any) -> Doc | None:
     """
     Wrapper for :func:`.run_filters`
 

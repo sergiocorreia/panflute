@@ -1,18 +1,16 @@
 """
-Make text in the last row of every table bold
+Emphasize the text in the last row of every table
 """
 
 import panflute as pf
 
 
 def action(elem, doc):
-    if isinstance(elem, pf.TableRow):
-        # Exclude table headers (which are not in a list)
-        if elem.index is None:
-            return
-
-        if elem.next is None:
-            pf.debug(elem)
+    # Only the rows of a table body (not those of its head or foot,
+    # nor the intermediate head rows of the body, at .location 'head')
+    if (isinstance(elem, pf.TableRow) and isinstance(elem.parent, pf.TableBody)
+            and elem.location is None):
+        if elem.next is None:  # The last row of the body
             elem.walk(make_emph)
 
 

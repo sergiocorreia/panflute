@@ -20,8 +20,9 @@ def fenced_action(options, data, element, doc):
             cells = [pf.TableCell(pf.Plain(pf.Str(x))) for x in row]
             body.append(pf.TableRow(*cells))
 
-    header = body.pop(0) if has_header else None
-    table = pf.Table(*body, header=header, caption=title)
+    head = pf.TableHead(body.pop(0)) if has_header else None
+    caption = pf.Caption(pf.Plain(*title))
+    table = pf.Table(pf.TableBody(*body), head=head, caption=caption)
     return table
 
 

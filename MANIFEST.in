@@ -1,2 +1,9 @@
-include README.md
-include LICENSE
+# Extra files for the source distribution (sdist). README.md, LICENSE and the
+# panflute package are included automatically from pyproject.toml metadata.
+include CHANGELOG.md
+include CONTRIBUTING.md
+# Ship the test suite and the example filters it exercises, so downstream
+# packagers can run `pytest` from an unpacked sdist (pandoc required).
+graft tests
+graft examples
+global-exclude __pycache__ *.py[cod]

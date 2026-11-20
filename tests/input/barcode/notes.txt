@@ -1,3 +1,0 @@
-Had to modify the markdown file a little:
-
-- Replace horizontal lines "---" with "----" to avoid confusion with yaml

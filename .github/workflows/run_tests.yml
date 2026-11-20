@@ -1,104 +1,150 @@
-# Documentation:
-# https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions
-
-# Available software:
-# https://help.github.com/en/actions/automating-your-workflow-with-github-actions/software-installed-on-github-hosted-runners
-
-# Useful info:
-# https://stackoverflow.com/a/57549440/3977107
-
-# Pandoc info:
-# https://github.com/pandoc/dockerfiles#available-images
-# https://github.com/leolabs/bachelor/blob/master/.github/workflows/main.yml
-# https://github.com/maxheld83/pandoc/blob/master/.github/workflows/main.yml
-
 name: CI Tests
+
 on:
+  # Pushes to master, and pull requests (from this repository or from forks);
+  # an unfiltered push trigger would run every job twice for a PR branch
   push:
+    branches: [master]
   pull_request:
   schedule:
-      - cron: '47 23 * * 0'
+    # Weekly run, to catch breakage from new pandoc/dependency releases
+    - cron: '47 23 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  lint:
+    name: Lint (ruff, mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: '3.14'
+      - name: Install ruff, mypy and panflute's dependencies
+        run: python -m pip install ".[dev]"
+      - name: Run ruff
+        run: ruff check --output-format=github .
+      - name: Type-check with mypy
+        # Checks panflute/ and the sample filter in tests/type_checking/
+        # (configured in [tool.mypy] in pyproject.toml; targets Python 3.10)
+        run: mypy
+
+  test:
+    name: Python ${{ matrix.python-version }} / pandoc ${{ matrix.pandoc-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 7
       matrix:
-        # see setup.py for supported versions
-        # here instead of having a matrix to test against 7 * 7 * 3 * 3 combinations
-        # we only test 7 combinations in a round-robin fashion
-        # make sure the versions are monotonic increasing w.r.t. each other
-        # other wise e.g. an older version of a dependency may not work well with a newer version of Python
+        # Rather than the full Python x pandoc cartesian product, pair each
+        # Python version with one pandoc version, keeping both increasing so
+        # that old Pythons meet old pandocs and new Pythons meet new pandocs.
+        # The oldest pandoc should match the oldest one claimed in README.md.
         include:
-          - python-version: "pypy-3.8"
-            pandoc-version: "3.0.1"
-            click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=6,<7"
-          - python-version: "pypy-3.9"
-            pandoc-version: "latest"
-            click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=6,<7"
-          - python-version: "3.8"
-            pandoc-version: "2.15"
-            click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=6,<7"
-          - python-version: "3.9"
-            pandoc-version: "2.16.2"
-            click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=6,<7"
-          - python-version: "3.10"
-            pandoc-version: "2.19.2"
-            click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=6,<7"
-            yamlloader-version: "yamlloader>=1,<2"
-          - python-version: "3.11"
-            pandoc-version: "latest"
-            click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=6,<7"
-            yamlloader-version: "yamlloader>=1,<2"
-          - python-version: "3.12-dev"
-            pandoc-version: "latest"
-            click-version: "click>=8,<9"
-            pyyaml-version: "pyyaml>=6,<7"
-            yamlloader-version: "yamlloader>=1,<2"
+          - python-version: '3.10'
+            pandoc-version: '2.11.4'
+            extras: ''  # also cover running without the optional yamlloader
+          - python-version: '3.11'
+            pandoc-version: '2.19.2'
+            extras: ',extras'
+          - python-version: '3.12'
+            pandoc-version: '3.0.1'
+            extras: ',extras'
+          - python-version: '3.13'
+            pandoc-version: '3.1.13'
+            extras: ',extras'
+          - python-version: '3.14'
+            pandoc-version: '3.6.4'
+            extras: ',extras'
+          - python-version: '3.15'
+            pandoc-version: 'latest'
+            extras: ',extras'
+          - python-version: 'pypy3.11'
+            pandoc-version: 'latest'
+            extras: ',extras'
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install "${{ matrix.click-version }}" "${{ matrix.pyyaml-version }}"
-        python -m pip install ".[dev]"
-    - name: Install yamlloader
-      if: ${{ matrix.yamlloader-version }}
-      run: python -m pip install "${{ matrix.yamlloader-version }}"
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 ./panflute --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 ./panflute --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Download Pandoc
-      run: |
-        [[ ${{ matrix.pandoc-version }} == "latest" ]] && url="https://github.com/jgm/pandoc/releases/latest" || url="https://github.com/jgm/pandoc/releases/tag/${{ matrix.pandoc-version }}"
-        url=$(curl -L $url | grep -o 'https://[a-zA-Z/.]*expanded_assets/[0-9.]*')
-        downloadUrl="https://github.com$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')"
-        wget --no-verbose "$downloadUrl"
-        sudo dpkg -i "${downloadUrl##*/}"
-        pandoc --version
-    - name: Test with pytest
-      run: pytest --color=yes
-    - name: Test by running existing filters
-      run: |
-       mkdir -p $HOME/.local/share/pandoc/filters
-       find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} $HOME/.local/share/pandoc/filters \;
-       find . -iname '*.md' -print0 | xargs -0 -i -n1 -P4 bash -c 'pandoc -t native -F panflute -o $0.native $0' {}
-    - name: Test panfl cli
-      run: panfl --help
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
 
-# put filters in $DATADIR for panflute's autofilter
-# running all available .md files through panflute
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install panflute and test dependencies
+        env:
+          EXTRAS: ${{ matrix.extras }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[dev${EXTRAS}]"
+
+      - name: Install pandoc ${{ matrix.pandoc-version }}
+        # An empty version means "latest release"
+        uses: pandoc/actions/setup@86321b6dd4675f5014c611e05088e10d4939e09e  # v1.1.1
+        with:
+          version: ${{ matrix.pandoc-version != 'latest' && matrix.pandoc-version || '' }}
+
+      - name: Show versions
+        run: |
+          python --version
+          pandoc --version
+          python -m pip list
+
+      - name: Test with pytest
+        run: pytest --color=yes --cov
+
+      - name: Test by running existing filters through pandoc
+        # Put the example filters in $DATADIR/filters for panflute's autofilter,
+        # then run every .md file in the repo through `pandoc -F panflute`.
+        run: |
+          mkdir -p "$HOME/.local/share/pandoc/filters"
+          find ./examples/panflute ./docs/source/_static -iname '*.py' -exec cp {} "$HOME/.local/share/pandoc/filters" \;
+          find . -iname '*.md' -print0 | xargs -0 -I{} -P4 bash -c 'pandoc -t native -F panflute -o "$0.native" "$0"' {}
+
+      - name: Test panfl CLI
+        run: panfl --help
+
+  docs:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: '3.14'
+      - name: Install panflute and Sphinx
+        run: python -m pip install ".[docs]"
+      - name: Build the documentation (warnings are errors)
+        run: sphinx-build -W --keep-going -b html docs/source docs/build/html
+
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: '3.14'
+      - name: Install build tools
+        run: python -m pip install build twine
+      - name: Build sdist and wheel
+        run: python -m build
+      - name: Check distributions
+        run: |
+          twine check --strict dist/*
+          python -m zipfile -l dist/*.whl

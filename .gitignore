@@ -1,6 +1,6 @@
 # panflute-specific
-README.rst
-# note: generated when pushing to PyPI
+# Outputs of the "run example filters through pandoc" CI smoke test
+*.md.native
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -19,7 +19,11 @@ pylint-report.txt
 
 # Distribution / packaging
 .Python
+build/
 env/
+.env/
+venv/
+.venv/
 develop-eggs/
 dist/
 downloads/
@@ -30,7 +34,6 @@ lib64/
 parts/
 sdist/
 var/
-tests/1/*.txt
 *.egg-info/
 .installed.cfg
 *.egg
@@ -56,6 +59,10 @@ coverage.xml
 *,cover
 .hypothesis/
 .pytest_cache/
+
+# Linters / type checkers
+.ruff_cache/
+.mypy_cache/
 
 # Translations
 *.mo

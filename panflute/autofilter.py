@@ -6,6 +6,8 @@ shell scripts as Pandoc filter with arguments.
 Exports ``main`` and ``panfl``.
 """
 
+from __future__ import annotations
+
 import os
 import os.path as p
 from pathlib import Path
@@ -16,11 +18,12 @@ from io import StringIO
 from .io import load, dump
 from .utils import debug, ContextImport
 
+# Directories in sys.path when panflute was imported (computed in
+# __init__.py, as this module is only imported the first time it is used)
+from . import _reduced_sys_path as reduced_sys_path
 
-reduced_sys_path = [d for d in sys.path if (d not in ('', '.')) and p.isdir(d)]
 
-
-def get_filter_dirs(hardcoded=True):
+def get_filter_dirs(hardcoded: bool = True) -> list[str]:
     """
     Return directories where we expect to find filters.
 
@@ -133,12 +136,34 @@ def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True,
     dump(doc, output_stream)
 
 
-def main():
+def main() -> None:
     """
     Allows Panflute to be run as a command line executable
     to be used as a Pandoc filter.
     """
+    # Pandoc runs filters as `panflute <output format>`, so these
+    # arguments can only come from a user typing them
+    if sys.argv[1:] in (['-h'], ['--help']):
+        print(_main_help_str)
+        return
+    if sys.argv[1:] == ['--version']:
+        from .version import __version__
+        print(f'panflute {__version__}')
+        return
     stdio()
+
+
+_main_help_str = """Usage: panflute [FORMAT]
+
+Pandoc filter that runs the panflute filters listed in the document's
+metadata (`panflute-filters`, searched for in `panflute-path`).
+It is meant to be called by pandoc, which sends the document as JSON
+on stdin:
+
+    pandoc --filter panflute input.md -o output.html
+
+See also `panfl --help`, and https://scorreia.com/software/panflute/
+"""
 
 
 help_str = """Allows Panflute to be run as a command line executable:
@@ -172,10 +197,12 @@ Search preserves directories order (except for --data-dir and
 @click.option('--data-dir', is_flag=True, default=False,
               help="Search filters in default user data directory listed in `pandoc --version` " +
                    "(in it's `filters` subfolder actually). It's appended to the search list.")
-@click.option('--no-sys-path', 'sys_path', is_flag=True, default=True,
+# (a plain flag: `is_flag=True, default=True` with a negated meaning is
+# parsed differently by different click versions)
+@click.option('--no-sys-path', 'no_sys_path', is_flag=True, default=False,
               help="Disable search filters in python's `sys.path` (without '' and '.') " +
                    "that is appended to the search list.")
-def panfl(filters, to, search_dirs, data_dir, sys_path):
+def panfl(filters, to, search_dirs, data_dir, no_sys_path):
     """
     Allows Panflute to be run as a command line executable:
 
@@ -191,6 +218,7 @@ def panfl(filters, to, search_dirs, data_dir, sys_path):
     (or relevant dir provided if module spec) TO THE `sys.path` before
     importing the filter!
     """
+    sys_path = not no_sys_path
     if to is None:
         if (len(filters) > 1) or search_dirs or not sys_path or data_dir:
             raise ValueError('When no `--to` option then Pandoc filter mode assumed and ' +
@@ -263,8 +291,18 @@ def autorun_filters(filters, doc, search_dirs, verbose):
             raise Exception("filter not found: " + filter_)
 
     # Intercept any print() statements made by filters (which would cause Pandoc to fail)
+    previous_stdout = sys.stdout
     sys.stdout = alt_stdout = StringIO()
+    try:
+        _run_filters(filter_paths, doc, verbose, alt_stdout)
+    finally:
+        # Restore stdout (even if a filter failed)
+        sys.stdout = previous_stdout
 
+    return doc
+
+
+def _run_filters(filter_paths, doc, verbose, alt_stdout):
     for filter_, filter_path, module_, extra_dir in filter_paths:
         if verbose:
             debug("panflute: running filter <{}>".format(filter_))
@@ -287,14 +325,9 @@ def autorun_filters(filters, doc, search_dirs, verbose):
         alt_stdout_data = alt_stdout.getvalue()
         if alt_stdout_data:
             msg = (
-                f'Panflute Warning: filter "{filter_}" wrote to stdout, ',
+                f'Panflute Warning: filter "{filter_}" wrote to stdout, '
                 'but Pandoc does not allow that')
             debug(msg)
             debug(alt_stdout_data)
             sys.stderr.flush()
             sys.stdout = alt_stdout = StringIO()
-
-    # Restore stdout
-    sys.stdout = sys.__stdout__
-
-    return doc

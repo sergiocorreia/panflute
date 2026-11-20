@@ -7,6 +7,8 @@ Useful (but not essential) functions for writing panflute filters
 # Imports
 # ---------------------------
 
+from __future__ import annotations
+
 from .base import Element
 from .elements import *
 from .io import dump
@@ -17,32 +19,81 @@ import os.path as p
 import re
 import sys
 import json
-import yaml
 import shlex
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING, overload
 
 from shutil import which
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, DEVNULL
 from functools import partial
 
-# yamlloader keeps dict ordering in yaml
-try:
-    import yamlloader
-except ImportError:
-    yamlloader = None
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+    from typing import Any, Literal
+    from .containers import ListContainer
 
-if yamlloader is None:
-    # property of pyyaml:
-    # C*Loader when compiled with C, else fallback to pure Python loader
+# yaml, yamlloader and Loader (the YAML loader used by yaml_filter) are
+# imported the first time they are needed, by _import_yaml(): importing yaml
+# takes longer than everything else in panflute, and most filters don't use
+# it. They are still found as attributes of this module and by dir() (see
+# __getattr__ and __dir__ below), and `from panflute.tools import *` still
+# imports them.
+
+if TYPE_CHECKING:
+    import yaml
+    import yamlloader
+    from yaml import CSafeLoader as Loader
+
+_YAML_NAMES = ('yaml', 'yamlloader', 'Loader')
+
+
+def _import_yaml() -> None:
+    g = globals()
+    if all(name in g for name in _YAML_NAMES):
+        return
+
+    import yaml
+
+    # yamlloader keeps dict ordering in yaml
     try:
-        from yaml import CSafeLoader as Loader
+        import yamlloader
     except ImportError:
-        from yaml import SafeLoader as Loader
-else:
-    from yamlloader.ordereddict import CSafeLoader as Loader
+        yamlloader = None
+
+    if yamlloader is None:
+        # property of pyyaml:
+        # C*Loader when compiled with C, else fallback to pure Python loader
+        try:
+            from yaml import CSafeLoader as Loader
+        except ImportError:
+            from yaml import SafeLoader as Loader  # type: ignore[assignment]  # fallback import
+    else:
+        from yamlloader.ordereddict import CSafeLoader as Loader  # type: ignore[no-redef]  # alternative import
+
+    # (without replacing a value that a user has set on the module)
+    g.setdefault('yaml', yaml)
+    g.setdefault('yamlloader', yamlloader)
+    g.setdefault('Loader', Loader)
+
+
+def __getattr__(name: str) -> Any:
+    if name in _YAML_NAMES:
+        _import_yaml()
+        return globals()[name]
+    if name == '__all__':
+        # This module has no __all__: `from panflute.tools import *` (like
+        # pydoc and others) looks for it, and when it is missing, it imports
+        # every public name in the module's namespace instead. Import yaml
+        # first, so that these names include yaml, yamlloader and Loader.
+        _import_yaml()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return list(set(globals()) | set(_YAML_NAMES))
+
 
 # to be filled when the first time which('pandoc') is called
-PANDOC_PATH = None
+PANDOC_PATH = None  # type: str | None
 
 
 # ---------------------------
@@ -66,8 +117,8 @@ class PandocVersion:
     use PandocVersion().version for comparing versions
     '''
 
-    def __init__(self):
-        pass
+    def __init__(self) -> None:
+        self._version_text: str | None = None
 
     def __str__(self) -> str:
         return self._repr.splitlines()[0].split(' ')[1]
@@ -76,11 +127,11 @@ class PandocVersion:
         return self._repr
 
     @property
-    def _repr(self):
+    def _repr(self) -> str:
         # lazily call pandoc only once
-        if not hasattr(self, '__repr'):
-            self.__repr: str = run_pandoc(args=['--version'])
-        return self.__repr
+        if self._version_text is None:
+            self._version_text = run_pandoc(args=['--version'])
+        return self._version_text
 
     @property
     def version(self) -> Tuple[int, ...]:
@@ -176,11 +227,12 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
         for tag in tags:
             if tag in element.classes:
                 function = tags[tag]
+                _import_yaml()
 
                 if not strict_yaml:
                     # Split YAML and data parts (separated by ... or ---)
                     raw = re.split("^([.]{3,}|[-]{3,})$",
-                                   element.text, 1, re.MULTILINE)
+                                   element.text, maxsplit=1, flags=re.MULTILINE)
                     data = raw[2] if len(raw) > 2 else ''
                     data = data.lstrip('\n')
                     raw = raw[0]
@@ -197,7 +249,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                     options = {}
                     data = []
                     raw = re.split("^([.]{3,}|[-]{3,})$",
-                                   element.text, 0, re.MULTILINE)
+                                   element.text, flags=re.MULTILINE)
                     rawmode = True
                     for chunk in raw:
 
@@ -215,10 +267,17 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                                 rawmode = True
                             else:
                                 try:
-                                    options.update(yaml.load(chunk, Loader=Loader))  # nosec  # already using SafeLoader
-                                except yaml.scanner.ScannerError:
+                                    chunk_options = yaml.load(chunk, Loader=Loader)  # nosec  # already using SafeLoader
+                                except (yaml.scanner.ScannerError, yaml.parser.ParserError):
                                     debug("panflute: malformed YAML block")
                                     return
+                                if chunk_options is None:  # e.g. only comments
+                                    continue
+                                if not isinstance(chunk_options, dict):
+                                    debug("panflute: YAML block is not a mapping (key: value pairs):")
+                                    debug(repr(chunk))
+                                    return
+                                options.update(chunk_options)
 
                     data = '\n'.join(data)
 
@@ -230,7 +289,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
 # Functions that extract content
 # ---------------------------
 
-def stringify(element, newlines=True):
+def stringify(element: Element | ListContainer, newlines: bool = True) -> str:
     """
     Return the raw text version of an element (and its children elements).
 
@@ -272,14 +331,14 @@ def stringify(element, newlines=True):
 
         # Add quotes around the contents of Quoted()
         if type(e.parent) == Quoted:
-            if e.index == 0:
+            if e.index_in_parent == 0:
                 ans = '"' + ans
-            if e.index == len(e.container) - 1:
+            if e.index_in_parent == len(e.container) - 1:
                 ans += '"'
 
         answer.append(ans)
 
-    answer = []
+    answer: list[str] = []
     f = partial(attach_str, answer=answer)
     element.walk(f, stop_if=stop_if)
     return ''.join(answer)
@@ -327,7 +386,7 @@ def _get_metadata(self, key='', default=None, builtin=True):
     return meta2builtin(meta) if builtin else meta
 
 
-def meta2builtin(meta):
+def meta2builtin(meta: Any) -> Any:
     if isinstance(meta, MetaBool):
         return meta.boolean
     elif isinstance(meta, MetaString):
@@ -343,17 +402,24 @@ def meta2builtin(meta):
         return meta
 
 
-# Bind the method
-Doc.get_metadata = _get_metadata
+# Bind the method (declared in the Doc class for type checkers)
+Doc.get_metadata = _get_metadata  # type: ignore[method-assign]
 
 
 # ---------------------------
 # Functions that rely on external calls
 # ---------------------------
 
-def shell(args, wait=True, msg=None):
+def shell(args: str | Sequence[str], wait: bool = True, msg: bytes | None = None) -> bytes | None:
     """
     Execute the external command and get its exitcode, stdout and stderr.
+
+    :param args: command, either as a string or as a sequence of arguments
+    :param wait: wait for the command to finish (otherwise, run it detached
+        and return ``None``)
+    :param msg: bytes sent to the standard input of the command
+    :return: the standard output of the command (as bytes) if ``wait=True``
+    :raises IOError: if the command fails
     """
 
     # Fix Windows error if passed a string
@@ -372,12 +438,17 @@ def shell(args, wait=True, msg=None):
             debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
             raise IOError()
         return out
-    else:
+    elif os.name == 'nt':
         DETACHED_PROCESS = 0x00000008
         proc = Popen(args, creationflags=DETACHED_PROCESS)
+    else:
+        # (creationflags is Windows-only.) Run the command in its own session,
+        # and keep it from writing to our stdout (which pandoc reads)
+        proc = Popen(args, stdin=DEVNULL, stdout=DEVNULL, start_new_session=True)
+    return None
 
 
-def run_pandoc(text='', args=None, pandoc_path=None):
+def run_pandoc(text: str = '', args: list[str] | None = None, pandoc_path: str | None = None) -> str:
     """
     Low level function that calls Pandoc with (optionally)
     some input text and/or arguments
@@ -393,11 +464,11 @@ def run_pandoc(text='', args=None, pandoc_path=None):
             temp = which('pandoc')
             if temp is None:
                 raise OSError("Path to pandoc executable does not exists")
-            sys.modules[__name__].PANDOC_PATH = temp
+            sys.modules[__name__].PANDOC_PATH = temp  # type: ignore[attr-defined]  # sets the global above
         pandoc_path = PANDOC_PATH
 
     try:
-        proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)  # type: ignore[arg-type]  # PANDOC_PATH was set above
     except FileNotFoundError:
         raise OSError(f"Given pandoc_path {pandoc_path} is invalid")
     out, err = proc.communicate(input=text.encode('utf-8'))
@@ -408,6 +479,36 @@ def run_pandoc(text='', args=None, pandoc_path=None):
         raise IOError('')
     return out.decode('utf-8')
 
+
+@overload
+def convert_text(text: str | Element | Sequence[Element],
+                 input_format: str = ...,
+                 output_format: Literal['panflute'] = ...,
+                 standalone: Literal[False] = ...,
+                 extra_args: list[str] | None = ...,
+                 pandoc_path: str | None = ...) -> list[Element]: ...
+@overload
+def convert_text(text: str | Element | Sequence[Element],
+                 input_format: str,
+                 output_format: Literal['panflute'],
+                 standalone: Literal[True],
+                 extra_args: list[str] | None = ...,
+                 pandoc_path: str | None = ...) -> Doc: ...
+@overload
+def convert_text(text: str | Element | Sequence[Element],
+                 input_format: str = ...,
+                 output_format: Literal['panflute'] = ...,
+                 *,
+                 standalone: Literal[True],
+                 extra_args: list[str] | None = ...,
+                 pandoc_path: str | None = ...) -> Doc: ...
+@overload
+def convert_text(text: str | Element | Sequence[Element],
+                 input_format: str = ...,
+                 output_format: str = ...,
+                 standalone: bool = ...,
+                 extra_args: list[str] | None = ...,
+                 pandoc_path: str | None = ...) -> Any: ...
 
 def convert_text(text,
                  input_format='markdown',
@@ -478,8 +579,8 @@ def convert_text(text,
     in_fmt = 'json' if input_format == 'panflute' else input_format
     out_fmt = 'json' if output_format == 'panflute' else output_format
 
-    if extra_args is None:
-        extra_args = []
+    # (a copy: the caller's list must not be modified)
+    extra_args = [] if extra_args is None else list(extra_args)
 
     if standalone:
         extra_args.append('--standalone')
@@ -502,7 +603,8 @@ def convert_text(text,
     return out
 
 
-def inner_convert_text(text, input_format, output_format, extra_args, pandoc_path=None):
+def inner_convert_text(text: str, input_format: str, output_format: str, extra_args: list[str],
+                       pandoc_path: str | None = None) -> str:
     # like convert_text(), but does not support 'panflute' input/output
     from_arg = '--from={}'.format(input_format)
     to_arg = '--to={}'.format(output_format)
@@ -516,7 +618,7 @@ def inner_convert_text(text, input_format, output_format, extra_args, pandoc_pat
 # Functions that modify content
 # ---------------------------
 
-def _replace_keyword(self, keyword, replacement, count=0):
+def _replace_keyword(self: Element, keyword: str, replacement: Element, count: int = 0) -> Element:
     """
     replace_keyword(keyword, replacement[, count])
 
@@ -616,11 +718,13 @@ def _replace_keyword(self, keyword, replacement, count=0):
         raise NotImplementedError(type(replacement))
 
 
-# Bind the method
-Element.replace_keyword = _replace_keyword
+# Bind the method (declared in the Element class for type checkers)
+Element.replace_keyword = _replace_keyword  # type: ignore[method-assign]
 
 
-def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=None, error_on_none=True):
+def get_option(options: Mapping[str, Any] | None = None, local_tag: str | None = None,
+               doc: Doc | None = None, doc_tag: str | None = None,
+               default: Any = None, error_on_none: bool = True) -> Any:
     """
     Fetch an option variable from either a local (element) level option/attribute tag,
     a document level metadata tag, or a default.

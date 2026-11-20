@@ -6,24 +6,32 @@ Auxiliary functions that have no dependencies
 # Imports
 # ---------------------------
 
+from __future__ import annotations
+
 import os
 import sys
 import json
 import os.path as p
 from importlib import import_module
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Sequence
+    from types import ModuleType, TracebackType
+    from typing import Any
 
 
 # ---------------------------
 # Functions
 # ---------------------------
 
-def decode_ica(lst):
+def decode_ica(lst: Sequence[Any]) -> dict[str, Any]:
     return {'identifier': lst[0],
             'classes': lst[1],
             'attributes': lst[2]}
 
 
-def debug(*args, **kwargs):
+def debug(*args: object, **kwargs: Any) -> None:
     """
     Same as print, but prints to ``stderr``
     (which is not intercepted by Pandoc).
@@ -31,7 +39,7 @@ def debug(*args, **kwargs):
     print(file=sys.stderr, *args, **kwargs)
 
 
-def get_caller_name():
+def get_caller_name() -> str:
     '''Get the name of the calling Element
 
     This is just the name of the Class of the __init__ calling function
@@ -56,7 +64,7 @@ def get_caller_name():
                 return class_name
 
 
-def check_type(value, oktypes):
+def check_type(value: Any, oktypes: type | tuple[type, ...]) -> Any:
     # This allows 'Space' instead of 'Space()'
     if callable(value):
         value = value()
@@ -71,7 +79,7 @@ def check_type(value, oktypes):
     raise TypeError(msg)
 
 
-def check_group(value, group):
+def check_group(value: Any, group: Collection[Any]) -> Any:
     if value not in group:
         tag = type(value).__name__
         msg = 'element {} not in group {}'.format(tag, repr(group))
@@ -80,7 +88,7 @@ def check_group(value, group):
         return value
 
 
-def check_type_or_value(value, oktypes, okvalue):
+def check_type_or_value(value: Any, oktypes: type | tuple[type, ...], okvalue: Any) -> Any:
     # This allows 'Space' instead of 'Space()'
     if callable(value):
         value = value()
@@ -95,14 +103,14 @@ def check_type_or_value(value, oktypes, okvalue):
     raise TypeError(msg)
 
 
-def encode_dict(tag, content):
+def encode_dict(tag: str, content: Any) -> dict[str, Any]:
     return {
         "t": tag,
         "c": content,
     }
 
 
-def load_pandoc_version():
+def load_pandoc_version() -> tuple[int, ...] | None:
     """
     Retrieve Pandoc version tuple from the environment
     """
@@ -114,7 +122,7 @@ def load_pandoc_version():
         debug(f'Environment variable PANDOC_VERSION is malformed, ignoring...')
 
 
-def load_pandoc_reader_options():
+def load_pandoc_reader_options() -> dict[str, Any]:
     """
     Retrieve Pandoc Reader options from the environment
     """
@@ -151,7 +159,7 @@ class ContextImport:
         >>>     # module = import_module('dir.fi')
         >>>     module.main()
     """
-    def __init__(self, module, extra_dir=None):
+    def __init__(self, module: str, extra_dir: str | None = None) -> None:
         """
         :param module: str
             module spec for import or file path
@@ -169,11 +177,18 @@ class ContextImport:
             extra_dir = p.dirname(module)
         self.extra_dir = extra_dir
 
-    def __enter__(self):
+    def __enter__(self) -> ModuleType:
         if self.extra_dir is not None:
             sys.path.insert(0, self.extra_dir)
-        return import_module(self.module)
+        try:
+            return import_module(self.module)
+        except BaseException:
+            # __exit__ is not called when __enter__ fails
+            if self.extra_dir is not None:
+                sys.path.pop(0)
+            raise
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None,
+                 traceback: TracebackType | None) -> None:
         if self.extra_dir is not None:
             sys.path.pop(0)

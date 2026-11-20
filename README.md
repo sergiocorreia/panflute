@@ -61,12 +61,15 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 
 | panflute version | supported pandoc versions | supported pandoc API versions |
 | ---------------- | ------------------------- | ----------------------------- |
+| 3.0.0            | 2.11.4–3.14 (see note)    | 1.22–1.23 (incl. 1.23.1.x)    |
 | 2.3.1            | 2.11.0.4–3.1.x            | 1.22–1.23                     |
 | 2.2.4            | 2.11.0.4–2.17.x           | 1.22–1.22.1                   |
 | 2.1.x            | 2.11.0.4—2.14.x           | 1.22                          |
 | 2.0              | 2.11.0.4—2.11.x           | 1.22                          |
 | not supported    | 2.10                      | 1.21                          |
 | 1.12             | 2.7-2.9                   | 1.17.5–1.20                   |
+
+Note on 3.0.0: the pandoc API version is the version of the JSON format in which pandoc passes documents to filters. Every pandoc release up to 3.14 uses API 1.22 (pandoc 2.11–2.19) or 1.23 (pandoc 3.x; pandoc-types 1.23 to 1.23.1.x did not change the JSON format), and panflute supports every element of both. CI runs the test suite against pandoc 2.11.4, 2.19.2, 3.0.1, 3.1.13, 3.6.4 and the latest release.
 
 Note: pandoc 2.10 is short lived and 2.11 has minor API changes comparing to that, mainly for fixing its shortcomings. Please avoid using pandoc 2.10.
 
@@ -75,11 +78,13 @@ Note: pandoc 2.10 is short lived and 2.11 has minor API changes comparing to tha
 After cloning the repo and opening the panflute folder, run
 
 - `python -m pip install .` to install the package locally
-- `python -m pip install -e .` to install locally with a symlink so changes are automatically updated
+- `python -m pip install -e ".[dev]"` to install it in editable mode (changes are picked up automatically), together with the tools needed to run the tests (`pytest`) and the linter (`ruff check .`)
+
+See [CONTRIBUTING.md](/CONTRIBUTING.md#development-setup) for details.
 
 ## Contributing
 
-Feel free to submit push requests. For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8) (as long as its reasonable), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [google](http://google.github.io/styleguide/pyguide.html). Read more [here](/CONTRIBUTING.md).
+Feel free to submit pull requests. For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8) (as long as its reasonable), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [google](http://google.github.io/styleguide/pyguide.html). Read more [here](/CONTRIBUTING.md).
 
 ## License
 
@@ -88,6 +93,4 @@ BSD3 license (following [`pandocfilters`](https://github.com/jgm/pandocfilters) 
 
 ## Changelog
 
-- `2.3.0` Update [Pandoc API](https://github.com/jgm/pandoc-types/blob/master/changelog) from 1.22 to 1.23 ([Pandoc 3.0](https://pandoc.org/releases.html#pandoc-3.0-2023-01-18)):
-    - Add `Figure` block object
-    - Remove `Null` block object (scheduled for removed)
+See [CHANGELOG.md](https://github.com/sergiocorreia/panflute/blob/master/CHANGELOG.md) for the changes in each release, including the breaking changes in 3.0.

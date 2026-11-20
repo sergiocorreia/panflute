@@ -7,9 +7,18 @@ Classes corresponding to Pandoc Table elements
 # Imports
 # ---------------------------
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .utils import decode_ica, check_group, check_type, check_type_or_value, encode_dict, debug
 from .containers import ListContainer
 from .base import Element, Block, Inline
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping
+    from typing import Literal
+
 
 
 # ---------------------------
@@ -66,8 +75,16 @@ class Table(Block):
                  'identifier', 'classes', 'attributes', 'cols']
     _children = ['head', 'content', 'foot', 'caption']
 
-    def __init__(self, *args, head=None, foot=None, caption=None,
-                 colspec=None, identifier='', classes=[], attributes={}):
+    colspec: list[tuple[Literal['AlignLeft', 'AlignRight', 'AlignCenter', 'AlignDefault'],
+                        float | Literal['ColWidthDefault']]]
+    cols: int
+
+    def __init__(self, *args: TableBody, head: TableHead | None = None,
+                 foot: TableFoot | None = None, caption: Caption | None = None,
+                 colspec: Iterable[tuple[Literal['AlignLeft', 'AlignRight', 'AlignCenter', 'AlignDefault'],
+                                         float | Literal['ColWidthDefault']]] | None = None,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
 
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, TableBody)
@@ -108,33 +125,33 @@ class Table(Block):
             raise IndexError(msg)
 
     @property
-    def head(self):
+    def head(self) -> TableHead:
         return self._head
 
     @head.setter
-    def head(self, value):
+    def head(self, value: TableHead | None) -> None:
         self._head = check_type(value, TableHead) if value else TableHead()
         self._head.parent = self
         self._head.location = 'head'
         self._validate_cols(self.head)
 
     @property
-    def foot(self):
+    def foot(self) -> TableFoot:
         return self._foot
 
     @foot.setter
-    def foot(self, value):
+    def foot(self, value: TableFoot | None) -> None:
         self._foot = check_type(value, TableFoot) if value else TableFoot()
         self._foot.parent = self
         self._foot.location = 'foot'
         self._validate_cols(self.foot)
 
     @property
-    def caption(self):
+    def caption(self) -> Caption:
         return self._caption
 
     @caption.setter
-    def caption(self, value):
+    def caption(self, value: Caption | None) -> None:
         if value is None:
             value = Caption()
         self._caption = check_type(value, Caption)
@@ -169,7 +186,9 @@ class TableHead(Block):
     __slots__ = ['_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, identifier='', classes=[], attributes={}):
+    def __init__(self, *args: TableRow,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, TableRow)
 
@@ -195,7 +214,9 @@ class TableFoot(Block):
     __slots__ = ['_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, identifier='', classes=[], attributes={}):
+    def __init__(self, *args: TableRow,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, TableRow)
 
@@ -225,19 +246,23 @@ class TableBody(Block):
     __slots__ = ['_content', '_head', 'row_head_columns', 'identifier', 'classes', 'attributes']
     _children = ['content', 'head']
 
-    def __init__(self, *args, head=None, row_head_columns=0,
-                 identifier='', classes=[], attributes={}):
+    row_head_columns: int
+
+    def __init__(self, *args: TableRow, head: Iterable[TableRow] | None = None,
+                 row_head_columns: int = 0,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, TableRow)
         self.head = head
         self.row_head_columns = check_type(row_head_columns, int)
 
     @property
-    def head(self):
+    def head(self) -> ListContainer:
         return self._head
 
     @head.setter
-    def head(self, value):
+    def head(self, value: Iterable[Element] | None) -> None:
         if value:
             value = value.list if isinstance(value, ListContainer) else list(value)
         else:
@@ -267,7 +292,9 @@ class TableRow(Element):
     __slots__ = ['_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, identifier='', classes=[], attributes={}):
+    def __init__(self, *args: TableCell,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, TableCell)
 
@@ -300,14 +327,21 @@ class TableCell(Element):
                  'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, alignment='AlignDefault', rowspan=1, colspan=1,
-                 identifier='', classes=[], attributes={}):
+    alignment: Literal['AlignLeft', 'AlignRight', 'AlignCenter', 'AlignDefault']
+    rowspan: int
+    colspan: int
+
+    def __init__(self, *args: Block,
+                 alignment: Literal['AlignLeft', 'AlignRight', 'AlignCenter', 'AlignDefault'] = 'AlignDefault',
+                 rowspan: int = 1, colspan: int = 1,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
 
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Block)
         self.alignment = check_group(alignment, TABLE_ALIGNMENT)
-        self.rowspan = rowspan
-        self.colspan = colspan
+        self.rowspan = check_type(rowspan, int)
+        self.colspan = check_type(colspan, int)
         if (self.rowspan <= 0):
             raise TypeError('Cell rowspan must be positive')
         if (self.colspan <= 0):
@@ -333,7 +367,9 @@ class Caption(Element):
     __slots__ = ['_content', '_short_caption']
     _children = ['content', 'short_caption']
 
-    def __init__(self, *args, short_caption=None):
+    _short_caption: ListContainer | None
+
+    def __init__(self, *args: Block, short_caption: Iterable[Inline] | None = None) -> None:
         self._set_content(args, Block)
         self.short_caption = short_caption
 
@@ -342,11 +378,11 @@ class Caption(Element):
         return [short_caption, self.content.to_json()]
 
     @property
-    def short_caption(self):
+    def short_caption(self) -> ListContainer | None:
         return self._short_caption
 
     @short_caption.setter
-    def short_caption(self, value):
+    def short_caption(self, value: Iterable[Element] | None) -> None:
         if value:
             value = value.list if isinstance(value, ListContainer) else list(value)
             self._short_caption = ListContainer(*value, oktypes=Inline, parent=self)

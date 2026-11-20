@@ -1,0 +1,160 @@
+Pandoc
+  Meta
+    { unMeta =
+        fromList
+          [ ( "bool-false" , MetaBool False )
+          , ( "bool-true" , MetaBool True )
+          , ( "blocks"
+            , MetaBlocks
+                [ Para [ Str "First" ] , CodeBlock ( "" , [] , [] ) "meta code" ]
+            )
+          , ( "inlines" , MetaInlines [ Str "Some" , Space , Emph [ Str "inlines" ] ] )
+          , ( "list"
+            , MetaList
+                [ MetaString "s"
+                , MetaBool True
+                , MetaList []
+                , MetaMap (fromList [ ( "k" , MetaString "v" ) ])
+                ]
+            )
+          , ( "map"
+            , MetaMap
+                (fromList
+                   [ ( "empty" , MetaMap (fromList []) )
+                   , ( "inner" , MetaInlines [ Str "x" ] )
+                   ])
+            )
+          , ( "string" , MetaString "plain string" )
+          , ( "unicode-string" , MetaString "caf\233 \128512" )
+          ]
+    }
+  [ Header 1 ( "ks-header" , [ "a" , "b" ] , [ ( "k" , "v" ) , ( "k2" , "v2" ) ] ) [ Str "Kitchen" , Space , Str "sink" ]
+  , Para
+      [ Underline [ Str "under" ]
+      , Space
+      , SmallCaps [ Str "caps" ]
+      , Space
+      , Quoted SingleQuote [ Str "single" ]
+      , Space
+      , Quoted DoubleQuote [ Quoted SingleQuote [ Str "nested" ] ]
+      , Space
+      , Math InlineMath "x^2"
+      , Space
+      , Math DisplayMath "\\sum_i x_i"
+      , SoftBreak
+      , LineBreak
+      , Cite
+          [ Citation
+              { citationId = "key1"
+              , citationPrefix = [ Str "see" ]
+              , citationSuffix = [ Str "p." , Space , Str "1" ]
+              , citationMode = NormalCitation
+              , citationNoteNum = 3
+              , citationHash = 7
+              }
+          , Citation
+              { citationId = "key2"
+              , citationPrefix = []
+              , citationSuffix = []
+              , citationMode = AuthorInText
+              , citationNoteNum = 0
+              , citationHash = 0
+              }
+          , Citation
+              { citationId = "key3"
+              , citationPrefix = []
+              , citationSuffix = []
+              , citationMode = SuppressAuthor
+              , citationNoteNum = 0
+              , citationHash = 0
+              }
+          ]
+          [ Str "[see" , Space , Str "@key1]" ]
+      , Space
+      , Note [ Para [ Str "A" , Space , Str "note" ] , BlockQuote [ Plain [ Str "quoted" ] ] ]
+      , RawInline (Format "typst") "#emph[x]"
+      , RawInline (Format "openxml") "<w:r/>"
+      , Link ( "lid" , [ "lc" ] , [ ( "rel" , "x" ) ] ) [ Str "link" ] ( "http://e.com" , "title" )
+      , Image ( "" , [] , [] ) [] ( "img.png" , "" )
+      , Span ( "" , [] , [] ) []
+      , Code ( "" , [] , [] ) ""
+      , Str ""
+      ]
+  , Plain []
+  , Para []
+  , LineBlock [ [ Str "line" , Space , Str "one" ] , [] , [ Str "line" , Space , Str "three" ] ]
+  , OrderedList ( 5 , UpperRoman , OneParen ) [ [ Plain [ Str "i" ] ] , [] ]
+  , OrderedList ( 1 , DefaultStyle , DefaultDelim ) [ [ Plain [ Str "d" ] ] ]
+  , OrderedList ( 2 , Example , TwoParens ) [ [ Plain [ Str "e" ] ] ]
+  , OrderedList ( 0 , LowerAlpha , Period ) [ [ Plain [ Str "a" ] ] ]
+  , OrderedList ( 1 , UpperAlpha , Period ) [ [ Plain [ Str "A" ] ] ]
+  , OrderedList ( 1 , LowerRoman , Period ) [ [ Plain [ Str "ii" ] ] ]
+  , OrderedList ( 1 , Decimal , Period ) [ [ Plain [ Str "1" ] ] ]
+  , BulletList [ [] , [ Plain [ Str "x" ] , BulletList [ [ Plain [ Str "y" ] ] ] ] ]
+  , DefinitionList
+      [ ( [ Str "term" ] , [ [ Para [ Str "def1" ] ] , [] ] )
+      , ( [] , [] )
+      ]
+  , Div ( "" , [] , [] ) []
+  , BlockQuote []
+  , RawBlock (Format "html") "<hr/>"
+  , RawBlock (Format "context") "\\starttext"
+  , HorizontalRule
+  , CodeBlock ( "" , [] , [] ) ""
+  , Figure
+      ( "fig-ks" , [ "fc" ] , [ ( "fa" , "1" ) ] )
+      (Caption
+         (Just [ Str "short" ])
+         [ Para [ Str "Long" , Space , Str "caption" ] ])
+      [ Plain [ Image ( "" , [] , [] ) [ Str "img" ] ( "a.png" , "" ) ]
+      , Para [ Str "second" , Space , Str "block" ]
+      ]
+  , Figure ( "" , [] , [] ) (Caption Nothing []) []
+  , Table
+      ( "tbl-ks" , [ "t" ] , [ ( "ta" , "1" ) ] )
+      (Caption (Just [ Str "Short" ]) [ Plain [ Str "Long" , Space , Str "table" , Space , Str "caption" ] ])
+      [ ( AlignLeft , ColWidth 0.25 )
+      , ( AlignRight , ColWidth 0.5 )
+      , ( AlignCenter , ColWidthDefault )
+      ]
+      (TableHead
+         ( "th" , [ "thc" ] , [ ( "tha" , "1" ) ] )
+         [ Row
+             ( "hr" , [] , [] )
+             [ Cell ( "c1" , [ "cc" ] , [ ( "ca" , "x" ) ] ) AlignLeft (RowSpan 1) (ColSpan 2) [ Plain [ Str "H12" ] ]
+             , Cell ( "" , [] , [] ) AlignDefault (RowSpan 1) (ColSpan 1) []
+             ]
+         ])
+      [ TableBody
+          ( "tb1" , [ "tbc" ] , [ ( "tba" , "1" ) ] )
+          (RowHeadColumns 1)
+          [ Row
+              ( "" , [ "intermediate" ] , [] )
+              [ Cell ( "" , [] , [] ) AlignDefault (RowSpan 1) (ColSpan 3) [ Plain [ Str "Intermediate" , Space , Str "head" ] ] ]
+          ]
+          [ Row
+              ( "" , [] , [] )
+              [ Cell ( "" , [] , [] ) AlignDefault (RowSpan 2) (ColSpan 1) [ Plain [ Str "r1" ] ]
+              , Cell ( "" , [] , [] ) AlignRight (RowSpan 1) (ColSpan 1) [ Para [ Str "p" ] , Para [ Str "q" ] ]
+              , Cell ( "" , [] , [] ) AlignCenter (RowSpan 1) (ColSpan 1) [ Plain [ Str "c" ] ]
+              ]
+          , Row
+              ( "" , [] , [] )
+              [ Cell ( "" , [] , [] ) AlignDefault (RowSpan 1) (ColSpan 2) [ Plain [ Str "span" ] ] ]
+          ]
+      , TableBody ( "" , [] , [] ) (RowHeadColumns 0) [] []
+      ]
+      (TableFoot
+         ( "tf" , [] , [] )
+         [ Row
+             ( "" , [] , [] )
+             [ Cell ( "" , [] , [] ) AlignDefault (RowSpan 1) (ColSpan 3) [ Plain [ Str "foot" ] ] ]
+         ])
+  , Table
+      ( "" , [] , [] )
+      (Caption Nothing [])
+      [ ( AlignDefault , ColWidthDefault ) ]
+      (TableHead ( "" , [] , [] ) [])
+      [ TableBody ( "" , [] , [] ) (RowHeadColumns 0) [] [ Row ( "" , [] , [] ) [ Cell ( "" , [] , [] ) AlignDefault (RowSpan 1) (ColSpan 1) [] ] ] ]
+      (TableFoot ( "" , [] , [] ) [])
+  ]
