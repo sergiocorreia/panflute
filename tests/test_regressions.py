@@ -9,6 +9,7 @@ the marker gets removed. Unmarked tests guard bugs that are already fixed.
 
 import importlib.util
 import io
+import json
 import sys
 import warnings
 
@@ -110,21 +111,27 @@ def test_convert_text_does_not_mutate_extra_args_262(monkeypatch):
     assert calls[1] == ['--from=markdown', '--to=html', '--katex']
 
 
-@pytest.mark.xfail(strict=True, raises=TypeError,
-                   reason='#236 #247 RawBlock/RawInline reject format strings pandoc accepts')
 @pytest.mark.parametrize('fmt', ['comment', 'asciidoc', 'html5', 'beamer', 'my-custom-writer'])
 def test_raw_elements_accept_any_format_236_247(fmt):
     assert pf.RawInline('x', format=fmt).format == fmt
     assert pf.RawBlock('x', format=fmt).format == fmt
 
 
-@pytest.mark.xfail(strict=True, raises=TypeError,
-                   reason='#247 documents with {=comment} raw blocks cannot be loaded')
 def test_load_document_with_comment_raw_block_247():
     text = ('{"pandoc-api-version":[1,23,1],"meta":{},"blocks":[{"t":"RawBlock","c":["comment","hidden"]},'
             '{"t":"Para","c":[{"t":"RawInline","c":["comment","x"]}]}]}')
     doc = load_text(text)
     assert doc.content[0].format == 'comment'
+    assert to_json_value(doc) == json.loads(text)
+
+
+@pytest.mark.parametrize('fmt', [1, None, b'html'])
+def test_raw_elements_still_reject_non_strings(fmt):
+    with pytest.raises(TypeError):
+        pf.RawInline('x', format=fmt)
+    with pytest.raises(TypeError):
+        pf.RawBlock('x', format=fmt)
+    assert 'html' in pf.elements.RAW_FORMATS
 
 
 def test_sibling_navigation_after_insert_255():

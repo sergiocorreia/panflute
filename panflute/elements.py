@@ -762,7 +762,8 @@ class RawBlock(Block):
 
     :param text: a string of raw text with another underlying format
     :type text: :class:`str`
-    :param format: Format of the raw text ('html', 'tex', 'latex', 'context', etc.)
+    :param format: Format of the raw text ('html', 'tex', 'latex', 'context', etc.);
+        any string is accepted, as in pandoc (e.g. 'comment', or the name of a custom writer)
     :type format: ``str``
     :Base: :class:`Block`
      """
@@ -774,7 +775,7 @@ class RawBlock(Block):
 
     def __init__(self, text: str, format: str = 'html') -> None:
         self.text = check_type(text, str)
-        self.format = check_group(format, RAW_FORMATS)
+        self.format = check_type(format, str)  # Any format is valid (e.g. 'comment', custom writers)
 
     def _slots_to_json(self):
         return [self.format, self.text]
@@ -843,7 +844,8 @@ class RawInline(Inline):
 
     :param text: a string of raw text with another underlying format
     :type text: :class:`str`
-    :param format: Format of the raw text ('html', 'tex', 'latex', 'context', etc.)
+    :param format: Format of the raw text ('html', 'tex', 'latex', 'context', etc.);
+        any string is accepted, as in pandoc (e.g. 'comment', or the name of a custom writer)
     :type format: ``str``
     :Base: :class:`Inline`
      """
@@ -855,7 +857,7 @@ class RawInline(Inline):
 
     def __init__(self, text: str, format: str = 'html') -> None:
         self.text = check_type(text, str)
-        self.format = check_group(format, RAW_FORMATS)
+        self.format = check_type(format, str)  # Any format is valid (e.g. 'comment', custom writers)
 
     def _slots_to_json(self):
         return [self.format, self.text]
@@ -1374,6 +1376,8 @@ CITATION_MODE = {'AuthorInText', 'SuppressAuthor', 'NormalCitation'}
 
 MATH_FORMATS = {'DisplayMath', 'InlineMath'}
 
+# Raw formats known to pandoc (not exhaustive). Kept for reference: RawBlock and
+# RawInline accept any string, as pandoc does (see issues #236 and #247).
 RAW_FORMATS = {'tex',
                'latex',
                'latex-merge',  # From Quarto output.

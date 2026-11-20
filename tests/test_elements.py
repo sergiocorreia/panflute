@@ -352,7 +352,7 @@ def test_wrong_child_types_raise_type_error(build):
     lambda: pf.OrderedList(delimiter='Dot'),
     lambda: pf.Citation('id', mode='Normal'),
     lambda: pf.TableCell(alignment='Left'),
-    lambda: pf.RawBlock('x', format='not-a-known-format'),
+    # (RawBlock/RawInline accept any format string: see test_regressions.py, #236/#247)
 ])
 def test_values_outside_enumerations_raise_type_error(build):
     with pytest.raises(TypeError):
