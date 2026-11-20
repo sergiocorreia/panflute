@@ -47,12 +47,10 @@ def test_context_import_module_already_on_path():
 
 
 def test_context_import_missing_module():
-    path_before = list(sys.path)
+    # (sys.path handling on failure: see test_regressions.py)
     with pytest.raises(ImportError):
         with ContextImport('panflute_no_such_module_xyz', str(FIXTURES)):
             pass
-    # sys.path is not restored when the import itself fails (current behaviour)
-    assert sys.path[1:] == path_before
 
 
 def test_check_type():

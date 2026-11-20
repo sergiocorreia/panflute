@@ -302,6 +302,16 @@ def test_autorun_filters_restores_stdout_on_error(tmp_path, monkeypatch):
     assert sys.stdout is mine
 
 
+@pytest.mark.xfail(strict=True, reason='ContextImport leaves its directory on sys.path when the import fails')
+def test_context_import_restores_sys_path_on_import_error(tmp_path):
+    from panflute.utils import ContextImport
+    path_before = list(sys.path)
+    with pytest.raises(ImportError):
+        with ContextImport('panflute_no_such_module_xyz', str(tmp_path)):
+            pass
+    assert sys.path == path_before
+
+
 def _click_ignores_no_sys_path():
     """True if `--no-sys-path` (is_flag, default=True) parses as True (click >= 8.2)."""
     import click
