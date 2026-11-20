@@ -26,11 +26,13 @@ python -m pip install -e ".[dev,extras]"
 
 ### Running the tests
 
-Run the test suite from the root of the repository (several tests use paths relative to it) with the virtual environment activated, since some tests call `pandoc`, which in turn runs `panflute`/`panfl` and `python` from the `PATH`:
+Run the test suite (from the root of the repository, or pass the path to `tests/` from anywhere else):
 
 ```bash
 pytest
 ```
+
+Tests that need `pandoc` are skipped when it is not on the `PATH`. See [tests/README.md](tests/README.md) for how the suite is organised and how to regenerate its fixtures.
 
 To also measure code coverage:
 
