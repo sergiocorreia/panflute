@@ -69,7 +69,7 @@ pandoc versioning semantics is [MAJOR.MAJOR.MINOR.PATCH](https://pvp.haskell.org
 | not supported    | 2.10                      | 1.21                          |
 | 1.12             | 2.7-2.9                   | 1.17.5–1.20                   |
 
-Note on 3.0.0: every pandoc release up to 3.14 uses pandoc API 1.22 (pandoc 2.11–2.19) or 1.23 (pandoc 3.x; pandoc-types 1.23 to 1.23.1.x, which did not change the JSON format), and panflute supports every element of both. The test suite runs against pandoc 2.11.4, 2.19.2, 3.0.1, 3.1.13, 3.6.4 and the latest release in CI; the 3.0.0 changes were only run locally against pandoc 3.1.3 before release.
+Note on 3.0.0: the pandoc API version is the version of the JSON format in which pandoc passes documents to filters. Every pandoc release up to 3.14 uses API 1.22 (pandoc 2.11–2.19) or 1.23 (pandoc 3.x; pandoc-types 1.23 to 1.23.1.x did not change the JSON format), and panflute supports every element of both. CI runs the test suite against pandoc 2.11.4, 2.19.2, 3.0.1, 3.1.13, 3.6.4 and the latest release; before release, the 3.0.0 changes were run locally only against pandoc 3.1.3.
 
 Note: pandoc 2.10 is short lived and 2.11 has minor API changes comparing to that, mainly for fixing its shortcomings. Please avoid using pandoc 2.10.
 
@@ -84,7 +84,7 @@ See [CONTRIBUTING.md](/CONTRIBUTING.md#development-setup) for details.
 
 ## Contributing
 
-Feel free to submit push requests. For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8) (as long as its reasonable), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [google](http://google.github.io/styleguide/pyguide.html). Read more [here](/CONTRIBUTING.md).
+Feel free to submit pull requests. For consistency, code should comply with [pep8](https://pypi.python.org/pypi/pep8) (as long as its reasonable), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [google](http://google.github.io/styleguide/pyguide.html). Read more [here](/CONTRIBUTING.md).
 
 ## License
 

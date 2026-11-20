@@ -131,7 +131,7 @@ Navigating through the document tree
 
 You might wish to apply a filter that depends on the parent or sibling objects of an element. For instance, Modify the first row (`TableRow`) of a table, or all the `Str` items nested within a header.
 
-For this, every element has a `.parent` attribute (and the related `.next`, `.prev`, `.ancestor(#)`, `.index_in_parent`, `.offset(#)` attributes; `.index` is an alias of `.index_in_parent`, except on a `MetaList`, where `.index()` is the list method).
+For this, every element has a `.parent` attribute (and the related `.next`, `.prev`, `.ancestor(#)`, `.index_in_parent`, `.offset(#)` attributes).
 
 For example, the code below will emphasize all text in the last row of every table:
 
@@ -145,20 +145,22 @@ These attributes are:
   parent; otherwise, the name of the attribute of the parent that holds it,
   such as ``'caption'`` or ``'head'`` for a table, or ``'citations'``
   for a :class:`.Cite`.
-- ``.index_in_parent``: the index of the element within the list that
-  ``.location`` names, so that
-  ``elem.container[elem.index_in_parent] is elem``. A parent can hold
-  several lists (the ``.term`` and ``.definitions`` of a
+- ``.container``: the list container that holds the element (the
+  ``.content`` of the parent, or the attribute that ``.location`` names), a
+  dict container for a value of a :class:`.MetaMap`, or ``None``.
+- ``.index_in_parent``: the index of the element within its list container,
+  so that ``elem.container[elem.index_in_parent] is elem``. A parent can hold
+  several list containers (the ``.term`` and ``.definitions`` of a
   :class:`.DefinitionItem`, for instance), and the index counts only within
-  the element's own list. ``None`` when no list holds the element: the
+  the element's own. ``None`` when no list container holds the element: the
   :class:`.Doc`, an element without a parent, the ``.caption`` of a table,
   or a value of a :class:`.MetaMap`. ``.index`` is the older name of this
   attribute, and still works on every element except :class:`.MetaList`
-  (see below).
+  (see the note below).
 - ``.next``, ``.prev`` and ``.offset(n)``: the sibling elements in the same
-  list (or ``None``), and ``.ancestor(n)``: the parent of the parent, etc.
-- ``.container``: the list (or dict) that holds the element, and ``.doc``:
-  the root :class:`.Doc`, if there is one.
+  list container (or ``None``), and ``.ancestor(n)``: the parent
+  (``n=1``), the parent of the parent (``n=2``), etc.
+- ``.doc``: the root :class:`.Doc`, if there is one.
 
 .. code-block:: python
 
@@ -179,12 +181,12 @@ keeps its old ``.parent`` and ``.index_in_parent``.
    container is ``metalist.index_in_parent``. (In panflute 2.x,
    ``metalist.index`` was that index.)
 
-Lists of elements and slices
-****************************
+List containers and slices
+**************************
 
 The ``.content`` of an element (and other lists of elements, such as the
-``.citations`` of a :class:`.Cite`) is a :class:`.ListContainer`: a
-list-like object that only accepts elements of the right type, and that
+``.citations`` of a :class:`.Cite`) is a list container, a :class:`.ListContainer`:
+a list-like object that only accepts elements of the right type, and that
 sets their ``.parent`` and ``.index_in_parent``. It supports the usual list
 operations (``append``, ``insert``, ``del``, ``elem.content[i:j] = [...]``, etc.).
 
@@ -244,11 +246,12 @@ Installing panflute also installs two command line programs:
 - ``panflute`` is the filter used above (``pandoc -F panflute``): it runs the
   filters listed in the metadata. ``panflute --help`` describes it, and
   ``panflute --version`` prints panflute's version.
-- ``panfl`` can do the same (``pandoc -F panfl``), and can also run filters
-  given on the command line, in a pipeline of pandoc commands. With the
-  ``-t``/``--to`` option it runs several filters at once, searching for them
-  in the directories given with ``-d`` (``--dir``), in pandoc's data directory
-  (``--data-dir``), and in Python's ``sys.path`` (unless ``--no-sys-path``):
+- ``panfl`` can do the same (``pandoc -F panfl``). It can also run the
+  filters given on its command line, in a pipeline of pandoc commands; there
+  it needs the output format (``-t``/``--to``) and accepts several filters,
+  which it searches for in the directories given with ``-d`` (``--dir``), in
+  pandoc's data directory (``--data-dir``), and in Python's ``sys.path``
+  (unless ``--no-sys-path``):
 
   .. code-block:: none
 

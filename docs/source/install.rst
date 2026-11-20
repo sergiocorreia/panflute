@@ -24,7 +24,7 @@ To install the latest Github version of panflute, type::
 
     pip install git+https://github.com/sergiocorreia/panflute.git
 
-Upgrading from panflute 2.x? See :doc:`whatsnew`.
+To upgrade from panflute 2.x, see :doc:`whatsnew`.
 
 
 Dev Install
