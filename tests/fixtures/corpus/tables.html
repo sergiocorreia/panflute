@@ -1,0 +1,32 @@
+<table id="html-table" class="data wide" data-source="test">
+  <caption>An <em>HTML</em> table caption</caption>
+  <colgroup>
+    <col style="width: 25%">
+    <col style="width: 25%">
+    <col style="width: 50%">
+  </colgroup>
+  <thead>
+    <tr class="head-row">
+      <th rowspan="2">Name</th>
+      <th colspan="2" style="text-align: center">Scores</th>
+    </tr>
+    <tr>
+      <th>A</th>
+      <th style="text-align: right">B</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th>Alice</th><td>1</td><td align="right">2</td></tr>
+    <tr><th>Bob</th><td colspan="2">absent</td></tr>
+  </tbody>
+  <tbody class="second-body">
+    <tr><th>Carol</th><td rowspan="2">3</td><td>4</td></tr>
+    <tr><th>Dan</th><td>5</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><td>Total</td><td>4</td><td>11</td></tr>
+  </tfoot>
+</table>
+<table>
+  <tr><td>no head</td><td>no foot</td></tr>
+</table>

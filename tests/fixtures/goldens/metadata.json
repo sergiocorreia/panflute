@@ -1,0 +1,298 @@
+{
+ "blocks.json": {},
+ "citations-citeproc.json": {
+  "bibliography": "/home/sergio/git/panflute/tests/fixtures/corpus/citations.bib",
+  "link-citations": true,
+  "title": "Citations"
+ },
+ "citations.json": {
+  "link-citations": true,
+  "title": "Citations"
+ },
+ "inlines.json": {},
+ "kitchen_sink.json": {
+  "blocks": "First\n\nmeta code",
+  "bool-false": false,
+  "bool-true": true,
+  "inlines": "Some inlines",
+  "list": [
+   "s",
+   true,
+   [],
+   {
+    "k": "v"
+   }
+  ],
+  "map": {
+   "empty": {},
+   "inner": "x"
+  },
+  "string": "plain string",
+  "unicode-string": "café 😀"
+ },
+ "metadata-cli.json": {
+  "abstract": "First paragraph of the abstract.\n\nSecond paragraph with strong text.\n\n",
+  "author": [
+   {
+    "affiliation": [
+     "One",
+     "Two"
+    ],
+    "name": "First Author"
+   },
+   {
+    "name": "Second Author"
+   }
+  ],
+  "cli-flag": true,
+  "cli-string": "from the command line",
+  "count": "42",
+  "date": "2024-01-01",
+  "draft": true,
+  "empty-list": [],
+  "empty-map": {},
+  "empty-string": "",
+  "folded": "folded text\n\n",
+  "literal": "just one line\n\n",
+  "nested": {
+   "level1": {
+    "level2": [
+     "a",
+     [
+      "b",
+      "c"
+     ],
+     {
+      "key": "value"
+     }
+    ]
+   }
+  },
+  "published": false,
+  "ratio": "0.5",
+  "raw-latex": "\\newcommand{\\x}{y}",
+  "subtitle": "Plain subtitle",
+  "title": "The Title with code"
+ },
+ "metadata.json": {
+  "abstract": "First paragraph of the abstract.\n\nSecond paragraph with strong text.\n\n",
+  "author": [
+   {
+    "affiliation": [
+     "One",
+     "Two"
+    ],
+    "name": "First Author"
+   },
+   {
+    "name": "Second Author"
+   }
+  ],
+  "count": "42",
+  "date": "2024-01-01",
+  "draft": true,
+  "empty-list": [],
+  "empty-map": {},
+  "empty-string": "",
+  "folded": "folded text\n\n",
+  "literal": "just one line\n\n",
+  "nested": {
+   "level1": {
+    "level2": [
+     "a",
+     [
+      "b",
+      "c"
+     ],
+     {
+      "key": "value"
+     }
+    ]
+   }
+  },
+  "published": false,
+  "ratio": "0.5",
+  "raw-latex": "\\newcommand{\\x}{y}",
+  "subtitle": "Plain subtitle",
+  "title": "The Title with code"
+ },
+ "native-nordics.json": {},
+ "native-planets.json": {},
+ "native-students.json": {},
+ "sample-abstract.json": {
+  "abstract": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n",
+  "author": "",
+  "format": {
+   "cmdline": "see if double dash creates a bug",
+   "elegant-title": true,
+   "media-in-back": false,
+   "media-pagebreak": true,
+   "show-frame": false,
+   "show-media": true,
+   "show-published": true,
+   "show-titlepage": true,
+   "thin-margins": true
+  }
+ },
+ "sample-example1.json": {
+  "abstract": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n",
+  "author": [
+   {
+    "affiliation": "One University",
+    "email": "example@email.com",
+    "name": "First Name"
+   },
+   {
+    "affiliation": "Another University",
+    "email": "lorem@email.com",
+    "name": "Second Name"
+   }
+  ],
+  "date": "July 17, 2006",
+  "format": {
+   "cmdline": "see if double dash creates a bug",
+   "elegant-title": true,
+   "media-in-back": false,
+   "media-pagebreak": true,
+   "show-frame": false,
+   "show-media": true,
+   "show-published": true,
+   "show-titlepage": true,
+   "thin-margins": true
+  },
+  "institution": "Foobar Institute",
+  "jel": [
+   "G21",
+   "D12",
+   "D62"
+  ],
+  "misc": [
+   "item 1",
+   "item 2"
+  ],
+  "title": "Pandoc Test Suite"
+ },
+ "sample-example2.json": {
+  "abstract": "Lorem ipsum Ipsum lorem\n\n",
+  "build": "cls & pandoc slides.md –to=beamer –latex-engine=xelatex –template=templates\\default.beamer –output=..\\out\\slides.pdf && SumatraPDF ..\\out\\slides.pdf",
+  "date": "March 2016",
+  "fontsize": "11pt",
+  "foo": {
+   "rana": "d",
+   "sapo": "b"
+  },
+  "foobar": true,
+  "header-includes": [
+   "\\metroset{progressbar=frametitle}",
+   "\\usefonttheme[onlymath]{serif}"
+  ],
+  "institute": "Duke University",
+  "jel": [
+   "C01",
+   "C13",
+   "C23",
+   "C55",
+   "C81"
+  ],
+  "q1": "asd",
+  "q2": "ASD",
+  "spam": false,
+  "subtitle": "Identification and Estimation",
+  "theme": "metropolis",
+  "title": "CEO and Firm Fixed Effects in a Matched Panel"
+ },
+ "sample-example3.json": {},
+ "sample-example4.json": {},
+ "sample-fenced.json": {
+  "author": "Some author",
+  "note": "this is standard markdown metadata",
+  "title": "Some title"
+ },
+ "sample-heavy_metadata.json": {
+  "abstract": "Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.\n\n",
+  "amsthm": {
+   "definition": [
+    "Definition"
+   ],
+   "parentcounter": [
+    "chapter"
+   ],
+   "plain": [
+    {
+     "Theorem": "Lemma"
+    },
+    "With Space*"
+   ],
+   "remark": [
+    "Case"
+   ]
+  },
+  "author": [
+   {
+    "affiliation": "Some University, Some School",
+    "email": "example@example.com",
+    "name": "John Smith"
+   }
+  ],
+  "bibliography": "../../References/all.bib",
+  "classoption": [
+   "12pt"
+  ],
+  "cmd": "pandoc –smart –parse-raw –to=json index.md > benchmark.json",
+  "comments": [
+   "Foo",
+   "Bar"
+  ],
+  "csl": "chicago-author-date",
+  "date": "Dec 2016",
+  "estimates": {
+   "input-path": "../../../out/Regression",
+   "output-path": "../estimates-appendix",
+   "update-tex": false
+  },
+  "format": {
+   "cmdline": "somestring",
+   "elegant-title": true,
+   "linestretch": "1.213",
+   "media-in-back": false,
+   "media-pagebreak": true,
+   "show-frame": false,
+   "show-media": true,
+   "show-published": true,
+   "show-titlepage": true,
+   "thin-margins": true
+  },
+  "jel": [
+   "G1",
+   "G2",
+   "G3"
+  ],
+  "key1": {
+   "key1-1": [
+    "value1-1-1",
+    "value1-1-2"
+   ],
+   "key1-2": [
+    "value1-2-1",
+    "value1-2-2"
+   ]
+  },
+  "key2": "value1-2",
+  "keywords": [
+   "Tag1",
+   "Tag2",
+   "Tag3"
+  ],
+  "lof": false,
+  "lot": false,
+  "numbersections": true,
+  "published": "Draft",
+  "thanks": "Leverage agile frameworks to provide a robust synopsis for high level overviews. Iterative approaches to corporate strategy foster collaborative thinking to further the overall value proposition. Organically grow the holistic world view of disruptive innovation via workplace diversity and empowerment.",
+  "title": "Lorem Ipsum: Title",
+  "toc": false
+ },
+ "sample-pandoc-2.11.json": {},
+ "tables-html.json": {},
+ "tables.json": {},
+ "unicode.json": {}
+}
