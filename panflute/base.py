@@ -300,9 +300,8 @@ class Element(object):
         if stop_if is None or not stop_if(self):
 
             # self._children has property *names* so we need a bit of getattr/setattr magic to modify the objects themselves
-            children = ((child_name, getattr(self, child_name)) for child_name in self._children)
-
-            for child_name, child in children:
+            for child_name in self._children:
+                child = getattr(self, child_name)
                 if isinstance(child, (Element, ListContainer, DictContainer)):
                     child = child.walk(action, doc, stop_if)
                 elif child is None:

@@ -10,7 +10,7 @@ object, and the attribute of the parent object that they correspond to.
 from __future__ import annotations
 
 from collections.abc import MutableSequence, MutableMapping
-from itertools import chain
+from itertools import chain  # (no longer used, but part of this module's namespace)
 from typing import TYPE_CHECKING, overload
 from .utils import check_type, encode_dict, debug
 
@@ -60,7 +60,17 @@ class ListContainer(MutableSequence["Element"]):
         self.location = None  # Cannot be set through __init__
 
         self.list: list[Element] = []
-        self.extend(args)  # self.oktypes must be set first
+        if type(self) is not ListContainer:  # (a subclass might override insert)
+            self.extend(args)
+            return
+        # Same as self.extend(args), which calls self.insert(len(self), item)
+        # for each item, but much faster (this is how every element is built)
+        lst = self.list
+        for i, v in enumerate(args):
+            if callable(v) or not isinstance(v, oktypes):
+                v = check_type(v, oktypes)
+            lst.append(v)
+            attach(v, parent, None, i)
 
     def __contains__(self, item: object) -> bool:
         return item in self.list
@@ -81,6 +91,19 @@ class ListContainer(MutableSequence["Element"]):
             return attach(element, self.parent, self.location, i)
         else:
             return _ListSlice._from(self, self.list[i])
+
+    def __iter__(self) -> Iterator[Element]:
+        # Same as Sequence.__iter__ (``self[0]``, ``self[1]``, ... until IndexError:
+        # it sees changes made to the list during the iteration, and attaches
+        # each element as it is reached), without the __getitem__ calls
+        i = 0
+        try:
+            while True:
+                element = self.list[i]
+                yield attach(element, self.parent, self.location, i)
+                i += 1
+        except IndexError:
+            return
 
     def __delitem__(self, i: int | slice) -> None:
         del self.list[i]
@@ -147,11 +170,14 @@ class ListContainer(MutableSequence["Element"]):
 
     def walk(self, action: _Action, doc: Doc | None = None,
              stop_if: Callable[[Element], bool] | None = None) -> list[Element]:
-        ans: Iterable[Any] = (item.walk(action, doc, stop_if) for item in self)
-        # We need to convert single elements to iterables that can be flattened later
-        ans = ((item,) if type(item) is not list else item for item in ans)
-        # Flatten the list, by expanding any sublists
-        ans = list(chain.from_iterable(ans))
+        ans: list[Any] = []
+        for item in self:
+            walked: Any = item.walk(action, doc, stop_if)
+            # Flatten the lists returned by the action
+            if type(walked) is list:
+                ans.extend(walked)
+            else:
+                ans.append(walked)
         return ans
 
     def __str__(self) -> str:
@@ -208,6 +234,9 @@ class _ListSlice(ListContainer):
         if isinstance(i, int):
             return self.list[i]
         return _ListSlice._from(self, self.list[i])
+
+    # (not ListContainer.__iter__, which attaches the elements)
+    __iter__ = MutableSequence.__iter__
 
     def __delitem__(self, i: int | slice) -> None:
         del self.list[i]
