@@ -18,8 +18,9 @@ from io import StringIO
 from .io import load, dump
 from .utils import debug, ContextImport
 
-
-reduced_sys_path = [d for d in sys.path if (d not in ('', '.')) and p.isdir(d)]
+# Directories in sys.path when panflute was imported (computed in
+# __init__.py, as this module is only imported the first time it is used)
+from . import _reduced_sys_path as reduced_sys_path
 
 
 def get_filter_dirs(hardcoded: bool = True) -> list[str]:
