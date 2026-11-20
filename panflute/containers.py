@@ -11,11 +11,14 @@ from __future__ import annotations
 
 from collections.abc import MutableSequence, MutableMapping
 from itertools import chain
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 from .utils import check_type, encode_dict, debug
 
 if TYPE_CHECKING:
-    from .base import Element
+    from collections.abc import Callable, Iterable, Iterator
+    from typing import Any, NoReturn
+    from .base import Element, MetaValue, _Action
+    from .elements import Doc
 
 
 # ---------------------------
@@ -27,7 +30,7 @@ if TYPE_CHECKING:
 #  (c) track the index in the parent in case of list
 # They attach these three to the elements requested through __getattr__
 
-class ListContainer(MutableSequence[object]):
+class ListContainer(MutableSequence["Element"]):
     """
     Wrapper around a list, to track the elements' parents.
     **This class shouldn't be instantiated directly by users,
@@ -46,21 +49,31 @@ class ListContainer(MutableSequence[object]):
 
     __slots__ = ['list', 'oktypes', 'parent', 'location']
 
-    def __init__(self, *args: MutableSequence[object], oktypes: type | tuple[type]=object, parent: object | None=None):
-        self.oktypes: type | tuple[type] = oktypes
-        self.parent: object | None = parent
+    oktypes: type | tuple[type, ...]
+    parent: Element | None
+    location: str | None
+
+    def __init__(self, *args: Element, oktypes: type | tuple[type, ...]=object,
+                 parent: Element | None=None) -> None:
+        self.oktypes = oktypes
+        self.parent = parent
         self.location = None  # Cannot be set through __init__
 
-        self.list = []
+        self.list: list[Element] = []
         self.extend(args)  # self.oktypes must be set first
 
-    def __contains__(self, item):
+    def __contains__(self, item: object) -> bool:
         return item in self.list
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.list)
 
-    def __getitem__(self, i):
+    @overload
+    def __getitem__(self, i: int) -> Element: ...
+    @overload
+    def __getitem__(self, i: slice) -> ListContainer: ...
+
+    def __getitem__(self, i: int | slice) -> Element | ListContainer:
         if isinstance(i, int):
             return attach(self.list[i], self.parent, self.location, i)
         else:
@@ -70,34 +83,43 @@ class ListContainer(MutableSequence[object]):
             obj.location = self.location
             return obj
 
-    def __delitem__(self, i):
+    def __delitem__(self, i: int | slice) -> None:
         del self.list[i]
 
-    def __setitem__(self, i, v):
+    @overload
+    def __setitem__(self, i: int, v: Element) -> None: ...
+    @overload
+    def __setitem__(self, i: slice, v: Iterable[Element]) -> NoReturn: ...
+    # TODO(bug-fix step): slice assignment currently always raises (attach() is
+    # called on a list; see tests/test_regressions.py); once fixed, the slice
+    # overload above should return None.
+
+    def __setitem__(self, i: int | slice, v: Any) -> None:
         if isinstance(i, slice):
             v = (check_type(x, self.oktypes) for x in v)
         else:
             v = check_type(v, self.oktypes)
         self.list[i] = v
-        attach(self.list[i], self.parent, self.location, i)
+        attach(self.list[i], self.parent, self.location, i)  # type: ignore[arg-type]  # TODO(bug-fix step): wrong for slices
 
-    def insert(self, i: int, v):
+    def insert(self, i: int, v: Element) -> None:
         v = check_type(v, self.oktypes)
         self.list.insert(i, v)
         attach(self.list[i], self.parent, self.location, i)
 
-    def walk(self, action, doc=None, stop_if=None):
-        ans = (item.walk(action, doc, stop_if) for item in self)
+    def walk(self, action: _Action, doc: Doc | None = None,
+             stop_if: Callable[[Element], bool] | None = None) -> list[Element]:
+        ans: Iterable[Any] = (item.walk(action, doc, stop_if) for item in self)
         # We need to convert single elements to iterables that can be flattened later
         ans = ((item,) if type(item) is not list else item for item in ans)
         # Flatten the list, by expanding any sublists
         ans = list(chain.from_iterable(ans))
         return ans
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__repr__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'ListContainer({})'.format(' '.join(repr(x) for x in self.list))
 
     def __eq__(self, other):
@@ -111,11 +133,11 @@ class ListContainer(MutableSequence[object]):
                 return False
         return True
 
-    def to_json(self):
+    def to_json(self) -> list[Any]:
         return [to_json_wrapper(item) for item in self.list]
 
 
-class DictContainer(MutableMapping[str, object]):
+class DictContainer(MutableMapping[str, "MetaValue"]):
     """
     Wrapper around a dict, to track the elements' parents.
     **This class shouldn't be instantiated directly by users,
@@ -130,47 +152,53 @@ class DictContainer(MutableMapping[str, object]):
 
     __slots__ = ['dict', 'oktypes', 'parent', 'location']
 
-    def __init__(self, *args: MutableMapping[str, object], oktypes: type | tuple[type]=object, parent: Element | None=None, **kwargs):
-        self.oktypes: type | tuple[type] = oktypes
-        self.parent: object | None = parent
+    oktypes: type | tuple[type, ...]
+    parent: Element | None
+    location: str | None
+
+    def __init__(self, *args: tuple[str, MetaValue], oktypes: type | tuple[type, ...]=object,
+                 parent: Element | None=None, **kwargs: MetaValue) -> None:
+        self.oktypes = oktypes
+        self.parent = parent
         self.location = None
 
-        self.dict = dict()
+        self.dict: dict[str, MetaValue] = dict()
         self.update(args)  # Must be a sequence of tuples
         self.update(kwargs)  # Order of kwargs is not preserved
 
-    def __contains__(self, item):
+    def __contains__(self, item: object) -> bool:
         return item in self.dict
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.dict)
 
-    def __getitem__(self, k):
+    def __getitem__(self, k: str) -> MetaValue:
         return attach(self.dict[k], self.parent, self.location)
 
-    def __delitem__(self, k):
+    def __delitem__(self, k: str) -> None:
         del self.dict[k]
 
-    def __setitem__(self, k, v):
+    def __setitem__(self, k: str, v: MetaValue) -> None:
         v = check_type(v, self.oktypes)
         self.dict[k] = v
         attach(self.dict[k], self.parent, self.location)
 
-    def walk(self, action, doc=None, stop_if=None):
-        ans = ((k, v.walk(action, doc, stop_if)) for k, v in self.items())
+    def walk(self, action: _Action, doc: Doc | None = None,
+             stop_if: Callable[[Element], bool] | None = None) -> list[tuple[str, Any]]:
+        ans: Iterable[tuple[str, Any]] = ((k, v.walk(action, doc, stop_if)) for k, v in self.items())
         ans = [(k, v) for k, v in ans if v != []]
         return ans
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__repr__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'DictContainer({})'.format(' '.join(repr(x) for x in self.dict))
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         return self.dict.__iter__()
 
-    def to_json(self):
+    def to_json(self) -> dict[str, Any]:
         return {k: to_json_wrapper(v) for k, v in self.dict.items()}
 
 
@@ -178,7 +206,7 @@ class DictContainer(MutableMapping[str, object]):
 # Functions
 # ---------------------------
 
-def attach(element, parent, location, index=None):
+def attach(element: Any, parent: Element | None, location: str | None, index: int | None = None) -> Any:
     if not isinstance(element, (int, str, bool)):
         element.parent = parent
         element.location = location
@@ -188,7 +216,7 @@ def attach(element, parent, location, index=None):
     return element
 
 
-def to_json_wrapper(e):
+def to_json_wrapper(e: Any) -> Any:
     if isinstance(e, str):
         return e
     elif isinstance(e, bool):
