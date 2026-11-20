@@ -86,8 +86,8 @@ def finalize(doc: pf.Doc) -> None:
 def navigation(elem: pf.Element) -> None:
     assert_type(elem.tag, str)
     assert_type(elem.parent, pf.Element | None)
-    assert_type(elem.position, int | None)
-    assert_type(elem.index, int | None)  # (alias of .position)
+    assert_type(elem.index_in_parent, int | None)
+    assert_type(elem.index, int | None)  # (alias of .index_in_parent)
     elem.index = 0
     assert_type(elem.location, str | None)
     assert_type(elem.next, pf.Element | None)
@@ -171,7 +171,7 @@ def metadata() -> None:
     ml = pf.MetaList('a', 1, True, pf.MetaString('b'))
     assert_type(ml[0], pf.MetaValue)
     assert_type(ml[1:], MutableSequence[pf.MetaValue])
-    assert_type(ml.position, int | None)  # The position of ml in its container
+    assert_type(ml.index_in_parent, int | None)  # The index of ml in its container
     assert_type(ml.index(pf.MetaString('b')), int)  # The sequence method (see #258)
     assert_type(ml.index(pf.MetaString('b'), 1, -1), int)
     ml.remove(pf.MetaString('b'))

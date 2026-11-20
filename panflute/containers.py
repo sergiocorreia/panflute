@@ -27,7 +27,8 @@ if TYPE_CHECKING:
 # These are list and dict containers that
 #  (a) track the identity of their parents, and
 #  (b) track the parent's property where they are stored
-#  (c) track the position in the parent in case of list
+#  (c) track the element's index in the list, in case of list containers
+#      (the element's .index_in_parent)
 # They attach these three to the elements requested through __getattr__
 
 class ListContainer(MutableSequence["Element"]):
@@ -127,13 +128,13 @@ class ListContainer(MutableSequence["Element"]):
             if step == 1:
                 # The new elements are at start, start+1, ... and the
                 # elements after them might have moved
-                positions = range(start, start + len(new))
+                indexes = range(start, start + len(new))
                 self._reindex(start + len(new))
             else:
                 # Extended slice: same number of elements, nothing moves
-                positions = range(start, stop, step)
-            for position, element in zip(positions, new):
-                attach(element, self.parent, self.location, position)
+                indexes = range(start, stop, step)
+            for index_in_parent, element in zip(indexes, new):
+                attach(element, self.parent, self.location, index_in_parent)
         else:
             v = check_type(v, self.oktypes)
             self.list[i] = v
@@ -155,7 +156,7 @@ class ListContainer(MutableSequence["Element"]):
 
     def _reindex(self, start: int) -> None:
         """
-        Update the ``position`` of the elements at positions ``start`` and
+        Update the ``index_in_parent`` of the elements at indexes ``start`` and
         later, after elements were inserted or removed before them.
 
         Elements that were last accessed through another container
@@ -166,7 +167,7 @@ class ListContainer(MutableSequence["Element"]):
         for j in range(start, len(lst)):
             element = lst[j]
             if getattr(element, 'parent', None) is parent and getattr(element, 'location', None) == location:
-                element.position = j
+                element.index_in_parent = j
 
     def walk(self, action: _Action, doc: Doc | None = None,
              stop_if: Callable[[Element], bool] | None = None) -> list[Element]:
@@ -210,8 +211,8 @@ class _ListSlice(ListContainer):
     It is a new container that holds the same elements (a copy of the list,
     not a view): changing it does not change the original container.
     Neither reading nor changing it changes the ``parent``, ``location`` or
-    ``position`` of the elements, which keep describing their position in the
-    original container.
+    ``index_in_parent`` of the elements, which keep describing their place in
+    the original container.
     """
 
     __slots__ = []
@@ -325,11 +326,11 @@ class DictContainer(MutableMapping[str, "MetaValue"]):
 # Functions
 # ---------------------------
 
-def attach(element: Any, parent: Element | None, location: str | None, position: int | None = None) -> Any:
+def attach(element: Any, parent: Element | None, location: str | None, index_in_parent: int | None = None) -> Any:
     if not isinstance(element, (int, str, bool)):
         element.parent = parent
         element.location = location
-        element.position = position
+        element.index_in_parent = index_in_parent
     else:
         debug(f'Warning: element "{type(element)}" has no parent')
     return element

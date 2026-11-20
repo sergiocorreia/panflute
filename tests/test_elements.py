@@ -616,12 +616,12 @@ def test_metalist_index_method_258():
         ml.index(S('a'), 'x')
     with pytest.raises(ValueError):
         pf.MetaList().index(S('a'))
-    # It does not change the parent/position of the items
+    # It does not change the parent/index_in_parent of the items
     other = pf.MetaList()
     other.content.list.append(item)
-    item.parent, item.position = other, 0
+    item.parent, item.index_in_parent = other, 0
     assert ml.index(S('b')) == 1
-    assert item.parent is other and item.position == 0
+    assert item.parent is other and item.index_in_parent == 0
 
 
 def test_metalist_mutable_sequence_api_258():
@@ -647,13 +647,13 @@ def test_metalist_mutable_sequence_api_258():
     ml.append('e')
     ml.reverse()
     assert list(ml) == [S('e'), pf.MetaBool(False), S('c'), S('a')]
-    assert [e.position for e in ml.content.list] == [0, 1, 2, 3]
+    assert [e.index_in_parent for e in ml.content.list] == [0, 1, 2, 3]
     assert all(e.parent is ml for e in ml.content.list)
     ml.clear()
     assert len(ml) == 0 and not ml
 
 
-def test_element_copy_and_pickle_keep_position():
+def test_element_copy_and_pickle_keep_index_in_parent():
     import copy
     import pickle
     para = pf.Para(pf.Str('a'), pf.Emph(pf.Str('b')))
@@ -663,15 +663,15 @@ def test_element_copy_and_pickle_keep_position():
     inner = ml[1]
     for clone in (copy.deepcopy, lambda x: pickle.loads(pickle.dumps(x))):
         e = clone(emph)
-        assert e == emph and e.position == 1 and e.index == 1 and type(e.parent) is pf.Para
-        assert e.content[0].position == 0
+        assert e == emph and e.index_in_parent == 1 and e.index == 1 and type(e.parent) is pf.Para
+        assert e.content[0].index_in_parent == 0
         m = clone(inner)
-        assert m == inner and m.position == 1 and m.index(pf.MetaString('y')) == 0
+        assert m == inner and m.index_in_parent == 1 and m.index(pf.MetaString('y')) == 0
         d = clone(doc)
         assert d == doc and to_json_value(d) == to_json_value(doc)
-        assert d.metadata['l'][1].position == 1
+        assert d.metadata['l'][1].index_in_parent == 1
     s = copy.copy(emph)
-    assert s.position == 1
+    assert s.index_in_parent == 1
 
 
 def test_metamap_mapping_protocol():

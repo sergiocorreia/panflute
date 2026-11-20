@@ -31,14 +31,15 @@ class Element(object):
     """
     Base class of all Pandoc elements
     """
-    __slots__ = ['parent', 'location', 'position']
+    __slots__ = ['parent', 'location', 'index_in_parent']
     _children: list[str] = []
 
     parent: Element | None
     location: str | None
-    # Position of the element in the ListContainer that holds it (None when
-    # it is not in one), set by the containers; see also the .index alias below
-    position: int | None
+    # Index of the element within the list that holds it, self.container
+    # (the list at self.parent.<self.location>), or None when it is not held
+    # in a list; set by the containers. See also the .index alias below
+    index_in_parent: int | None
 
     # Only present on elements that take them (set by _set_ica)
     identifier: str
@@ -52,7 +53,7 @@ class Element(object):
         element = object.__new__(cls)
         element.parent = None
         element.location = None
-        element.position = None
+        element.index_in_parent = None
         return element
 
     @property
@@ -164,27 +165,27 @@ class Element(object):
     # Navigation
     # ---------------------------
 
-    # (the position itself is the .position slot, read and written directly
-    # by the containers; .index is kept as an alias, see issue #258)
+    # (the index itself is the .index_in_parent slot, read and written
+    # directly by the containers; .index is kept as an alias, see issue #258)
     @property
     def index(self) -> int | None:
         """
-        Alias of :attr:`position`: the position of the element in the
-        list container that holds it (``elem.parent.content``, or another
-        list attribute of the parent), or ``None`` when it is not in one.
-        It can also be assigned to.
+        Alias of :attr:`index_in_parent`: the index of the element within
+        the list container that holds it (:attr:`container`:
+        ``elem.parent.content``, or the attribute of the parent named by
+        :attr:`location`), or ``None`` when no list container holds it. It can also be assigned to.
 
         **Not available on** :class:`.MetaList`, where ``index()`` is the
         standard sequence method (``metalist.index(value)``, as in
-        ``list.index``); use ``metalist.position`` instead.
+        ``list.index``); use ``metalist.index_in_parent`` instead.
 
         :rtype: ``int`` | ``None``
         """
-        return self.position
+        return self.index_in_parent
 
     @index.setter
     def index(self, value: int | None) -> None:
-        self.position = value
+        self.index_in_parent = value
 
     @property
     def container(self) -> ListContainer | DictContainer | None:
@@ -216,10 +217,10 @@ class Element(object):
         :rtype: :class:`Element` | ``None``
         """
 
-        idx = self.position
+        idx = self.index_in_parent
         if idx is not None:
             sibling = idx + n
-            # An element with a position always lives in a ListContainer
+            # An element with an index_in_parent always lives in a ListContainer
             container: ListContainer = self.container  # type: ignore[assignment]
             if 0 <= sibling < len(container):
                 return container[sibling]
