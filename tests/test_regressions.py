@@ -11,6 +11,7 @@ import importlib.util
 import io
 import json
 import sys
+import time
 import warnings
 
 import pytest
@@ -100,7 +101,6 @@ def test_too_old_api_version_is_rejected_246():
 # Known bugs (strict xfail: remove the marker once fixed)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason='#262 convert_text appends --standalone to the caller\'s extra_args')
 def test_convert_text_does_not_mutate_extra_args_262(monkeypatch):
     calls = []
     monkeypatch.setattr(tools, 'run_pandoc', lambda text, args, pandoc_path=None: calls.append(args) or '')
@@ -307,8 +307,6 @@ def test_listcontainer_comparison_with_other_types(other):
     assert (lc != other) is True
 
 
-@pytest.mark.xfail(sys.version_info >= (3, 13), strict=True,
-                   reason='re.split() called with positional maxsplit/flags (deprecated in Python 3.13)')
 def test_yaml_filter_no_deprecation_warning():
     calls = []
     with warnings.catch_warnings(record=True) as caught:
@@ -321,7 +319,29 @@ def test_yaml_filter_no_deprecation_warning():
     assert [w for w in caught if issubclass(w.category, DeprecationWarning)] == []
 
 
-@pytest.mark.xfail(strict=True, reason='PandocVersion re-runs `pandoc --version` on every access')
+@pytest.mark.parametrize('text', [
+    '---\n- a\n- b\n---\ndata',           # a list
+    '---\njust a string\n---\ndata',       # a scalar
+])
+def test_yaml_filter_strict_with_non_mapping_yaml(text, capsys):
+    calls = []
+    elem = pf.CodeBlock(text, classes=['t'])
+    result = pf.yaml_filter(elem, None, tag='t', function=lambda **kw: calls.append(kw), strict_yaml=True)
+    assert result is None and calls == []      # left unchanged, like malformed YAML
+    assert 'not a mapping' in capsys.readouterr().err
+
+
+def test_yaml_filter_strict_with_empty_or_unparsable_yaml(capsys):
+    calls = []
+    f = lambda **kw: calls.append(kw)
+    pf.yaml_filter(pf.CodeBlock('---\n# only a comment\n---\ndata', classes=['t']), None,
+                   tag='t', function=f, strict_yaml=True)
+    assert [(c['options'], c['data']) for c in calls] == [({}, 'data')]
+    assert pf.yaml_filter(pf.CodeBlock('---\na: [1\n---\ndata', classes=['t']), None,
+                          tag='t', function=f, strict_yaml=True) is None
+    assert len(calls) == 1 and 'malformed YAML' in capsys.readouterr().err
+
+
 def test_pandoc_version_runs_pandoc_once(monkeypatch):
     calls = []
     monkeypatch.setattr(tools, 'run_pandoc', lambda *a, **k: calls.append(a) or 'pandoc 3.1.3\n')
@@ -333,10 +353,15 @@ def test_pandoc_version_runs_pandoc_once(monkeypatch):
 
 
 @pytest.mark.skipif(sys.platform == 'win32', reason='POSIX-only bug')
-@pytest.mark.xfail(strict=True, raises=ValueError,
-                   reason='shell(wait=False) passes Windows-only creationflags on POSIX')
-def test_shell_without_waiting():
-    assert pf.shell([sys.executable, '-c', 'pass'], wait=False) is None
+def test_shell_without_waiting(tmp_path):
+    marker = tmp_path / 'done'
+    code = f'import pathlib; print("not to our stdout"); pathlib.Path({str(marker)!r}).write_text("x")'
+    assert pf.shell([sys.executable, '-c', code], wait=False) is None
+    for _ in range(200):
+        if marker.exists():
+            break
+        time.sleep(0.05)
+    assert marker.read_text() == 'x'
 
 
 @pytest.mark.xfail(strict=True, reason='TableCell rowspan/colspan are not type checked (floats reach the JSON)')

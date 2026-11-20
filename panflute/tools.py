@@ -24,7 +24,7 @@ import shlex
 from typing import Tuple, TYPE_CHECKING, overload
 
 from shutil import which
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, DEVNULL
 from functools import partial
 
 if TYPE_CHECKING:
@@ -74,7 +74,7 @@ class PandocVersion:
     '''
 
     def __init__(self) -> None:
-        pass
+        self._version_text: str | None = None
 
     def __str__(self) -> str:
         return self._repr.splitlines()[0].split(' ')[1]
@@ -85,9 +85,9 @@ class PandocVersion:
     @property
     def _repr(self) -> str:
         # lazily call pandoc only once
-        if not hasattr(self, '__repr'):
-            self.__repr: str = run_pandoc(args=['--version'])
-        return self.__repr
+        if self._version_text is None:
+            self._version_text = run_pandoc(args=['--version'])
+        return self._version_text
 
     @property
     def version(self) -> Tuple[int, ...]:
@@ -187,7 +187,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                 if not strict_yaml:
                     # Split YAML and data parts (separated by ... or ---)
                     raw = re.split("^([.]{3,}|[-]{3,})$",
-                                   element.text, 1, re.MULTILINE)
+                                   element.text, maxsplit=1, flags=re.MULTILINE)
                     data = raw[2] if len(raw) > 2 else ''
                     data = data.lstrip('\n')
                     raw = raw[0]
@@ -204,7 +204,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                     options = {}
                     data = []
                     raw = re.split("^([.]{3,}|[-]{3,})$",
-                                   element.text, 0, re.MULTILINE)
+                                   element.text, flags=re.MULTILINE)
                     rawmode = True
                     for chunk in raw:
 
@@ -222,10 +222,17 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
                                 rawmode = True
                             else:
                                 try:
-                                    options.update(yaml.load(chunk, Loader=Loader))  # nosec  # already using SafeLoader
-                                except yaml.scanner.ScannerError:
+                                    chunk_options = yaml.load(chunk, Loader=Loader)  # nosec  # already using SafeLoader
+                                except (yaml.scanner.ScannerError, yaml.parser.ParserError):
                                     debug("panflute: malformed YAML block")
                                     return
+                                if chunk_options is None:  # e.g. only comments
+                                    continue
+                                if not isinstance(chunk_options, dict):
+                                    debug("panflute: YAML block is not a mapping (key: value pairs):")
+                                    debug(repr(chunk))
+                                    return
+                                options.update(chunk_options)
 
                     data = '\n'.join(data)
 
@@ -386,9 +393,14 @@ def shell(args: str | Sequence[str], wait: bool = True, msg: bytes | None = None
             debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
             raise IOError()
         return out
-    else:
+    elif os.name == 'nt':
         DETACHED_PROCESS = 0x00000008
         proc = Popen(args, creationflags=DETACHED_PROCESS)
+    else:
+        # (creationflags is Windows-only.) Run the command in its own session,
+        # and keep it from writing to our stdout (which pandoc reads)
+        proc = Popen(args, stdin=DEVNULL, stdout=DEVNULL, start_new_session=True)
+    return None
 
 
 def run_pandoc(text: str = '', args: list[str] | None = None, pandoc_path: str | None = None) -> str:
@@ -522,8 +534,8 @@ def convert_text(text,
     in_fmt = 'json' if input_format == 'panflute' else input_format
     out_fmt = 'json' if output_format == 'panflute' else output_format
 
-    if extra_args is None:
-        extra_args = []
+    # (a copy: the caller's list must not be modified)
+    extra_args = [] if extra_args is None else list(extra_args)
 
     if standalone:
         extra_args.append('--standalone')

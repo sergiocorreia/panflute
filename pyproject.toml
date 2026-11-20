@@ -81,13 +81,9 @@ markers = [
     "requires_pandoc: needs a pandoc executable on PATH (skipped otherwise)",
 ]
 filterwarnings = [
-    # Deprecations triggered by panflute's own code are errors...
+    # Deprecations triggered by panflute's own code are errors
     "error::DeprecationWarning:panflute",
     "error::PendingDeprecationWarning:panflute",
-    # ...except this known one (positional maxsplit/flags in re.split, Python 3.13+),
-    # which is pinned by tests/test_regressions.py::test_yaml_filter_no_deprecation_warning.
-    # Remove this line once it is fixed.
-    "ignore:'maxsplit' is passed as positional argument:DeprecationWarning:panflute",
 ]
 
 [tool.coverage.run]
