@@ -29,6 +29,23 @@ Base elements
 
       :rtype: ``str`` | ``None``
 
+   .. attribute:: position
+
+      Position of the element in the list container that holds it: in
+      ``elem.parent.content``, or in another list attribute of the parent
+      (such as ``.citations`` of a :class:`.Cite`), so that
+      ``elem.container[elem.position] is elem``.
+      ``None`` if the element is not in a list container: it has no parent,
+      it is the value of a single-element attribute (such as ``.caption``
+      of a table), or a value of a :class:`.MetaMap`.
+
+      Kept up to date by the containers: it is set when the element is
+      added to a container or read from it (``elem.content[i]``, iterating,
+      walking), and updated when elements are inserted or deleted before it.
+      :meth:`offset`, :attr:`next` and :attr:`prev` are based on it.
+
+      :rtype: ``int`` | ``None``
+
    .. automethod:: panflute.base.Element.walk
    .. autoattribute:: panflute.base.Element.content
    .. autoattribute:: panflute.base.Element.index

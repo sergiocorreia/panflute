@@ -122,7 +122,7 @@ Navigating through the document tree
 
 You might wish to apply a filter that depends on the parent or sibling objects of an element. For instance, Modify the first row (`TableRow`) of a table, or all the `Str` items nested within a header.
 
-For this, every element has a `.parent` attribute (and the related `.next`, `.prev`, `.ancestor(#), `.index`, `.offset(#)` attributes).
+For this, every element has a `.parent` attribute (and the related `.next`, `.prev`, `.ancestor(#)`, `.position`, `.offset(#)` attributes; `.index` is an alias of `.position`, except on a `MetaList`, where `.index()` is the list method).
 
 For example, the code below will emphasize all text in the last row of every table:
 
