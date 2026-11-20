@@ -19,7 +19,6 @@ import os.path as p
 import re
 import sys
 import json
-import yaml
 import shlex
 from typing import Tuple, TYPE_CHECKING, overload
 
@@ -32,21 +31,66 @@ if TYPE_CHECKING:
     from typing import Any, Literal
     from .containers import ListContainer
 
-# yamlloader keeps dict ordering in yaml
-try:
-    import yamlloader
-except ImportError:
-    yamlloader = None
+# yaml, yamlloader and Loader (the YAML loader used by yaml_filter) are
+# imported the first time they are needed, by _import_yaml(): importing yaml
+# takes longer than everything else in panflute, and most filters don't use
+# it. They are still found as attributes of this module and by dir() (see
+# __getattr__ and __dir__ below), and `from panflute.tools import *` still
+# imports them.
 
-if yamlloader is None:
-    # property of pyyaml:
-    # C*Loader when compiled with C, else fallback to pure Python loader
+if TYPE_CHECKING:
+    import yaml
+    import yamlloader
+    from yaml import CSafeLoader as Loader
+
+_YAML_NAMES = ('yaml', 'yamlloader', 'Loader')
+
+
+def _import_yaml() -> None:
+    g = globals()
+    if all(name in g for name in _YAML_NAMES):
+        return
+
+    import yaml
+
+    # yamlloader keeps dict ordering in yaml
     try:
-        from yaml import CSafeLoader as Loader
+        import yamlloader
     except ImportError:
-        from yaml import SafeLoader as Loader  # type: ignore[assignment]  # fallback import
-else:
-    from yamlloader.ordereddict import CSafeLoader as Loader  # type: ignore[no-redef]  # alternative import
+        yamlloader = None
+
+    if yamlloader is None:
+        # property of pyyaml:
+        # C*Loader when compiled with C, else fallback to pure Python loader
+        try:
+            from yaml import CSafeLoader as Loader
+        except ImportError:
+            from yaml import SafeLoader as Loader  # type: ignore[assignment]  # fallback import
+    else:
+        from yamlloader.ordereddict import CSafeLoader as Loader  # type: ignore[no-redef]  # alternative import
+
+    # (without replacing a value that a user has set on the module)
+    g.setdefault('yaml', yaml)
+    g.setdefault('yamlloader', yamlloader)
+    g.setdefault('Loader', Loader)
+
+
+def __getattr__(name: str) -> Any:
+    if name in _YAML_NAMES:
+        _import_yaml()
+        return globals()[name]
+    if name == '__all__':
+        # This module has no __all__: `from panflute.tools import *` (like
+        # pydoc and others) looks for it, and when it is missing, it imports
+        # every public name in the module's namespace instead. Import yaml
+        # first, so that these names include yaml, yamlloader and Loader.
+        _import_yaml()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return list(set(globals()) | set(_YAML_NAMES))
+
 
 # to be filled when the first time which('pandoc') is called
 PANDOC_PATH = None  # type: str | None
@@ -183,6 +227,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
         for tag in tags:
             if tag in element.classes:
                 function = tags[tag]
+                _import_yaml()
 
                 if not strict_yaml:
                     # Split YAML and data parts (separated by ... or ---)
