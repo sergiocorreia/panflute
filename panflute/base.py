@@ -144,7 +144,10 @@ class Element(object):
     @content.setter
     def content(self, value: Iterable[Element]) -> None:
         oktypes = self._content.oktypes
-        value = value.list if isinstance(value, ListContainer) else list(value)
+        # (a plain list, e.g. from walk(), needs neither a copy nor the slower
+        # isinstance check against ListContainer, an abstract base class)
+        if type(value) is not list:
+            value = value.list if isinstance(value, ListContainer) else list(value)
         self._content = ListContainer(*value, oktypes=oktypes, parent=self)
 
     def _set_content(self, value: Iterable[Element] | None, oktypes: type | tuple[type, ...]) -> None:
