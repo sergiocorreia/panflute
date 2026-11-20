@@ -9,6 +9,10 @@ Notation:
 # Imports
 # ---------------------------
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, overload
+
 from .utils import check_type, check_group, encode_dict, decode_ica, debug, check_type_or_value
 from .utils import load_pandoc_version, load_pandoc_reader_options
 from .containers import ListContainer, DictContainer, MutableSequence, MutableMapping
@@ -16,6 +20,14 @@ from .base import Element, Block, Inline, MetaValue
 from .table_elements import (
     Table, TableHead, TableFoot, TableBody, TableRow, TableCell, Caption,
     TABLE_ALIGNMENT, TABLE_WIDTH, table_from_json)
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator, Mapping
+    from typing import Any, Literal, NoReturn
+
+    # Values accepted by MetaList/MetaMap (and Doc metadata), converted with builtin2meta()
+    _MetaInput = (MetaValue | Inline | Block | str | bool | int | float
+                  | list[Any] | dict[str, Any])
 
 
 # ---------------------------
@@ -53,7 +65,13 @@ class Doc(Element):
 
     _children = ['metadata', 'content']
 
-    def __init__(self, *args, metadata={}, format='html', api_version=(1, 23)):
+    format: str
+    api_version: tuple[int, ...]
+    pandoc_version: tuple[int, ...] | None
+    pandoc_reader_options: dict[str, Any]
+
+    def __init__(self, *args: Block, metadata: Mapping[str, _MetaInput] | MetaMap = {},
+                 format: str = 'html', api_version: Iterable[int] = (1, 23)) -> None:
         self._set_content(args, Block)
         self.metadata = metadata
         self.format = format  # Output format
@@ -77,14 +95,22 @@ class Doc(Element):
             return False
         return True
 
+    if TYPE_CHECKING:
+        # Filters can store their own attributes in the Doc (e.g. ``doc.count = 0``)
+        def __getattr__(self, name: str) -> Any: ...
+        def __setattr__(self, name: str, value: Any) -> None: ...
+
+        # Bound in tools.py
+        def get_metadata(self, key: str = '', default: Any = None, builtin: bool = True) -> Any: ...
+
     @property
-    def metadata(self):
+    def metadata(self) -> MetaMap:
         self._metadata.parent = self
         self._metadata.location = 'metadata'
         return self._metadata
 
     @metadata.setter
-    def metadata(self, value):
+    def metadata(self, value: Mapping[str, _MetaInput] | MetaMap) -> None:
         value = value.content if isinstance(value, MetaMap) else dict(value)
         self._metadata = MetaMap(*value.items())
 
@@ -171,7 +197,7 @@ class Plain(Block):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -194,7 +220,7 @@ class Para(Block):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -211,7 +237,7 @@ class BlockQuote(Block):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Block) -> None:
         self._set_content(args, Block)
 
     def _slots_to_json(self):
@@ -228,7 +254,7 @@ class Emph(Inline):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -245,7 +271,7 @@ class Strong(Inline):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -262,7 +288,7 @@ class Underline(Inline):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -279,7 +305,7 @@ class Strikeout(Inline):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -296,7 +322,7 @@ class Superscript(Inline):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -313,7 +339,7 @@ class Subscript(Inline):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -330,7 +356,7 @@ class SmallCaps(Inline):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -347,7 +373,7 @@ class Note(Inline):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Block) -> None:
         self._set_content(args, Block)
 
     def _slots_to_json(self):
@@ -382,8 +408,11 @@ class Header(Block):
     __slots__ = ['level', '_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, level=1,
-                 identifier='', classes=[], attributes={}):
+    level: int
+
+    def __init__(self, *args: Inline, level: int = 1,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self.level = check_type(level, int)
         if not 0 < self.level <= 10:
             raise TypeError('Header level not between 1 and 10')
@@ -411,7 +440,9 @@ class Div(Block):
     __slots__ = ['_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, identifier='', classes=[], attributes={}):
+    def __init__(self, *args: Block,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Block)
 
@@ -436,7 +467,9 @@ class Span(Inline):
     __slots__ = ['_content', 'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, identifier='', classes=[], attributes={}):
+    def __init__(self, *args: Inline,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Inline)
 
@@ -457,7 +490,10 @@ class Quoted(Inline):
     __slots__ = ['quote_type', '_content']
     _children = ['content']
 
-    def __init__(self, *args, quote_type='DoubleQuote'):
+    quote_type: Literal['SingleQuote', 'DoubleQuote']
+
+    def __init__(self, *args: Inline,
+                 quote_type: Literal['SingleQuote', 'DoubleQuote'] = 'DoubleQuote') -> None:
         self.quote_type = check_group(quote_type, QUOTE_TYPES)
         self._set_content(args, Inline)
 
@@ -483,17 +519,17 @@ class Cite(Inline):
     __slots__ = ['_content', '_citations']
     _children = ['content', 'citations']
 
-    def __init__(self, *args, citations=[]):
+    def __init__(self, *args: Inline, citations: Iterable[Citation] = []) -> None:
         self._set_content(args, Inline)
         self.citations = citations
 
     # Cannot access citations directly b/c that would mess up .parent
     @property
-    def citations(self):
+    def citations(self) -> ListContainer:
         return self._citations
 
     @citations.setter
-    def citations(self, value):
+    def citations(self, value: Iterable[Element]) -> None:
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._citations = ListContainer(*value, oktypes=Citation, parent=self)
         self._citations.location = 'citations'
@@ -526,8 +562,16 @@ class Citation(Element):
     __slots__ = ['id', 'mode', '_prefix', '_suffix', 'note_num', 'hash']
     _children = ['prefix', 'suffix']
 
-    def __init__(self, id, mode='NormalCitation', prefix='', suffix='',
-                 hash=0, note_num=0):
+    id: str
+    mode: Literal['AuthorInText', 'SuppressAuthor', 'NormalCitation']
+    hash: int
+    note_num: int
+
+    def __init__(self, id: str,
+                 mode: Literal['AuthorInText', 'SuppressAuthor', 'NormalCitation'] = 'NormalCitation',
+                 # TODO(bug-fix step): the '' defaults (an empty iterable) should be ()
+                 prefix: Iterable[Inline] = '', suffix: Iterable[Inline] = '',  # type: ignore[assignment]
+                 hash: int = 0, note_num: int = 0) -> None:
         self.id = check_type(id, str)
         self.mode = check_group(mode, CITATION_MODE)
         self.hash = check_type(hash, int)
@@ -536,21 +580,21 @@ class Citation(Element):
         self.suffix = suffix
 
     @property
-    def prefix(self):
+    def prefix(self) -> ListContainer:
         return self._prefix
 
     @prefix.setter
-    def prefix(self, value):
+    def prefix(self, value: Iterable[Element]) -> None:
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._prefix = ListContainer(*value, oktypes=Inline, parent=self)
         self._prefix.location = 'prefix'
 
     @property
-    def suffix(self):
+    def suffix(self) -> ListContainer:
         return self._suffix
 
     @suffix.setter
-    def suffix(self, value):
+    def suffix(self, value: Iterable[Element]) -> None:
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._suffix = ListContainer(*value, oktypes=Inline, parent=self)
         self._suffix.location = 'suffix'
@@ -601,8 +645,12 @@ class Link(Inline):
                  'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, url='', title='',
-                 identifier='', classes=[], attributes={}):
+    url: str
+    title: str
+
+    def __init__(self, *args: Inline, url: str = '', title: str = '',
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Inline)
         self.url = check_type(url, str)
@@ -636,8 +684,12 @@ class Image(Inline):
                  'identifier', 'classes', 'attributes']
     _children = ['content']
 
-    def __init__(self, *args, url='', title='',
-                 identifier='', classes=[], attributes={}):
+    url: str
+    title: str
+
+    def __init__(self, *args: Inline, url: str = '', title: str = '',
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Inline)
         self.url = check_type(url, str)
@@ -663,7 +715,9 @@ class Str(Inline):
 
     __slots__ = ['text']
 
-    def __init__(self, text):
+    text: str
+
+    def __init__(self, text: str) -> None:
         self.text = check_type(text, str)
 
     def __repr__(self):
@@ -690,7 +744,11 @@ class CodeBlock(Block):
 
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
-    def __init__(self, text, identifier='', classes=[], attributes={}):
+    text: str
+
+    def __init__(self, text: str,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self.text = check_type(text, str)
 
@@ -711,7 +769,10 @@ class RawBlock(Block):
 
     __slots__ = ['text', 'format']
 
-    def __init__(self, text, format='html'):
+    text: str
+    format: str
+
+    def __init__(self, text: str, format: str = 'html') -> None:
         self.text = check_type(text, str)
         self.format = check_group(format, RAW_FORMATS)
 
@@ -736,7 +797,11 @@ class Code(Inline):
 
     __slots__ = ['text', 'identifier', 'classes', 'attributes']
 
-    def __init__(self, text, identifier='', classes=[], attributes={}):
+    text: str
+
+    def __init__(self, text: str,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self.text = check_type(text, str)
 
@@ -757,7 +822,10 @@ class Math(Inline):
 
     __slots__ = ['text', 'format']
 
-    def __init__(self, text, format='DisplayMath'):
+    text: str
+    format: Literal['DisplayMath', 'InlineMath']
+
+    def __init__(self, text: str, format: Literal['DisplayMath', 'InlineMath'] = 'DisplayMath') -> None:
         self.text = check_type(text, str)
         self.format = check_group(format, MATH_FORMATS)
 
@@ -782,7 +850,10 @@ class RawInline(Inline):
 
     __slots__ = ['text', 'format']
 
-    def __init__(self, text, format='html'):
+    text: str
+    format: str
+
+    def __init__(self, text: str, format: str = 'html') -> None:
         self.text = check_type(text, str)
         self.format = check_group(format, RAW_FORMATS)
 
@@ -804,7 +875,7 @@ class ListItem(Element):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Block) -> None:
         self._set_content(args, Block)
 
     def to_json(self):
@@ -822,7 +893,7 @@ class BulletList(Block):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: ListItem) -> None:
         self._set_content(args, ListItem)
 
     def _slots_to_json(self):
@@ -849,7 +920,15 @@ class OrderedList(Block):
     __slots__ = ['_content', 'start', 'style', 'delimiter']
     _children = ['content']
 
-    def __init__(self, *args, start=1, style='Decimal', delimiter='Period'):
+    start: int
+    style: Literal['DefaultStyle', 'Example', 'Decimal', 'LowerRoman',
+                   'UpperRoman', 'LowerAlpha', 'UpperAlpha']
+    delimiter: Literal['DefaultDelim', 'Period', 'OneParen', 'TwoParens']
+
+    def __init__(self, *args: ListItem, start: int = 1,
+                 style: Literal['DefaultStyle', 'Example', 'Decimal', 'LowerRoman',
+                                'UpperRoman', 'LowerAlpha', 'UpperAlpha'] = 'Decimal',
+                 delimiter: Literal['DefaultDelim', 'Period', 'OneParen', 'TwoParens'] = 'Period') -> None:
         self._set_content(args, ListItem)
         self.start = check_type(start, int)
         self.style = check_group(style, LIST_NUMBER_STYLES)
@@ -879,7 +958,7 @@ class Definition(Element):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Block) -> None:
         self._set_content(args, Block)
 
     def to_json(self):
@@ -904,7 +983,7 @@ class DefinitionItem(Element):
     __slots__ = ['_term', '_definitions']
     _children = ['term', 'definitions']
 
-    def __init__(self, term, definitions):
+    def __init__(self, term: Iterable[Inline], definitions: Iterable[Definition]) -> None:
         self.term = term
         self.definitions = definitions
 
@@ -914,21 +993,21 @@ class DefinitionItem(Element):
         return '{}({}: {})'.format(self.tag, term, definitions)
 
     @property
-    def term(self):
+    def term(self) -> ListContainer:
         return self._term
 
     @term.setter
-    def term(self, value):
+    def term(self, value: Iterable[Element]) -> None:
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._term = ListContainer(*value, oktypes=Inline, parent=self)
         self._term.location = 'term'
 
     @property
-    def definitions(self):
+    def definitions(self) -> ListContainer:
         return self._definitions
 
     @definitions.setter
-    def definitions(self, value):
+    def definitions(self, value: Iterable[Element]) -> None:
         value = value.list if isinstance(value, ListContainer) else list(value)
         self._definitions = ListContainer(*value,
                                           oktypes=Definition, parent=self)
@@ -965,7 +1044,7 @@ class DefinitionList(Block):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: DefinitionItem) -> None:
         self._set_content(args, DefinitionItem)
 
     def _slots_to_json(self):
@@ -982,7 +1061,7 @@ class LineItem(Element):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def to_json(self):
@@ -1000,7 +1079,7 @@ class LineBlock(Block):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: LineItem) -> None:
         self._set_content(args, LineItem)
 
     def _slots_to_json(self):
@@ -1036,17 +1115,19 @@ class Figure(Block):
     __slots__ = ['_content', '_caption', 'identifier', 'classes', 'attributes']
     _children = ['content', 'caption']
 
-    def __init__(self, *args, caption=None, identifier='', classes=[], attributes={}):
+    def __init__(self, *args: Block, caption: Caption | None = None,
+                 identifier: str = '', classes: Iterable[str] = [],
+                 attributes: Mapping[str, str] = {}) -> None:
         self._set_ica(identifier, classes, attributes)
         self._set_content(args, Block)
         self.caption = caption
 
     @property
-    def caption(self):
+    def caption(self) -> Caption:
         return self._caption
 
     @caption.setter
-    def caption(self, value):
+    def caption(self, value: Caption | None) -> None:
         if value is None:
             value = Caption()
         self._caption = check_type(value, Caption)
@@ -1061,40 +1142,70 @@ class Figure(Block):
 # Classes - Metadata
 # ---------------------------
 
-class MetaList(MetaValue, MutableSequence):
+class MetaList(MetaValue, MutableSequence[MetaValue]):
     """Metadata list container
 
     :param args: contents of a metadata list
+        (built-in values such as ``str`` or ``dict`` are converted
+        to :class:`MetaValue` elements)
     :type args: :class:`MetaValue`
     :Base: :class:`MetaValue`
     """
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
-        args = [builtin2meta(v) for v in args]
-        self._set_content(args, MetaValue)
+    # MetaList inherits both Element.index (the position of the element in
+    # its container, an attribute) and Sequence.index() (a method). At runtime
+    # the attribute wins (Element comes first in the MRO), see issue #258.
+    index: int | None  # type: ignore[assignment]
+
+    if TYPE_CHECKING:
+        # Typed signature; the implementation below (which rebinds its
+        # arguments) is left unannotated
+        def __init__(self, *args: _MetaInput) -> None: ...
+    else:
+        def __init__(self, *args):
+            args = [builtin2meta(v) for v in args]
+            self._set_content(args, MetaValue)
 
     def _slots_to_json(self):
         return self.content.to_json()
 
-    def __getitem__(self, i):
-        return self.content[i]
+    @overload
+    def __getitem__(self, i: int) -> MetaValue: ...
+    @overload
+    def __getitem__(self, i: slice) -> MutableSequence[MetaValue]: ...
 
-    def __setitem__(self, i, v):
+    def __getitem__(self, i: int | slice) -> MetaValue | MutableSequence[MetaValue]:
+        # Slices return a ListContainer of MetaValues
+        return self.content[i]  # type: ignore[return-value]
+
+    @overload
+    def __setitem__(self, i: int, v: _MetaInput) -> None: ...
+    @overload
+    def __setitem__(self, i: slice, v: Iterable[_MetaInput]) -> NoReturn: ...
+    # TODO(bug-fix step): slice assignment currently always raises (issue #260);
+    # once fixed, the slice overload above should return None.
+
+    def __setitem__(self, i: int | slice, v: Any) -> None:
         self.content[i] = builtin2meta(v)
 
-    def __delitem__(self, i):
+    def __delitem__(self, i: int | slice) -> None:
         del self.content[i]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.content)
 
-    def insert(self, i, v):
+    def insert(self, i: int, v: _MetaInput) -> None:
         self.content.insert(i, builtin2meta(v))
 
+    if TYPE_CHECKING:
+        # Inherited from MutableSequence (which calls insert), so they also accept builtins
+        def append(self, value: _MetaInput) -> None: ...
+        def extend(self, values: Iterable[_MetaInput]) -> None: ...
 
-class MetaMap(MetaValue, MutableMapping):
+
+class MetaMap(MetaValue, MutableMapping[str, MetaValue]):
     """Metadata container for ordered dicts
 
     :param args: (key, value) tuples
@@ -1106,42 +1217,49 @@ class MetaMap(MetaValue, MutableMapping):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args, **kwargs):
-        args = list(args)
-        if kwargs:
-            args.extend(kwargs.items())
-        args = [(k, builtin2meta(v)) for k, v in args]
-        self._content = DictContainer(*args, oktypes=MetaValue, parent=self)
+    if TYPE_CHECKING:
+        # Typed signature; the implementation below (which rebinds its
+        # arguments) is left unannotated
+        def __init__(self, *args: tuple[str, _MetaInput], **kwargs: _MetaInput) -> None: ...
+    else:
+        def __init__(self, *args, **kwargs):
+            args = list(args)
+            if kwargs:
+                args.extend(kwargs.items())
+            args = [(k, builtin2meta(v)) for k, v in args]
+            self._content = DictContainer(*args, oktypes=MetaValue, parent=self)
 
     def _slots_to_json(self):
         return self.content.to_json()
 
-    @property
-    def content(self):
+    # Unlike other elements, the content of a MetaMap is a mapping
+    @property  # type: ignore[override]
+    def content(self) -> DictContainer:
         """
         Map of :class:`MetaValue` objects.
         """
         return self._content
 
-    @content.setter
-    def content(self, value):
+    @content.setter  # type: ignore[override]
+    def content(self, value: Iterable[tuple[str, MetaValue]]) -> None:
         if isinstance(value, dict):
-            value = value.dict.items()
+            # TODO(bug-fix step): should test for DictContainer (dicts have no .dict)
+            value = value.dict.items()  # type: ignore[attr-defined]
         self._content = DictContainer(*value, oktypes=MetaValue, parent=self)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i: str) -> MetaValue:
         return self.content[i]
 
-    def __setitem__(self, i, v):
+    def __setitem__(self, i: str, v: _MetaInput) -> None:
         self.content[i] = builtin2meta(v)
 
-    def __delitem__(self, i):
+    def __delitem__(self, i: str) -> None:
         del self.content[i]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         return iter(self.content)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.content)
 
 
@@ -1158,7 +1276,7 @@ class MetaInlines(MetaValue):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Inline) -> None:
         self._set_content(args, Inline)
 
     def _slots_to_json(self):
@@ -1177,7 +1295,7 @@ class MetaBlocks(MetaValue):
     __slots__ = ['_content']
     _children = ['content']
 
-    def __init__(self, *args):
+    def __init__(self, *args: Block) -> None:
         self._set_content(args, Block)
 
     def _slots_to_json(self):
@@ -1196,7 +1314,9 @@ class MetaString(MetaValue):
 
     __slots__ = ['text']
 
-    def __init__(self, text):
+    text: str
+
+    def __init__(self, text: str) -> None:
         self.text = check_type(text, str)
 
     def __repr__(self):
@@ -1217,7 +1337,9 @@ class MetaBool(MetaValue):
 
     __slots__ = ['boolean']
 
-    def __init__(self, boolean):
+    boolean: bool
+
+    def __init__(self, boolean: bool) -> None:
         self.boolean = check_type(boolean, bool)
 
     def __repr__(self):
