@@ -79,9 +79,17 @@ class Doc(Element):
         try:
             self.api_version = tuple(check_type(v, int) for v in api_version)
         except TypeError:
-            raise TypeError("invalid api version; using an older version of Pandoc?")
+            raise TypeError(f"invalid api version {api_version!r}: expected a sequence of integers "
+                            "such as (1, 23, 1), the 'pandoc-api-version' of pandoc's JSON output. "
+                            "Using an older version of pandoc?") from None
         if len(self.api_version) > 4 or self.api_version[:2] < (1, 22):
-            raise TypeError("invalid api version", api_version)
+            version = '.'.join(str(v) for v in self.api_version) or '(empty)'
+            raise TypeError(
+                f"invalid api version {version}: panflute requires pandoc API version 1.22 or "
+                "later (pandoc 2.11 or later). If the document comes from pandoc, upgrade pandoc, "
+                "or check which pandoc is used: convert_text() and run_pandoc() call the first "
+                "`pandoc` on the PATH, which can be older than the one running the filter "
+                "(e.g. the one bundled with Quarto or RStudio).")
 
         self.pandoc_version = load_pandoc_version()
         self.pandoc_reader_options = load_pandoc_reader_options()

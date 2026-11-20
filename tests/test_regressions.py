@@ -97,6 +97,19 @@ def test_too_old_api_version_is_rejected_246():
         load_text('{"pandoc-api-version":[1,20],"meta":{},"blocks":[]}')
 
 
+@pytest.mark.parametrize('version,expected', [
+    ([1, 20], r'invalid api version 1\.20: panflute requires pandoc API version 1\.22 or later \(pandoc 2\.11'),
+    ([1, 23, 1, 0, 0], r'invalid api version 1\.23\.1\.0\.0: panflute requires'),
+    ([], r'invalid api version \(empty\): panflute requires'),
+    (['1', '23'], r"invalid api version \['1', '23'\]: expected a sequence of integers"),
+])
+def test_invalid_api_version_message_explains_the_problem_246(version, expected):
+    text = '{"pandoc-api-version":%s,"meta":{},"blocks":[]}' % json.dumps(version)
+    with pytest.raises(TypeError, match=expected) as info:
+        load_text(text)
+    assert len(info.value.args) == 1        # a message, not a tuple of values
+
+
 # ---------------------------------------------------------------------------
 # Known bugs (strict xfail: remove the marker once fixed)
 # ---------------------------------------------------------------------------
