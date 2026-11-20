@@ -7,9 +7,15 @@ object, and the attribute of the parent object that they correspond to.
 # Imports
 # ---------------------------
 
+from __future__ import annotations
+
 from collections.abc import MutableSequence, MutableMapping
 from itertools import chain
+from typing import TYPE_CHECKING
 from .utils import check_type, encode_dict, debug
+
+if TYPE_CHECKING:
+    from .base import Element
 
 
 # ---------------------------
