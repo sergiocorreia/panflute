@@ -97,6 +97,9 @@ def worker(names, repeat):
 # Subprocess measurements
 # ---------------------------
 
+# Subprocesses run in BENCHMARKS, so that `python -c ...` (which puts the current
+# directory first in sys.path) doesn't import the panflute of the current directory
+
 def _env(pythonpath):
     env = dict(os.environ)
     env.pop('PANDOC_VERSION', None)
@@ -108,7 +111,7 @@ def _env(pythonpath):
 
 def _wall(args, env, stdin=None):
     t0 = time.perf_counter()
-    subprocess.run(args, env=env, input=stdin, stdout=subprocess.DEVNULL, check=True)
+    subprocess.run(args, env=env, input=stdin, stdout=subprocess.DEVNULL, check=True, cwd=BENCHMARKS)
     return (time.perf_counter() - t0) * 1000
 
 
@@ -127,7 +130,8 @@ def measure_process(pythonpath, names):
 def importtime(pythonpath):
     """Cumulative import time of panflute reported by -X importtime (us)."""
     proc = subprocess.run([sys.executable, '-X', 'importtime', '-c', 'import panflute'],
-                          env=_env(pythonpath), capture_output=True, text=True, check=True)
+                          env=_env(pythonpath), capture_output=True, text=True, check=True,
+                          cwd=BENCHMARKS)
     for line in proc.stderr.splitlines():
         parts = [x.strip() for x in line.split('|')]
         if len(parts) == 3 and parts[2] == 'panflute':
