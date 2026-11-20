@@ -7,6 +7,10 @@ I/O related functions
 # Imports
 # ---------------------------
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .elements import Element, Doc, from_json, ListContainer
 
 # These will get modified if using Pandoc legacy (<1.8)
@@ -20,12 +24,17 @@ import json
 import codecs  # Used in sys.stdout writer
 from functools import partial
 
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+    from typing import Any
+    from _typeshed import SupportsRead, SupportsWrite
+
 
 # ---------------------------
 # Functions
 # ---------------------------
 
-def load(input_stream=None):
+def load(input_stream: SupportsRead[str] | None = None) -> Doc:
     """
     Load JSON-encoded document and return a :class:`.Doc` element.
 
@@ -79,7 +88,7 @@ def load(input_stream=None):
     return doc
 
 
-def dump(doc, output_stream=None):
+def dump(doc: Doc, output_stream: SupportsWrite[str] | None = None) -> None:
     """
     Dump a :class:`.Doc` object into a JSON-encoded text string.
 
@@ -115,7 +124,7 @@ def dump(doc, output_stream=None):
         raise TypeError(msg)
 
     if output_stream is None:
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())  # type: ignore[union-attr]  # TextIO has no detach()
         output_stream = sys.stdout
 
     json_serializer = lambda elem: elem.to_json()
@@ -129,14 +138,14 @@ def dump(doc, output_stream=None):
     ))
 
 
-def toJSONFilters(*args, **kwargs):
+def toJSONFilters(*args: Any, **kwargs: Any) -> Doc | None:
     """
     Wrapper for :func:`.run_filters`
     """
     return run_filters(*args, **kwargs)
 
 
-def toJSONFilter(*args, **kwargs):
+def toJSONFilter(*args: Any, **kwargs: Any) -> Doc | None:
     """
     Wrapper for :func:`.run_filter`, which calls :func:`.run_filters`
 
@@ -148,12 +157,14 @@ def toJSONFilter(*args, **kwargs):
     return run_filter(*args, **kwargs)
 
 
-def run_filters(actions,
-                prepare=None, finalize=None,
-                input_stream=None, output_stream=None,
-                doc=None,
-                stop_if=None,
-                **kwargs):
+def run_filters(actions: Iterable[Callable[..., Element | list[Element] | None]],
+                prepare: Callable[[Doc], object] | None = None,
+                finalize: Callable[[Doc], object] | None = None,
+                input_stream: SupportsRead[str] | None = None,
+                output_stream: SupportsWrite[str] | None = None,
+                doc: Doc | None = None,
+                stop_if: Callable[[Element], bool] | None = None,
+                **kwargs: Any) -> Doc | None:
     r"""
     Receive a Pandoc document from the input stream (default is stdin),
     walk through it applying the functions in *actions* to each element,
@@ -199,24 +210,27 @@ def run_filters(actions,
     if load_and_dump:
         doc = load(input_stream=input_stream)
 
+    # In what follows doc is a Doc (mypy can't infer it from load_and_dump),
+    # unless an action replaced the Doc itself
     if prepare is not None:
-        prepare(doc)
+        prepare(doc)  # type: ignore[arg-type]
 
     for action in actions:
         if kwargs:
             action = partial(action, **kwargs)
-        doc = doc.walk(action, doc=doc, stop_if=stop_if)
+        doc = doc.walk(action, doc=doc, stop_if=stop_if)  # type: ignore[union-attr, assignment]
 
     if finalize is not None:
-        finalize(doc)
+        finalize(doc)  # type: ignore[arg-type]
 
     if load_and_dump:
-        dump(doc, output_stream=output_stream)
+        dump(doc, output_stream=output_stream)  # type: ignore[arg-type]
     else:
         return(doc)
 
 
-def run_filter(action, *args, **kwargs):
+def run_filter(action: Callable[..., Element | list[Element] | None],
+               *args: Any, **kwargs: Any) -> Doc | None:
     """
     Wrapper for :func:`.run_filters`
 

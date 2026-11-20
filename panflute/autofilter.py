@@ -6,6 +6,8 @@ shell scripts as Pandoc filter with arguments.
 Exports ``main`` and ``panfl``.
 """
 
+from __future__ import annotations
+
 import os
 import os.path as p
 from pathlib import Path
@@ -20,7 +22,7 @@ from .utils import debug, ContextImport
 reduced_sys_path = [d for d in sys.path if (d not in ('', '.')) and p.isdir(d)]
 
 
-def get_filter_dirs(hardcoded=True):
+def get_filter_dirs(hardcoded: bool = True) -> list[str]:
     """
     Return directories where we expect to find filters.
 
@@ -133,7 +135,7 @@ def stdio(filters=None, search_dirs=None, data_dir=True, sys_path=True,
     dump(doc, output_stream)
 
 
-def main():
+def main() -> None:
     """
     Allows Panflute to be run as a command line executable
     to be used as a Pandoc filter.

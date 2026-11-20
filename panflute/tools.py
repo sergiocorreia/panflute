@@ -7,6 +7,8 @@ Useful (but not essential) functions for writing panflute filters
 # Imports
 # ---------------------------
 
+from __future__ import annotations
+
 from .base import Element
 from .elements import *
 from .io import dump
@@ -19,11 +21,16 @@ import sys
 import json
 import yaml
 import shlex
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING, overload
 
 from shutil import which
 from subprocess import Popen, PIPE
 from functools import partial
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+    from typing import Any, Literal
+    from .containers import ListContainer
 
 # yamlloader keeps dict ordering in yaml
 try:
@@ -37,12 +44,12 @@ if yamlloader is None:
     try:
         from yaml import CSafeLoader as Loader
     except ImportError:
-        from yaml import SafeLoader as Loader
+        from yaml import SafeLoader as Loader  # type: ignore[assignment]  # fallback import
 else:
-    from yamlloader.ordereddict import CSafeLoader as Loader
+    from yamlloader.ordereddict import CSafeLoader as Loader  # type: ignore[no-redef]  # alternative import
 
 # to be filled when the first time which('pandoc') is called
-PANDOC_PATH = None
+PANDOC_PATH = None  # type: str | None
 
 
 # ---------------------------
@@ -66,7 +73,7 @@ class PandocVersion:
     use PandocVersion().version for comparing versions
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def __str__(self) -> str:
@@ -76,7 +83,7 @@ class PandocVersion:
         return self._repr
 
     @property
-    def _repr(self):
+    def _repr(self) -> str:
         # lazily call pandoc only once
         if not hasattr(self, '__repr'):
             self.__repr: str = run_pandoc(args=['--version'])
@@ -230,7 +237,7 @@ def yaml_filter(element, doc, tag=None, function=None, tags=None,
 # Functions that extract content
 # ---------------------------
 
-def stringify(element, newlines=True):
+def stringify(element: Element | ListContainer, newlines: bool = True) -> str:
     """
     Return the raw text version of an element (and its children elements).
 
@@ -279,7 +286,7 @@ def stringify(element, newlines=True):
 
         answer.append(ans)
 
-    answer = []
+    answer: list[str] = []
     f = partial(attach_str, answer=answer)
     element.walk(f, stop_if=stop_if)
     return ''.join(answer)
@@ -327,7 +334,7 @@ def _get_metadata(self, key='', default=None, builtin=True):
     return meta2builtin(meta) if builtin else meta
 
 
-def meta2builtin(meta):
+def meta2builtin(meta: Any) -> Any:
     if isinstance(meta, MetaBool):
         return meta.boolean
     elif isinstance(meta, MetaString):
@@ -343,17 +350,24 @@ def meta2builtin(meta):
         return meta
 
 
-# Bind the method
-Doc.get_metadata = _get_metadata
+# Bind the method (declared in the Doc class for type checkers)
+Doc.get_metadata = _get_metadata  # type: ignore[method-assign]
 
 
 # ---------------------------
 # Functions that rely on external calls
 # ---------------------------
 
-def shell(args, wait=True, msg=None):
+def shell(args: str | Sequence[str], wait: bool = True, msg: bytes | None = None) -> bytes | None:
     """
     Execute the external command and get its exitcode, stdout and stderr.
+
+    :param args: command, either as a string or as a sequence of arguments
+    :param wait: wait for the command to finish (otherwise, run it detached
+        and return ``None``)
+    :param msg: bytes sent to the standard input of the command
+    :return: the standard output of the command (as bytes) if ``wait=True``
+    :raises IOError: if the command fails
     """
 
     # Fix Windows error if passed a string
@@ -377,7 +391,7 @@ def shell(args, wait=True, msg=None):
         proc = Popen(args, creationflags=DETACHED_PROCESS)
 
 
-def run_pandoc(text='', args=None, pandoc_path=None):
+def run_pandoc(text: str = '', args: list[str] | None = None, pandoc_path: str | None = None) -> str:
     """
     Low level function that calls Pandoc with (optionally)
     some input text and/or arguments
@@ -393,11 +407,11 @@ def run_pandoc(text='', args=None, pandoc_path=None):
             temp = which('pandoc')
             if temp is None:
                 raise OSError("Path to pandoc executable does not exists")
-            sys.modules[__name__].PANDOC_PATH = temp
+            sys.modules[__name__].PANDOC_PATH = temp  # type: ignore[attr-defined]  # sets the global above
         pandoc_path = PANDOC_PATH
 
     try:
-        proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        proc = Popen([pandoc_path] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)  # type: ignore[arg-type]  # PANDOC_PATH was set above
     except FileNotFoundError:
         raise OSError(f"Given pandoc_path {pandoc_path} is invalid")
     out, err = proc.communicate(input=text.encode('utf-8'))
@@ -408,6 +422,36 @@ def run_pandoc(text='', args=None, pandoc_path=None):
         raise IOError('')
     return out.decode('utf-8')
 
+
+@overload
+def convert_text(text: str | Element | Sequence[Element],
+                 input_format: str = ...,
+                 output_format: Literal['panflute'] = ...,
+                 standalone: Literal[False] = ...,
+                 extra_args: list[str] | None = ...,
+                 pandoc_path: str | None = ...) -> list[Element]: ...
+@overload
+def convert_text(text: str | Element | Sequence[Element],
+                 input_format: str,
+                 output_format: Literal['panflute'],
+                 standalone: Literal[True],
+                 extra_args: list[str] | None = ...,
+                 pandoc_path: str | None = ...) -> Doc: ...
+@overload
+def convert_text(text: str | Element | Sequence[Element],
+                 input_format: str = ...,
+                 output_format: Literal['panflute'] = ...,
+                 *,
+                 standalone: Literal[True],
+                 extra_args: list[str] | None = ...,
+                 pandoc_path: str | None = ...) -> Doc: ...
+@overload
+def convert_text(text: str | Element | Sequence[Element],
+                 input_format: str = ...,
+                 output_format: str = ...,
+                 standalone: bool = ...,
+                 extra_args: list[str] | None = ...,
+                 pandoc_path: str | None = ...) -> Any: ...
 
 def convert_text(text,
                  input_format='markdown',
@@ -502,7 +546,8 @@ def convert_text(text,
     return out
 
 
-def inner_convert_text(text, input_format, output_format, extra_args, pandoc_path=None):
+def inner_convert_text(text: str, input_format: str, output_format: str, extra_args: list[str],
+                       pandoc_path: str | None = None) -> str:
     # like convert_text(), but does not support 'panflute' input/output
     from_arg = '--from={}'.format(input_format)
     to_arg = '--to={}'.format(output_format)
@@ -516,7 +561,7 @@ def inner_convert_text(text, input_format, output_format, extra_args, pandoc_pat
 # Functions that modify content
 # ---------------------------
 
-def _replace_keyword(self, keyword, replacement, count=0):
+def _replace_keyword(self: Element, keyword: str, replacement: Element, count: int = 0) -> Element:
     """
     replace_keyword(keyword, replacement[, count])
 
@@ -616,11 +661,13 @@ def _replace_keyword(self, keyword, replacement, count=0):
         raise NotImplementedError(type(replacement))
 
 
-# Bind the method
-Element.replace_keyword = _replace_keyword
+# Bind the method (declared in the Element class for type checkers)
+Element.replace_keyword = _replace_keyword  # type: ignore[method-assign]
 
 
-def get_option(options=None, local_tag=None, doc=None, doc_tag=None, default=None, error_on_none=True):
+def get_option(options: Mapping[str, Any] | None = None, local_tag: str | None = None,
+               doc: Doc | None = None, doc_tag: str | None = None,
+               default: Any = None, error_on_none: bool = True) -> Any:
     """
     Fetch an option variable from either a local (element) level option/attribute tag,
     a document level metadata tag, or a default.
