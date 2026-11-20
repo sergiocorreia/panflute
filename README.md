@@ -75,7 +75,9 @@ Note: pandoc 2.10 is short lived and 2.11 has minor API changes comparing to tha
 After cloning the repo and opening the panflute folder, run
 
 - `python -m pip install .` to install the package locally
-- `python -m pip install -e .` to install locally with a symlink so changes are automatically updated
+- `python -m pip install -e ".[dev]"` to install it in editable mode (changes are picked up automatically), together with the tools needed to run the tests (`pytest`) and the linter (`ruff check .`)
+
+See [CONTRIBUTING.md](/CONTRIBUTING.md#development-setup) for details.
 
 ## Contributing
 

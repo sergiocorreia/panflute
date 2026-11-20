@@ -1,7 +1,10 @@
-* install packages from [`setup.py`](../setup.py) -> `extras_require` -> `'test'`,
-  (if you use pip instead of conda you can do it right from pip),
-* change CWD in terminal to the root of the Panflute repo,
+To run the tests:
+
+* install panflute with its development dependencies, from the root of the repo:
+  `python -m pip install -e ".[dev]"` (see [CONTRIBUTING.md](../CONTRIBUTING.md#development-setup)),
+* make sure `pandoc` is installed and on your `PATH`,
+* keep the CWD at the root of the Panflute repo,
 * run:
 ```
-py.test --cov=panflute tests && coverage html && cd htmlcov && index.html && cd ..
+pytest --cov --cov-report=html
 ```

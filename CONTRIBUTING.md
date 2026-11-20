@@ -7,26 +7,57 @@ This document contains useful resources and guidelines when contributing to the 
 
 #### Table Of Contents
 
+- [Development setup](#development-setup)
 - [Style guide](#style-guide)
 - [Panflute internals](#panflute-internals)
 - [Documentation](#documentation)
 
 
+## Development setup
+
+You need Python 3.10+ and [pandoc](https://pandoc.org/installing.html) on your `PATH`.
+From a clone of the repository, create a virtual environment and install panflute in editable mode with the development tools:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate   # on Windows: .venv\Scripts\activate
+python -m pip install -e ".[dev,extras]"
+```
+
+### Running the tests
+
+Run the test suite from the root of the repository (several tests use paths relative to it) with the virtual environment activated, since some tests call `pandoc`, which in turn runs `panflute`/`panfl` and `python` from the `PATH`:
+
+```bash
+pytest
+```
+
+To also measure code coverage:
+
+```bash
+pytest --cov --cov-report=html   # report in htmlcov/index.html
+```
+
+### Linting
+
+```bash
+ruff check .
+```
+
+The ruff rules are configured in `pyproject.toml`. Please don't reformat code you are not otherwise changing.
+
+### Continuous integration
+
+[GitHub Actions](https://github.com/sergiocorreia/panflute/blob/master/.github/workflows/run_tests.yml) runs ruff, the test suite (on several Python and pandoc versions), the example filters, and a packaging check on every push and pull request.
+
 ## Style Guide
 
 For consistency, code should try to comply (as much as possible) with [pep8](https://pypi.python.org/pypi/pep8), and with the style guides by [@kennethreitz](http://docs.python-guide.org/en/latest/writing/style/) and [Google](http://google.github.io/styleguide/pyguide.html).
-
-### flake8
-
-```bash
-flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-```
 
 ### Useful tools
 
 - [`pycodestyle`](https://pypi.org/project/pycodestyle/) (formerly `pep8`): run it with `pycodestyle ./panflute > pycodestyle-report.txt`
 - [`pylint`](https://www.pylint.org/): run it with `pylint panflute > pylint-report.txt` from the root folder of the repo
-- [Github Actions](https://github.com/sergiocorreia/panflute/blob/master/.github/workflows/run_tests.yml). CI tool that run automatically after pushing code. Amongst other things, it runs pytest on all the `test_*.py` files in the [`\tests`](https://github.com/sergiocorreia/panflute/tree/master/tests) folder. 
 
 
 ## Panflute internals
@@ -63,9 +94,9 @@ flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 ## Documentation
 
 Panflute uses [Sphinx](http://www.sphinx-doc.org/) for its documentation.
-To install it, install Python 3.3+ and then run `pip install sphinx` (or see [here](http://www.sphinx-doc.org/en/1.4.8/install.html)).
+To install it, run `pip install sphinx`.
 
-To build the documentation, navigate to the `/docs` folder and type `make html`. The build files will then be placed in `/docs/build/html`, and can be copied into a [website](scorreia.com/software/panflute/)
+To build the documentation, run `sphinx-build -b html docs/source docs/build/html` from the root of the repository. The build files will then be placed in `/docs/build/html`, and can be copied into the [website](https://scorreia.com/software/panflute/).
 
 The guides are written in [REST](http://www.sphinx-doc.org/en/stable/rest.html) and located in the [/docs/source](https://github.com/sergiocorreia/panflute/tree/master/docs/source) folder.
 

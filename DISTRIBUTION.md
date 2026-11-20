@@ -1,89 +1,93 @@
-# PyPI Distribution Instructions
+# Releasing panflute
 
-## Guides
+Releases are built and uploaded to PyPI by GitHub Actions
+([`.github/workflows/publish.yml`](.github/workflows/publish.yml)) using
+[PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/).
+No PyPI passwords or API tokens are stored in the repository or its secrets.
 
-- https://packaging.python.org/distributing/#upload-your-distributions
-- http://peterdowns.com/posts/first-time-with-pypi.html
+- Publishing a **GitHub release** uploads to [PyPI](https://pypi.org/project/panflute/).
+- Publishing a GitHub **prerelease**, or running the workflow manually
+  (*Actions → Publish on PyPI → Run workflow*), uploads to
+  [TestPyPI](https://test.pypi.org/project/panflute/) only.
+
+The version number lives in one place: [`panflute/version.py`](panflute/version.py).
 
 
-## Instructions
+## Release checklist
 
-First you may want to test a local install and test it:
+1. Make sure CI is green on `master`.
 
-```
-python setup.py install
-py.test
-```
+2. Bump `__version__` in `panflute/version.py`, update the changelog in
+   `README.md` (and the supported pandoc versions table if needed), and commit.
 
-Then,
+3. Optionally, check the build locally:
 
-1. Copy .pypirc file from backup (if required, as it's not synced to git)
-2. Test it: `python setup.py sdist upload -r pypitest`
-3. Run it live:
+   ```bash
+   python -m pip install build twine
+   python -m build
+   twine check --strict dist/*
+   ```
 
-```
-pandoc README.md --output=README.rst && python setup.py sdist upload -r pypi
-```
+4. Optionally, do a dry run on TestPyPI: run the *Publish on PyPI* workflow
+   manually from the Actions tab (or publish a GitHub prerelease) and then
+   `pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ panflute==X.Y.Z`.
+   TestPyPI never accepts the same version twice, so a re-run of an
+   already uploaded version is skipped rather than failing.
+
+5. Create a GitHub release whose tag is the version, e.g. `2.4.0` or `v2.4.0`
+   (*Releases → Draft a new release*), and publish it. The workflow refuses to
+   publish if the tag (minus a leading `v`) differs from `panflute.__version__`.
+
+6. If the `pypi` environment requires approval, approve the deployment in the
+   workflow run. Then check <https://pypi.org/project/panflute/>.
+
+The [conda-forge feedstock](https://github.com/conda-forge/panflute-feedstock)
+usually picks up new PyPI releases automatically through its bot.
+
+
+## One-time setup (already done once; repeat only if it is lost)
+
+### PyPI and TestPyPI trusted publishers
+
+On <https://pypi.org/manage/project/panflute/settings/publishing/>, add a
+*GitHub* trusted publisher with:
+
+| Field             | Value              |
+| ----------------- | ------------------ |
+| Owner             | `sergiocorreia`    |
+| Repository name   | `panflute`         |
+| Workflow name     | `publish.yml`      |
+| Environment name  | `pypi`             |
+
+Do the same on <https://test.pypi.org/manage/project/panflute/settings/publishing/>
+with environment name `testpypi` (the project must exist on TestPyPI and
+you must be an owner there; otherwise add it as a "pending publisher").
+
+### GitHub environments
+
+In the repository's *Settings → Environments*, create two environments named
+`pypi` and `testpypi`. Recommended for `pypi`: add yourself as a required
+reviewer and restrict deployments to protected branches/tags.
+
+### Old secrets
+
+The old workflows authenticated with the repository secrets `pypi_password`
+and `test_pypi_password`. They are no longer used and should be deleted
+(*Settings → Secrets and variables → Actions*), and the corresponding PyPI
+API tokens revoked.
+
 
 ## Documentation
 
-To run *and* update docs and website, run:
-
-```
-cd docs && make.bat html && cd .. && cd ../website && jekyll build && s3_website push && cd ../panflute
-```
-
-## PDF Documentation
-
-To build the pdf version (slow), install miktex or similar and run:
-
-```
-cd docs && make.bat latex && cd build && cd latex && Makefile && cd
-```
-
-(On Windows, replace `Makefile` with a few runs of `pdflatex Panflute.tex`)
-
-Then copy the resulting PDF into the Panflute folder of the website.
-
-
-## Unit Tests and Code Coverage
-
-To run unit tests locally and check code coverage, run:
-
-```
-pytest --cov=panflute tests && coverage html && cd htmlcov && index.html && cd ..
-```
-
-This requires a development environment,
-which can be installed from the repository's root directory using:
-
-```shell
-pip install --editable ".[dev]"
-```
-
-
-## Pushing to PyPI through Twine
-
-First, ensure that you have `twine` installed and the checks pass:
+The documentation at <https://scorreia.com/software/panflute/> is built with
+Sphinx from [`docs/source`](docs/source):
 
 ```bash
-cls && python setup.py sdist && twine check dist/*
+python -m pip install sphinx
+sphinx-build -b html docs/source docs/build/html
 ```
 
-Then try the test PyPI repository:
+Then upload `docs/build/html` to the website.
 
-```bash
-twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
-```
-
-Finally update to the official repo:
-
-```bash
-twine upload  dist/*
-```
-
-### Possible errors
-
-#### `warning: `long_description_content_type` missing. defaulting to `text/x-rst`.`
-
-Solution: ensure that files have Unix line endings (not Windows)
+To build the PDF version, install a LaTeX distribution and run
+`sphinx-build -M latexpdf docs/source docs/build`.
