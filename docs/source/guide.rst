@@ -131,7 +131,7 @@ Navigating through the document tree
 
 You might wish to apply a filter that depends on the parent or sibling objects of an element. For instance, Modify the first row (`TableRow`) of a table, or all the `Str` items nested within a header.
 
-For this, every element has a `.parent` attribute (and the related `.next`, `.prev`, `.ancestor(#)`, `.position`, `.offset(#)` attributes; `.index` is an alias of `.position`, except on a `MetaList`, where `.index()` is the list method).
+For this, every element has a `.parent` attribute (and the related `.next`, `.prev`, `.ancestor(#)`, `.index_in_parent`, `.offset(#)` attributes; `.index` is an alias of `.index_in_parent`, except on a `MetaList`, where `.index()` is the list method).
 
 For example, the code below will emphasize all text in the last row of every table:
 
@@ -145,11 +145,16 @@ These attributes are:
   parent; otherwise, the name of the attribute of the parent that holds it,
   such as ``'caption'`` or ``'head'`` for a table, or ``'citations'``
   for a :class:`.Cite`.
-- ``.position``: the position of the element in the list that holds it,
-  so that ``elem.container[elem.position] is elem``; ``None`` when the
-  element is not in a list (e.g. the ``.caption`` of a table, or a value
-  of a :class:`.MetaMap`). ``.index`` is the older name of this attribute,
-  and still works on every element except :class:`.MetaList` (see below).
+- ``.index_in_parent``: the index of the element within the list that
+  ``.location`` names, so that
+  ``elem.container[elem.index_in_parent] is elem``. A parent can hold
+  several lists (the ``.term`` and ``.definitions`` of a
+  :class:`.DefinitionItem`, for instance), and the index counts only within
+  the element's own list. ``None`` when no list holds the element: the
+  :class:`.Doc`, an element without a parent, the ``.caption`` of a table,
+  or a value of a :class:`.MetaMap`. ``.index`` is the older name of this
+  attribute, and still works on every element except :class:`.MetaList`
+  (see below).
 - ``.next``, ``.prev`` and ``.offset(n)``: the sibling elements in the same
   list (or ``None``), and ``.ancestor(n)``: the parent of the parent, etc.
 - ``.container``: the list (or dict) that holds the element, and ``.doc``:
@@ -159,20 +164,20 @@ These attributes are:
 
     >>> para = Para(Str('a'), Space(), Str('b'))
     >>> b = para.content[2]
-    >>> b.parent is para, b.position, b.prev, b.offset(-2)
+    >>> b.parent is para, b.index_in_parent, b.prev, b.offset(-2)
     (True, 2, Space, Str(a))
 
 These attributes are set as soon as an element is added to another one
 (when building it, or with ``append()``, ``insert()``, ``elem.content[i] = ...``,
-``elem.content = [...]``, etc.), and the positions are kept up to date when
-elements are inserted or deleted. An element that is removed from its parent
-keeps its old ``.parent`` and ``.position``.
+``elem.content = [...]``, etc.), and the containers keep ``.index_in_parent``
+up to date when elements are inserted or deleted. An element that is removed from its parent
+keeps its old ``.parent`` and ``.index_in_parent``.
 
 .. note:: :class:`.MetaList` is a list-like object, so ``metalist.index(value)``
    is the standard list method (the position of ``value`` in the list), as is
-   ``metalist.remove(value)``. The position of a :class:`.MetaList` in its own
-   container is ``metalist.position``. (In panflute 2.x, ``metalist.index``
-   was that position.)
+   ``metalist.remove(value)``. The index of a :class:`.MetaList` in its own
+   container is ``metalist.index_in_parent``. (In panflute 2.x,
+   ``metalist.index`` was that index.)
 
 Lists of elements and slices
 ****************************
@@ -180,12 +185,12 @@ Lists of elements and slices
 The ``.content`` of an element (and other lists of elements, such as the
 ``.citations`` of a :class:`.Cite`) is a :class:`.ListContainer`: a
 list-like object that only accepts elements of the right type, and that
-sets their ``.parent`` and ``.position``. It supports the usual list
+sets their ``.parent`` and ``.index_in_parent``. It supports the usual list
 operations (``append``, ``insert``, ``del``, ``elem.content[i:j] = [...]``, etc.).
 
 A slice such as ``para.content[1:3]`` is a new container that holds the same
 elements; changing the slice does not change ``para.content``, and reading
-it does not change the ``.parent`` or ``.position`` of the elements. A slice is an
+it does not change the ``.parent`` or ``.index_in_parent`` of the elements. A slice is an
 instance of a (private) subclass of :class:`.ListContainer`, so check its type
 with ``isinstance(s, ListContainer)``, or use ``list(s)`` to get a plain list.
 

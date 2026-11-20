@@ -25,12 +25,12 @@ page of the documentation explains how to migrate.
   project must keep working there, require `panflute<3` for those Pythons.
 - **`MetaList.index` is now the sequence method** `index(value, start=0, stop=None)`,
   as on `list` ([#258](https://github.com/sergiocorreia/panflute/issues/258)).
-  It used to be the position of the `MetaList` in its container, which made
-  `metalist.index(value)` and `metalist.remove(value)` fail. The position of
-  any element is now the new `Element.position` attribute; on every other
-  element, `.index` remains a read/write alias of `.position`.
-  *Migration:* replace `metalist.index` with `metalist.position` where it
-  refers to a `MetaList` (beware that `if metalist.index is not None` is now
+  It used to be the index of the `MetaList` in its container, so
+  `metalist.index(value)` and `metalist.remove(value)` failed. On every
+  element, that index is now the new attribute `Element.index_in_parent`; on
+  every element except `MetaList`, `.index` remains a read/write alias of it.
+  *Migration:* where `metalist.index` refers to a `MetaList`, replace it with
+  `metalist.index_in_parent` (beware that `if metalist.index is not None` is now
   always true, and that assigning to `metalist.index` raises `AttributeError`).
 - **Pickles of a `MetaList` made with panflute 2.x cannot be loaded** by 3.0
   (`AttributeError`), nor can pickles of anything that contains one, such as
@@ -40,7 +40,7 @@ page of the documentation explains how to migrate.
 - **Slices of a `ListContainer`** (`elem.content[1:3]`) are now instances of
   a private subclass of `ListContainer`, so `type(s) is ListContainer` is
   false (`isinstance(s, ListContainer)` is still true). Reading, iterating or
-  changing a slice no longer changes the `parent`/`position` of the elements
+  changing a slice no longer changes the `parent`/`index_in_parent` of the elements
   (reading it used to re-index them relative to the slice). As before, a slice
   is a new container holding the same elements.
   *Migration:* use `isinstance()`, or `list(s)` for a plain list.
@@ -74,9 +74,10 @@ page of the documentation explains how to migrate.
     although only elements with attributes have them;
   - passing a bare class (`Para(Space)`) instead of an instance
     (`Para(Space())`) still works at runtime but is rejected by type checkers.
-- `Element.position`: the position of an element in the list container that
-  holds it, or `None` when it is not in a list (e.g. a table caption, or a
-  value of a `MetaMap`); see `MetaList.index` above.
+- `Element.index_in_parent`: the index of an element within the list
+  container that holds it (`elem.container`), or `None` when no list
+  container holds it (e.g. a table caption, or a value of a `MetaMap`);
+  see `MetaList.index` above.
 - `panflute --help`, `panflute -h` and `panflute --version` print a short
   usage text or the version (they used to wait for a document on stdin).
 
@@ -134,17 +135,17 @@ page of the documentation explains how to migrate.
 - `convert_text(..., standalone=True, extra_args=args)` appended
   `'--standalone'` to the caller's `args` list, making later calls with the
   same list standalone too ([#262](https://github.com/sergiocorreia/panflute/issues/262)).
-- An element's `parent` (and `position`, in a list) was only set when it was
+- An element's `parent` (and `index_in_parent`, in a list) was only set when it was
   read back from its container: it is now set as soon as the element is added
   (when the parent is built, and by `append`, `insert`, item and slice
   assignment, and `MetaMap`/`DictContainer` item assignment)
   ([#255](https://github.com/sergiocorreia/panflute/issues/255),
   [#256](https://github.com/sergiocorreia/panflute/pull/256), thanks to me-kell).
-- Element positions (`position`/`index`, and so `next`, `prev` and `offset()`)
+- Element indexes (`index_in_parent`/`index`, and so `next`, `prev` and `offset()`)
   went stale or wrong: after `insert()` or `del` on a container, the elements
-  after the change kept their old position (`b.next` could be `b` itself);
-  reading with a negative index (`content[-1]`) stored a negative position;
-  reading a slice re-indexed the original elements. Positions are now always non-negative and
+  after the change kept their old index (`b.next` could be `b` itself);
+  reading with a negative index (`content[-1]`) stored a negative index;
+  reading a slice re-indexed the original elements. Indexes are now always non-negative and
   kept up to date by insertions, deletions and slice assignments.
 - `MetaList.index(value)` and `MetaList.remove(value)` raised `TypeError`
   ([#258](https://github.com/sergiocorreia/panflute/issues/258); see
@@ -225,7 +226,7 @@ Measured with `tests/benchmark.py` on CPython 3.12, panflute 2.3.1 vs 3.0.0
 - `Caption(short_caption=[])` is written as "no short caption" (`null`).
 - `MetaMap(...) == {...}` is `False` (compare with `doc.get_metadata()` instead),
   and `Doc.__eq__` ignores `format` and `api_version`.
-- An element removed from a container keeps its old `parent` and `position`;
+- An element removed from a container keeps its old `parent` and `index_in_parent`;
   an element held by two containers (not counting slices) reports the one it
   was last added to or read from.
 

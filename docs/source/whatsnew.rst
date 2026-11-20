@@ -12,7 +12,7 @@ later**, and supports pandoc 2.11.4 to 3.14. The highlights are:
   custom writers, ...). Documents with such raw elements could not be
   loaded before.
 - **Reliable navigation**: ``.parent`` is set as soon as an element is added
-  to another one, and ``.position`` (the new name of ``.index``), ``.next``,
+  to another one, and ``.index_in_parent`` (the new name of ``.index``), ``.next``,
   ``.prev`` and ``.offset()`` stay correct after insertions and deletions
   (see :ref:`navigation`).
 - **Faster filters**: ``import panflute`` takes about a quarter of the time
@@ -40,16 +40,16 @@ documents, and panflute stops with an "invalid api version" error.
 ``MetaList.index`` is now a method
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Every element has a ``.position`` attribute: its position in the list that
-holds it, or ``None`` when it is not in a list (e.g. the caption of a table,
-or a value of a :class:`.MetaMap`). On every element except
+Every element has an ``.index_in_parent`` attribute: its index within the
+list that holds it, or ``None`` when no list holds it (e.g. the caption of a
+table, or a value of a :class:`.MetaMap`). On every element except
 :class:`.MetaList`, ``.index`` remains an alias of it, so filters that read
 or assign ``elem.index`` work as before.
 
 The exception is :class:`.MetaList`, which is a list-like object: there,
 ``index()`` is now the standard list method, as is ``remove()``
-(they raised ``TypeError`` in 2.x). If your filter uses the position of a
-:class:`.MetaList`, use ``.position`` instead:
+(they raised ``TypeError`` in 2.x). If your filter reads the index of a
+:class:`.MetaList` in its container, use ``.index_in_parent`` instead:
 
 .. code-block:: python
 
@@ -58,7 +58,7 @@ The exception is :class:`.MetaList`, which is a list-like object: there,
         ...
 
     # panflute 3.0 (works for every element)
-    if metalist.position == 0:
+    if metalist.index_in_parent == 0:
         ...
 
     # and now this works as for a list:
@@ -84,7 +84,7 @@ should use ``isinstance(s, ListContainer)`` instead, or convert the slice
 with ``list(s)``.
 
 Reading, iterating or changing a slice no longer changes the ``.parent`` or
-``.position`` of the elements in it (reading it used to re-index them
+``.index_in_parent`` of the elements in it (reading it used to re-index them
 relative to the slice): they keep referring to the original list.
 
 Table cells

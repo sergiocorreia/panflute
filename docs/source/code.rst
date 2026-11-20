@@ -29,20 +29,29 @@ Base elements
 
       :rtype: ``str`` | ``None``
 
-   .. attribute:: position
+   .. attribute:: index_in_parent
 
-      Position of the element in the list container that holds it: in
-      ``elem.parent.content``, or in another list attribute of the parent
-      (such as ``.citations`` of a :class:`.Cite`), so that
-      ``elem.container[elem.position] is elem``.
-      ``None`` if the element is not in a list container: it has no parent,
-      it is the value of a single-element attribute (such as ``.caption``
-      of a table), or a value of a :class:`.MetaMap`.
+      Index of the element within the list container that holds it. That
+      container is :attr:`container`, the attribute of the parent named by
+      :attr:`location` (``elem.parent.content`` when ``.location`` is
+      ``None``), so that ``elem.container[elem.index_in_parent] is elem``.
+
+      Some parents hold more than one list container (``.term`` and
+      ``.definitions`` of a :class:`.DefinitionItem`, ``.content`` and ``.citations`` of a
+      :class:`.Cite`, ``.head`` and ``.content`` of a :class:`.TableBody`),
+      so this is the index within that one container, not among all the
+      children of the parent; ``.location`` says which container it is.
+
+      ``None`` if no list container holds the element: it has no parent (the
+      root :class:`.Doc`, or an element not yet added to another one), it is
+      the value of a single-element attribute (such as ``.caption`` of a
+      table), or it is a value of a :class:`.MetaMap`.
 
       Kept up to date by the containers: it is set when the element is
       added to a container or read from it (``elem.content[i]``, iterating,
       walking), and updated when elements are inserted or deleted before it.
-      :meth:`offset`, :attr:`next` and :attr:`prev` are based on it.
+      :meth:`offset`, :attr:`next` and :attr:`prev` are based on it, and
+      :attr:`index` is an alias of it (except on :class:`.MetaList`).
 
       :rtype: ``int`` | ``None``
 
@@ -90,8 +99,8 @@ Low-level classes
 
    We deal with the first problem by wrapping the list of items
    with a ListContainer class of type :class:`collections.abc.MutableSequence`.
-   This class sets the ``.parent``, ``.location`` and ``.position`` attributes
-   of the elements added to it, and updates the ``.position`` of the
+   This class sets the ``.parent``, ``.location`` and ``.index_in_parent`` attributes
+   of the elements added to it, and updates the ``.index_in_parent`` of the
    elements that move when others are inserted or deleted.
 
    For the second problem, we use setters and getters which update the
@@ -99,7 +108,7 @@ Low-level classes
 
    A slice of a ListContainer (``e.content[0:2]``) is a new container,
    an instance of a private subclass of ListContainer, which holds the same
-   elements but does not change their ``.parent`` or ``.position``.
+   elements but does not change their ``.parent`` or ``.index_in_parent``.
 
 
 Standard elements
