@@ -2,6 +2,8 @@
 
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 
+Changes that were considered and left out, mostly speed-ups with their measurements, are listed in [IDEAS.md](IDEAS.md).
+
 This document contains useful resources and guidelines when contributing to the project:
 
 
