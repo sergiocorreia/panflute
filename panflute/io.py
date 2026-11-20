@@ -21,7 +21,6 @@ import io
 import os
 import sys
 import json
-import codecs  # Used in sys.stdout writer
 from functools import partial
 
 if TYPE_CHECKING:
@@ -60,11 +59,19 @@ def load(input_stream: SupportsRead[str] | None = None) -> Doc:
     :rtype: :class:`.Doc`
     """
 
-    if input_stream is None:
-        input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-
     # Load JSON and validate it
-    doc = json.load(input_stream, object_hook=from_json)
+    if input_stream is None:
+        # Pandoc sends UTF-8, whatever the locale: read the bytes of stdin
+        # (without wrapping sys.stdin.buffer in a TextIOWrapper, which would
+        # close it when garbage collected)
+        buffer = getattr(sys.stdin, 'buffer', None)
+        if buffer is not None:
+            text = buffer.read().decode('utf-8')
+        else:  # sys.stdin was replaced by a text stream (e.g. io.StringIO)
+            text = sys.stdin.read()
+        doc = json.loads(text, object_hook=from_json)
+    else:
+        doc = json.load(input_stream, object_hook=from_json)
 
     # Notes:
     # - The hook gets called for dicts (not lists), and the deepest dicts
@@ -123,19 +130,31 @@ def dump(doc: Doc, output_stream: SupportsWrite[str] | None = None) -> None:
         msg = f'panflute.dump needs input of type "panflute.Doc" but received one of type "{type(doc).__name__}"'
         raise TypeError(msg)
 
-    if output_stream is None:
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())  # type: ignore[union-attr]  # TextIO has no detach()
-        output_stream = sys.stdout
-
     json_serializer = lambda elem: elem.to_json()
 
-    output_stream.write(json.dumps(
+    text = json.dumps(
         obj=doc,
         default=json_serializer,  # Serializer
         check_circular=False,
         separators=(',', ':'),  # Compact separators, like Pandoc
         ensure_ascii=False  # For Pandoc compat
-    ))
+    )
+
+    if output_stream is not None:
+        output_stream.write(text)
+        return
+
+    # Pandoc expects UTF-8, whatever the locale (and the encoding of
+    # sys.stdout): write the bytes to the binary buffer underneath sys.stdout
+    # (without newline translation; the JSON text has no line breaks anyway)
+    stdout = sys.stdout
+    buffer = getattr(stdout, 'buffer', None)
+    if buffer is not None:
+        stdout.flush()  # Keep the order of anything written to stdout before
+        buffer.write(text.encode('utf-8'))
+        buffer.flush()
+    else:  # sys.stdout was replaced by a text stream (e.g. io.StringIO)
+        stdout.write(text)
 
 
 def toJSONFilters(*args: Any, **kwargs: Any) -> Doc | None:

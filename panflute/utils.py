@@ -180,7 +180,13 @@ class ContextImport:
     def __enter__(self) -> ModuleType:
         if self.extra_dir is not None:
             sys.path.insert(0, self.extra_dir)
-        return import_module(self.module)
+        try:
+            return import_module(self.module)
+        except BaseException:
+            # __exit__ is not called when __enter__ fails
+            if self.extra_dir is not None:
+                sys.path.pop(0)
+            raise
 
     def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None,
                  traceback: TracebackType | None) -> None:

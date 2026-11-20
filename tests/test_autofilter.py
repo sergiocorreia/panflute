@@ -33,18 +33,20 @@ pytestmark = pytest.mark.usefixtures('clean_import_state', 'fake_stdout')
 @pytest.fixture
 def fake_stdout(monkeypatch):
     """
-    Point both sys.stdout and sys.__stdout__ to an in-memory UTF-8 stream.
-
-    autorun_filters() intercepts sys.stdout while filters run and afterwards
-    sets it to sys.__stdout__ (see test_regressions.py), and dump() detaches
-    sys.stdout when writing to it; neither may touch the real stdout of the
-    pytest process. Returns the underlying bytes buffer.
+    Point sys.__stdout__ to an in-memory UTF-8 stream, so that no test can
+    write to the real stdout of the pytest process. Returns the underlying
+    bytes buffer; tests that read what was written to sys.stdout must call
+    redirect_stdout() in the test body (pytest's own output capturing sets
+    sys.stdout again after the fixtures are set up).
     """
     buffer = io.BytesIO()
     stream = io.TextIOWrapper(buffer, encoding='utf-8')
-    monkeypatch.setattr(sys, 'stdout', stream)
     monkeypatch.setattr(sys, '__stdout__', stream)
     return buffer
+
+
+def redirect_stdout(monkeypatch, buffer):
+    monkeypatch.setattr(sys, 'stdout', io.TextIOWrapper(buffer, encoding='utf-8'))
 
 
 def stdout_text(buffer):
@@ -188,6 +190,7 @@ def test_main_reads_stdin_and_writes_stdout(monkeypatch, fake_stdout):
     monkeypatch.setattr(sys, 'argv', ['panflute', 'html'])
     text = doc_json(meta={'panflute-filters': 'test_filter', 'panflute-path': str(PANFL / 'bar')})
     monkeypatch.setattr(sys, 'stdin', io.TextIOWrapper(io.BytesIO(text.encode('utf-8'))))
+    redirect_stdout(monkeypatch, fake_stdout)
     pf.main()
     assert math_text(stdout_text(fake_stdout)) == '1+1html'
 
@@ -238,9 +241,10 @@ def test_panfl_help():
 
 
 def run_panfl(args, input_text, monkeypatch, fake_stdout):
-    # Not through CliRunner: its output capture does not survive autorun_filters()
-    # resetting sys.stdout (see fake_stdout above).
+    # Not through CliRunner: its output capture did not survive autorun_filters()
+    # resetting sys.stdout to sys.__stdout__ (fixed in 3.0).
     monkeypatch.setattr(sys, 'stdin', io.TextIOWrapper(io.BytesIO(input_text.encode('utf-8'))))
+    redirect_stdout(monkeypatch, fake_stdout)
     pf.panfl.main(args, standalone_mode=False)
     return stdout_text(fake_stdout)
 

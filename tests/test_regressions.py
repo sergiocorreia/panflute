@@ -364,14 +364,12 @@ def test_shell_without_waiting(tmp_path):
     assert marker.read_text() == 'x'
 
 
-@pytest.mark.xfail(strict=True, reason='TableCell rowspan/colspan are not type checked (floats reach the JSON)')
 @pytest.mark.parametrize('kwargs', [{'rowspan': 1.5}, {'colspan': 2.0}])
 def test_table_cell_spans_must_be_int(kwargs):
     with pytest.raises(TypeError):
         pf.TableCell(**kwargs)
 
 
-@pytest.mark.xfail(strict=True, reason='autorun_filters resets sys.stdout to sys.__stdout__')
 def test_autorun_filters_restores_previous_stdout(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, 'dont_write_bytecode', True)
     monkeypatch.setattr(sys, '__stdout__', io.StringIO())  # never touch the real one
@@ -382,7 +380,6 @@ def test_autorun_filters_restores_previous_stdout(tmp_path, monkeypatch):
     assert sys.stdout is mine
 
 
-@pytest.mark.xfail(strict=True, reason='autorun_filters leaves sys.stdout redirected when a filter fails')
 def test_autorun_filters_restores_stdout_on_error(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, 'dont_write_bytecode', True)
     monkeypatch.setattr(sys, '__stdout__', io.StringIO())
@@ -394,7 +391,6 @@ def test_autorun_filters_restores_stdout_on_error(tmp_path, monkeypatch):
     assert sys.stdout is mine
 
 
-@pytest.mark.xfail(strict=True, reason='ContextImport leaves its directory on sys.path when the import fails')
 def test_context_import_restores_sys_path_on_import_error(tmp_path):
     from panflute.utils import ContextImport
     path_before = list(sys.path)
@@ -404,19 +400,6 @@ def test_context_import_restores_sys_path_on_import_error(tmp_path):
     assert sys.path == path_before
 
 
-def _click_ignores_no_sys_path():
-    """True if `--no-sys-path` (is_flag, default=True) parses as True (click >= 8.2)."""
-    import click
-
-    @click.command()
-    @click.option('--no-sys-path', 'sys_path', is_flag=True, default=True)
-    def cmd(sys_path):
-        return sys_path
-    return cmd.main(['--no-sys-path'], standalone_mode=False) is True
-
-
-@pytest.mark.xfail(_click_ignores_no_sys_path(), strict=True,
-                   reason='panfl --no-sys-path has no effect with click >= 8.2')
 def test_panfl_no_sys_path_option(monkeypatch):
     import panflute.autofilter as autofilter
     calls = []
@@ -425,6 +408,74 @@ def test_panfl_no_sys_path_option(monkeypatch):
     pf.panfl.main(['f', '-t', 'html', '--no-sys-path'], standalone_mode=False)
     pf.panfl.main(['f', '-t', 'html'], standalone_mode=False)
     assert [c[3] for c in calls] == [False, True]
+
+
+def test_autorun_filters_warning_is_a_message_not_a_tuple(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(sys, 'dont_write_bytecode', True)
+    (tmp_path / 'noisy_filter_xyz.py').write_text('def main(doc):\n    print("noise")\n')
+    autorun_filters(['noisy_filter_xyz'], pf.Doc(), [str(tmp_path)], False)
+    err = capsys.readouterr().err
+    assert 'Panflute Warning: filter "noisy_filter_xyz" wrote to stdout, but Pandoc does not allow that' in err
+    assert "('Panflute" not in err
+
+
+@pytest.mark.parametrize('kwargs', [{'rowspan': True}, {'colspan': 2}])
+def test_table_cell_spans_accept_ints(kwargs):
+    cell = pf.TableCell(**kwargs)
+    assert cell.to_json()[2:4] == [kwargs.get('rowspan', 1), kwargs.get('colspan', 1)]
+
+
+def test_citation_default_prefix_and_suffix():
+    c = pf.Citation('id')
+    assert len(c.prefix) == 0 and len(c.suffix) == 0
+    assert c.to_json()['citationPrefix'] == [] and c.to_json()['citationSuffix'] == []
+
+
+def test_dump_to_stdout_does_not_replace_sys_stdout(monkeypatch):
+    buffer = io.BytesIO()
+    stream = io.TextIOWrapper(buffer, encoding='latin-1', newline='\r\n')
+    monkeypatch.setattr(sys, 'stdout', stream)
+    print('before')
+    pf.dump(pf.Doc(pf.Para(pf.Str('h\u00e9llo \u2603')), api_version=(1, 23, 1)))
+    assert sys.stdout is stream and not stream.closed
+    print('after')
+    stream.flush()
+    expected = ('{"pandoc-api-version":[1,23,1],"meta":{},"blocks":[{"t":"Para","c":'
+                '[{"t":"Str","c":"h\u00e9llo \u2603"}]}]}')
+    assert buffer.getvalue() == b'before\r\n' + expected.encode('utf-8') + b'after\r\n'
+
+
+def test_dump_to_stdout_without_buffer(monkeypatch):
+    out = io.StringIO()               # e.g. contextlib.redirect_stdout(), or pytest's capsys
+    monkeypatch.setattr(sys, 'stdout', out)
+    pf.dump(pf.Doc(api_version=(1, 23, 1)))
+    assert sys.stdout is out
+    assert out.getvalue() == '{"pandoc-api-version":[1,23,1],"meta":{},"blocks":[]}'
+
+
+def test_load_from_stdin_does_not_close_it(monkeypatch):
+    text = '{"pandoc-api-version":[1,23,1],"meta":{},"blocks":[{"t":"Para","c":[{"t":"Str","c":"\u00e9"}]}]}'
+    stdin = io.TextIOWrapper(io.BytesIO(text.encode('utf-8')), encoding='ascii')
+    monkeypatch.setattr(sys, 'stdin', stdin)
+    doc = pf.load()
+    import gc
+    gc.collect()
+    assert doc.content[0].content[0].text == '\u00e9'
+    assert sys.stdin is stdin and not stdin.buffer.closed
+
+
+def test_load_from_stdin_without_buffer(monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO('{"pandoc-api-version":[1,23,1],"meta":{},"blocks":[]}'))
+    assert pf.load() == pf.Doc()
+
+
+@pytest.mark.parametrize('arg', ['--help', '-h', '--version'])
+def test_panflute_command_help_and_version(arg, monkeypatch, capsys):
+    monkeypatch.setattr(sys, 'argv', ['panflute', arg])
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(''))   # would fail if it were read
+    pf.main()
+    out = capsys.readouterr().out
+    assert ('Usage: panflute' in out) if arg != '--version' else (out == f'panflute {pf.__version__}\n')
 
 
 # ---------------------------------------------------------------------------
