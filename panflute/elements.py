@@ -23,7 +23,7 @@ from .table_elements import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Mapping
-    from typing import Any, Literal, NoReturn
+    from typing import Any, Literal
 
     # Values accepted by MetaList/MetaMap (and Doc metadata), converted with builtin2meta()
     _MetaInput = (MetaValue | Inline | Block | str | bool | int | float
@@ -1183,12 +1183,13 @@ class MetaList(MetaValue, MutableSequence[MetaValue]):
     @overload
     def __setitem__(self, i: int, v: _MetaInput) -> None: ...
     @overload
-    def __setitem__(self, i: slice, v: Iterable[_MetaInput]) -> NoReturn: ...
-    # TODO(bug-fix step): slice assignment currently always raises (issue #260);
-    # once fixed, the slice overload above should return None.
+    def __setitem__(self, i: slice, v: Iterable[_MetaInput]) -> None: ...
 
     def __setitem__(self, i: int | slice, v: Any) -> None:
-        self.content[i] = builtin2meta(v)
+        if isinstance(i, slice):
+            self.content[i] = [builtin2meta(x) for x in v]
+        else:
+            self.content[i] = builtin2meta(v)
 
     def __delitem__(self, i: int | slice) -> None:
         del self.content[i]
@@ -1241,11 +1242,16 @@ class MetaMap(MetaValue, MutableMapping[str, MetaValue]):
         return self._content
 
     @content.setter  # type: ignore[override]
-    def content(self, value: Iterable[tuple[str, MetaValue]]) -> None:
-        if isinstance(value, dict):
-            # TODO(bug-fix step): should test for DictContainer (dicts have no .dict)
-            value = value.dict.items()  # type: ignore[attr-defined]
-        self._content = DictContainer(*value, oktypes=MetaValue, parent=self)
+    def content(self, value: Mapping[str, MetaValue] | Iterable[tuple[str, MetaValue]]) -> None:
+        from collections.abc import Mapping  # (not at module level: elements is star-imported)
+        items: Iterable[tuple[str, MetaValue]]
+        if isinstance(value, DictContainer):
+            items = value.dict.items()  # (without attaching the values to the old MetaMap)
+        elif isinstance(value, Mapping):
+            items = value.items()
+        else:
+            items = value
+        self._content = DictContainer(*items, oktypes=MetaValue, parent=self)
 
     def __getitem__(self, i: str) -> MetaValue:
         return self.content[i]

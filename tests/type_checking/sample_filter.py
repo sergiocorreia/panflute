@@ -47,6 +47,7 @@ def action(elem: pf.Element, doc: pf.Doc) -> pf.Element | list[pf.Element] | Non
         assert_type(elem.content[1:], pf.ListContainer)
         elem.content.append(pf.Space())
         elem.content = [pf.Str('New'), pf.Space(), pf.Str('title')]
+        elem.content[0:1] = [pf.Str('A'), pf.Space(), pf.Str('new')]
     elif isinstance(elem, pf.CodeBlock) and 'hidden' in elem.classes:
         return [pf.Para(pf.Str(elem.text)), pf.HorizontalRule()]
     elif isinstance(elem, pf.Math):
@@ -172,12 +173,15 @@ def metadata() -> None:
     ml.append('c')
     ml.extend([pf.MetaBool(False), 'd'])
     ml[0] = {'key': 'value'}
+    ml[0:1] = ['x', True]
     del ml[1:]
 
     mm = pf.MetaMap(('a', 'b'), c=True)
     assert_type(mm['a'], pf.MetaValue)
     assert_type(mm.content, pf.DictContainer)
     mm['d'] = [1, 2]
+    mm.content = {'e': pf.MetaString('f')}
+    mm.content = [('g', pf.MetaBool(True))]
     for key in mm:
         assert_type(key, str)
 

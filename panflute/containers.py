@@ -16,7 +16,7 @@ from .utils import check_type, encode_dict, debug
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator
-    from typing import Any, NoReturn
+    from typing import Any
     from .base import Element, MetaValue, _Action
     from .elements import Doc
 
@@ -75,37 +75,75 @@ class ListContainer(MutableSequence["Element"]):
 
     def __getitem__(self, i: int | slice) -> Element | ListContainer:
         if isinstance(i, int):
-            return attach(self.list[i], self.parent, self.location, i)
+            element = self.list[i]
+            if i < 0:
+                i += len(self.list)
+            return attach(element, self.parent, self.location, i)
         else:
-            newlist = self.list.__getitem__(i)
-            obj = ListContainer(*newlist,
-                                oktypes=self.oktypes, parent=self.parent)
-            obj.location = self.location
-            return obj
+            return _ListSlice._from(self, self.list[i])
 
     def __delitem__(self, i: int | slice) -> None:
         del self.list[i]
+        # The elements after the deleted ones have moved
+        if isinstance(i, int):
+            self._reindex(i if i >= 0 else i + len(self.list) + 1)
+        else:
+            self._reindex(0)
 
     @overload
     def __setitem__(self, i: int, v: Element) -> None: ...
     @overload
-    def __setitem__(self, i: slice, v: Iterable[Element]) -> NoReturn: ...
-    # TODO(bug-fix step): slice assignment currently always raises (attach() is
-    # called on a list; see tests/test_regressions.py); once fixed, the slice
-    # overload above should return None.
+    def __setitem__(self, i: slice, v: Iterable[Element]) -> None: ...
 
     def __setitem__(self, i: int | slice, v: Any) -> None:
         if isinstance(i, slice):
-            v = (check_type(x, self.oktypes) for x in v)
+            # Check every new element before changing the list
+            new = [check_type(x, self.oktypes) for x in v]
+            start, stop, step = i.indices(len(self.list))
+            self.list[i] = new
+            if step == 1:
+                # The new elements are at start, start+1, ... and the
+                # elements after them might have moved
+                positions = range(start, start + len(new))
+                self._reindex(start + len(new))
+            else:
+                # Extended slice: same number of elements, nothing moves
+                positions = range(start, stop, step)
+            for position, element in zip(positions, new):
+                attach(element, self.parent, self.location, position)
         else:
             v = check_type(v, self.oktypes)
-        self.list[i] = v
-        attach(self.list[i], self.parent, self.location, i)  # type: ignore[arg-type]  # TODO(bug-fix step): wrong for slices
+            self.list[i] = v
+            attach(v, self.parent, self.location, i if i >= 0 else i + len(self.list))
 
     def insert(self, i: int, v: Element) -> None:
         v = check_type(v, self.oktypes)
+        # Same semantics as list.insert(): out of range indexes are clipped
+        n = len(self.list)
+        if i >= n:  # append (this is how containers are filled)
+            self.list.append(v)
+            attach(v, self.parent, self.location, n)
+            return
+        if i < 0:
+            i = max(i + n, 0)
         self.list.insert(i, v)
-        attach(self.list[i], self.parent, self.location, i)
+        attach(v, self.parent, self.location, i)
+        self._reindex(i + 1)
+
+    def _reindex(self, start: int) -> None:
+        """
+        Update the ``index`` of the elements at positions ``start`` and
+        later, after elements were inserted or removed before them.
+
+        Elements that were last accessed through another container
+        (an element can be in more than one container) are left as they are.
+        """
+        parent, location = self.parent, self.location
+        lst = self.list
+        for j in range(start, len(lst)):
+            element = lst[j]
+            if getattr(element, 'parent', None) is parent and getattr(element, 'location', None) == location:
+                element.index = j
 
     def walk(self, action: _Action, doc: Doc | None = None,
              stop_if: Callable[[Element], bool] | None = None) -> list[Element]:
@@ -122,7 +160,9 @@ class ListContainer(MutableSequence["Element"]):
     def __repr__(self) -> str:
         return 'ListContainer({})'.format(' '.join(repr(x) for x in self.list))
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ListContainer):
+            return NotImplemented
         # We can't compare on .parent b/c then we would get a circular reference
         if (self.oktypes != other.oktypes) or (self.location != other.location):
             return False
@@ -135,6 +175,56 @@ class ListContainer(MutableSequence["Element"]):
 
     def to_json(self) -> list[Any]:
         return [to_json_wrapper(item) for item in self.list]
+
+
+class _ListSlice(ListContainer):
+    """
+    What slicing a :class:`ListContainer` returns (``elem.content[1:3]``).
+
+    It is a new container that holds the same elements (a copy of the list,
+    not a view): changing it does not change the original container.
+    Neither reading nor changing it changes the ``parent``, ``location`` or
+    ``index`` of the elements, which keep describing their position in the
+    original container.
+    """
+
+    __slots__ = []
+
+    @classmethod
+    def _from(cls, container: ListContainer, elements: list[Element]) -> _ListSlice:
+        obj = cls.__new__(cls)
+        obj.oktypes = container.oktypes
+        obj.parent = container.parent
+        obj.location = container.location
+        obj.list = elements
+        return obj
+
+    @overload
+    def __getitem__(self, i: int) -> Element: ...
+    @overload
+    def __getitem__(self, i: slice) -> ListContainer: ...
+
+    def __getitem__(self, i: int | slice) -> Element | ListContainer:
+        if isinstance(i, int):
+            return self.list[i]
+        return _ListSlice._from(self, self.list[i])
+
+    def __delitem__(self, i: int | slice) -> None:
+        del self.list[i]
+
+    @overload
+    def __setitem__(self, i: int, v: Element) -> None: ...
+    @overload
+    def __setitem__(self, i: slice, v: Iterable[Element]) -> None: ...
+
+    def __setitem__(self, i: int | slice, v: Any) -> None:
+        if isinstance(i, slice):
+            self.list[i] = [check_type(x, self.oktypes) for x in v]
+        else:
+            self.list[i] = check_type(v, self.oktypes)
+
+    def insert(self, i: int, v: Element) -> None:
+        self.list.insert(i, check_type(v, self.oktypes))
 
 
 class DictContainer(MutableMapping[str, "MetaValue"]):

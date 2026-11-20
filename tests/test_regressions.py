@@ -127,7 +127,6 @@ def test_load_document_with_comment_raw_block_247():
     assert doc.content[0].format == 'comment'
 
 
-@pytest.mark.xfail(strict=True, reason='#255 index of siblings is stale after insert()')
 def test_sibling_navigation_after_insert_255():
     a, b = pf.Str('a'), pf.Str('b')
     p = pf.Para(a, b)
@@ -137,7 +136,6 @@ def test_sibling_navigation_after_insert_255():
     assert a.prev.text == 'new'
 
 
-@pytest.mark.xfail(strict=True, reason='#255 index of siblings is stale after deletion')
 def test_sibling_navigation_after_delete_255():
     p = pf.Para(pf.Str('x'), pf.Str('y'), pf.Str('z'))
     y, z = p.content[1], p.content[2]
@@ -147,7 +145,6 @@ def test_sibling_navigation_after_delete_255():
     assert z.next is None
 
 
-@pytest.mark.xfail(strict=True, reason='negative indexes are stored in .index, breaking next/prev')
 def test_navigation_after_negative_indexing():
     p = pf.Para(pf.Str('a'), pf.Str('b'), pf.Str('c'))
     last = p.content[-1]
@@ -156,7 +153,6 @@ def test_navigation_after_negative_indexing():
     assert last.prev.text == 'b'   # currently None
 
 
-@pytest.mark.xfail(strict=True, reason='ListContainer.insert() with a negative index attaches the wrong element')
 def test_listcontainer_insert_negative_index():
     p = pf.Para(pf.Str('a'), pf.Str('b'))
     v = pf.Str('v')
@@ -168,8 +164,6 @@ def test_listcontainer_insert_negative_index():
     assert [e.text for e in p.content.list] == ['a', 'v', 'b']
 
 
-@pytest.mark.xfail(strict=True, raises=IndexError,
-                   reason='ListContainer.insert() past the end inserts, then raises IndexError')
 def test_listcontainer_insert_past_the_end():
     p = pf.Para(pf.Str('a'))
     w = pf.Str('w')
@@ -178,7 +172,6 @@ def test_listcontainer_insert_past_the_end():
     assert [e.text for e in p.content.list] == ['a', 'w']
 
 
-@pytest.mark.xfail(strict=True, reason='slicing a ListContainer re-indexes the original elements')
 def test_listcontainer_slicing_does_not_change_original_indexes():
     p = pf.Para(pf.Str('a'), pf.Str('b'), pf.Str('c'))
     b, c = p.content[1], p.content[2]
@@ -188,8 +181,6 @@ def test_listcontainer_slicing_does_not_change_original_indexes():
     assert c.next is None          # currently Str(c) itself
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError,
-                   reason='ListContainer slice assignment calls attach() on a list')
 def test_listcontainer_slice_assignment():
     p = pf.Para(pf.Str('a'), pf.Str('b'), pf.Str('c'))
     new = [pf.Str('x'), pf.Str('y')]
@@ -199,6 +190,80 @@ def test_listcontainer_slice_assignment():
     assert [e.text for e in p.content.list] == ['x', 'y', 'c']
 
 
+def test_listcontainer_slice_assignment_shifts_and_extended_slices():
+    p = pf.Para(pf.Str('a'), pf.Str('b'), pf.Str('c'))
+    c = p.content.list[2]
+    x, y, z = pf.Str('x'), pf.Str('y'), pf.Str('z')
+    p.content[0:1] = [x, y, z]     # more elements than replaced: 'c' moves
+    assert [e.index for e in (x, y, z)] == [0, 1, 2]
+    assert c.index == 4 and c.prev.text == 'b' and c.next is None
+    p.content[::2] = [pf.Str('0'), pf.Str('2'), pf.Str('4')]
+    assert [e.index for e in p.content.list] == [0, 1, 2, 3, 4]
+    assert [e.text for e in p.content.list] == ['0', 'y', '2', 'b', '4']
+    p.content[1:3] = []
+    assert [(e.text, e.index) for e in p.content.list] == [('0', 0), ('b', 1), ('4', 2)]
+    with pytest.raises(ValueError):  # extended slices must keep the length
+        p.content[::2] = [pf.Str('q')]
+    assert len(p.content) == 3
+
+
+def test_listcontainer_delete_and_insert_with_negative_indexes():
+    p = pf.Para(pf.Str('a'), pf.Str('b'), pf.Str('c'), pf.Str('d'))
+    d = p.content.list[3]
+    del p.content[-3]
+    assert d.index == 2 and d.prev.text == 'c'
+    p.content.insert(-10, pf.Str('first'))   # clipped, like list.insert()
+    assert [(e.text, e.index) for e in p.content.list] == [('first', 0), ('a', 1), ('c', 2), ('d', 3)]
+    p.content[-1] = new = pf.Str('D')
+    assert new.parent is p and new.index == 3 and new.prev.text == 'c'
+    assert p.content.pop(-2).text == 'c'
+    assert new.index == 2 and new.prev.text == 'a'
+
+
+def test_listcontainer_slices_do_not_change_elements():
+    p = pf.Para(pf.Str('a'), pf.Str('b'), pf.Str('c'))
+    elements = list(p.content.list)
+    sl = p.content[1:]
+    assert [e.text for e in sl] == ['b', 'c']     # iterating over the slice
+    assert sl[0] is elements[1] and sl[-1] is elements[2] and sl[::-1][0] is elements[2]
+    sl.walk(lambda e, doc: None)
+    for index, e in enumerate(elements):
+        assert (e.parent, e.location, e.index) == (p, None, index)
+    sl.insert(0, pf.Str('x'))                     # changing the slice does not change p
+    sl[1] = pf.Str('y')
+    del sl[-1]
+    assert [e.text for e in p.content] == ['a', 'b', 'c']
+    assert [e.text for e in sl] == ['x', 'y']
+    with pytest.raises(TypeError):
+        sl[0] = pf.Para()
+
+
+def test_element_in_two_containers_reports_the_last_one_accessed():
+    s = pf.Str('shared')
+    p1 = pf.Para(pf.Str('a'), s)
+    p2 = pf.Para(s)
+    assert s.parent is p2 and s.index == 0      # placed last in p2
+    assert p1.content[1] is s and s.parent is p1 and s.index == 1
+    p2.content.insert(0, pf.Str('b'))           # s is not attached to p2 now: left as it is
+    assert s.parent is p1 and s.index == 1
+    assert p2.content[1] is s and s.parent is p2 and s.index == 1
+
+
+def test_metamap_content_setter_accepts_mappings_and_pairs():
+    source = pf.MetaMap(a=pf.MetaString('x'))
+    for value in (source.content, source, [('a', pf.MetaString('x'))], {'a': pf.MetaString('x')}.items()):
+        mm = pf.MetaMap()
+        mm.content = value
+        assert list(mm) == ['a'] and mm['a'] == pf.MetaString('x') and mm['a'].parent is mm
+
+
+def test_metalist_slice_assignment_attaches_items_260():
+    ml = pf.MetaList('a', 'b', 'c')
+    ml[1:] = [{'k': 'v'}]
+    assert len(ml) == 2 and isinstance(ml[1], pf.MetaMap)
+    assert ml.content.list[1].parent is ml and ml.content.list[1].index == 1
+
+
 def test_listcontainer_slice_assignment_type_checked():
     p = pf.Para(pf.Str('a'))
     with pytest.raises(TypeError):
@@ -206,7 +271,6 @@ def test_listcontainer_slice_assignment_type_checked():
     assert p.content[0].text == 'a'
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError, reason='#260 MetaList slice assignment fails')
 def test_metalist_slice_assignment_260():
     ml = pf.MetaList('a', 'b', 'c')
     ml[0:2] = ['x', True]
@@ -222,8 +286,6 @@ def test_metalist_slice_read_and_delete_260():
     assert [m.text for m in ml] == ['c']
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError,
-                   reason='MetaMap.content setter calls .dict on a plain dict')
 def test_metamap_content_setter_accepts_dict():
     mm = pf.MetaMap()
     mm.content = {'a': pf.MetaString('x')}
@@ -231,8 +293,6 @@ def test_metamap_content_setter_accepts_dict():
     assert mm['a'].parent is mm
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError,
-                   reason='ListContainer.__eq__ assumes the other object is a ListContainer')
 @pytest.mark.parametrize('other', [None, 1, 'x', []])
 def test_listcontainer_comparison_with_other_types(other):
     lc = pf.Para(pf.Str('a')).content
