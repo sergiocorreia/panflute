@@ -58,6 +58,10 @@ at runtime (`from __future__ import annotations`; imports used only in
 annotations go under `if TYPE_CHECKING:`), so they must not affect the
 behavior or speed of panflute, and the code must keep working on Python 3.10.
 
+### Changelog
+
+If your change is visible to users (a new feature, a bug fix, a change in behavior), add a line for it at the top of [CHANGELOG.md](CHANGELOG.md), under the unreleased version.
+
 ### Continuous integration
 
 [GitHub Actions](https://github.com/sergiocorreia/panflute/blob/master/.github/workflows/run_tests.yml) runs ruff and mypy, the test suite (on several Python and pandoc versions), the example filters, and a packaging check on every push and pull request.

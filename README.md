@@ -93,6 +93,4 @@ BSD3 license (following [`pandocfilters`](https://github.com/jgm/pandocfilters) 
 
 ## Changelog
 
-- `2.3.0` Update [Pandoc API](https://github.com/jgm/pandoc-types/blob/master/changelog) from 1.22 to 1.23 ([Pandoc 3.0](https://pandoc.org/releases.html#pandoc-3.0-2023-01-18)):
-    - Add `Figure` block object
-    - Remove `Null` block object (scheduled for removed)
+See [CHANGELOG.md](https://github.com/sergiocorreia/panflute/blob/master/CHANGELOG.md) for the changes in each release, including the breaking changes in 3.0.

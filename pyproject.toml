@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -62,7 +62,7 @@ Homepage = "https://scorreia.com/software/panflute/"
 Documentation = "https://scorreia.com/software/panflute/"
 Repository = "https://github.com/sergiocorreia/panflute"
 Issues = "https://github.com/sergiocorreia/panflute/issues"
-Changelog = "https://github.com/sergiocorreia/panflute/releases"
+Changelog = "https://github.com/sergiocorreia/panflute/blob/master/CHANGELOG.md"
 
 [project.scripts]
 panflute = "panflute:main"

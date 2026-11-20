@@ -17,8 +17,11 @@ The version number lives in one place: [`panflute/version.py`](panflute/version.
 
 1. Make sure CI is green on `master`.
 
-2. Bump `__version__` in `panflute/version.py`, update the changelog in
-   `README.md` (and the supported pandoc versions table if needed), and commit.
+2. Bump `__version__` in `panflute/version.py`; in
+   [`CHANGELOG.md`](CHANGELOG.md), check that the release's section is
+   complete and replace `(unreleased)` in its heading with the release date
+   (e.g. `## 3.0.0 (2026-12-01)`); update the supported pandoc versions table
+   in `README.md` if needed; and commit.
 
 3. Optionally, check the build locally:
 
